@@ -12,6 +12,7 @@ jspm_packages/
 .env.development
 .env.test
 .env.production
+config/config.env
 
 # ===============================
 # Logs
