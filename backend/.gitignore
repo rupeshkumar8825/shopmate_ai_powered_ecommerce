@@ -91,3 +91,5 @@ Thumbs.db
 # Misc
 # ===============================
 *.tgz
+
+/src/generated/prisma

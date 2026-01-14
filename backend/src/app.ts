@@ -1,8 +1,9 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import  { Express, Request, Response} from "express"
 
-const app = express();
+const app : Express = express();
 
 //setting up the different middlewares in this case
 app.use(cors());
@@ -16,7 +17,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 
 
-app.get("/health", (req, res) => {
+app.get("/health", (req : Request, res : Response) => {
     res.json({status : "OK"})
 })
 
