@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import  { Express, Request, Response} from "express"
+import { errorHandler } from "./errors/AppError";
 
 const app : Express = express();
 
@@ -22,6 +23,8 @@ app.get("/health", (req : Request, res : Response) => {
 })
 
 
+// need to add the custom error handler middleware here for this purpose
+app.use(errorHandler);
 export default app;
 
 
