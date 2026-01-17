@@ -83,7 +83,7 @@ export class TodoService {
 
 
     // service function to update an existing todo
-    static async updateTodo (id : number, data : {title?: string, completed? : string})
+    static async updateTodo (id : number, data : {title?: string, completed? : boolean})
     {
         // the below function if able to find the todo then its fine otherwise it 
         // will throw the error which will be captured by the central middleware. 
@@ -93,7 +93,7 @@ export class TodoService {
         try{
             return await prisma.todo.update({
                 where : {id : id}, 
-                data, 
+                data : data, 
             });
 
         }catch

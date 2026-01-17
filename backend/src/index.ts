@@ -5,9 +5,10 @@ import { ENV } from "./config/env";
 
 
 const PORT = ENV.PORT ?? 4000;
-console.log(`The valye of the port is ${PORT}`)
+console.log(`The value of the port is ${PORT}`)
 
 // listening to the server on PORT 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
+
