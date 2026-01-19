@@ -16,7 +16,7 @@ datasource db {
 
 
 model User {
-  id String @id @default(uuid()) @db.Uuid()
+  id String @id @default(uuid()) @db.Uuid
   name String @db.VarChar(100)
   email String @unique @db.VarChar(100)
   password String
@@ -29,6 +29,10 @@ model User {
   // all relations related code comes here 
   // user can create multiple products. 
   productList Product[]
+
+  // user can give multiple review ratings 
+  reviewList Reviews[]
+  orderList Order[]
 }
 
 
@@ -42,7 +46,7 @@ enum Role{
 // Please note that the products will be created by some user itself.
 // so there will be a one to many relation between the user and products table
 model Product {
-  id String @id @default(uuid())
+  id String @id @default(uuid()) @db.Uuid
   name String @db.VarChar(100)
   description String
   price Decimal @db.Decimal(10, 2)
@@ -50,18 +54,142 @@ model Product {
   ratings Decimal @db.Decimal(3, 2) @default(0)
   images Json[] @default([])
   stock Int
-  created_by String
+  created_by String @db.Uuid
   created_at DateTime @default(now())
 
   // all relations comes here
+  // all one to many relation comes here
+  reviewList Reviews[]
+  orderItemList OrderItem[]
 
+  // all one to one relations comes here
   // each product will belong to exactly one user. Further if we delete the user entry 
   // the product should automatically gets deleted
   user User @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
 
   // all the relevant checks comes here 
   // it turns out that for implementing all the checks we will have to 
   // edit the generated sql migration file itself and there is no workaround for this may be
   // in that case for all the checks we would edit the migration file itself in that case 
 
+}
+
+
+// shipping details table comes here 
+model ShippingInfo{
+  id String @id @default(uuid()) @db.Uuid
+  order_id String @unique @db.Uuid
+  full_name String @db.VarChar(100)
+  state String @db.VarChar(100)
+  city String @db.VarChar(100)
+  country String @db.VarChar(100)
+  address String 
+  pincode String @db.VarChar(20)
+  phone String @db.VarChar(20)
+
+  order Order @relation(fields: [order_id], references: [id])
+}
+
+model Order{
+  id String @id @default(uuid()) @db.Uuid
+  buyer_id String @db.Uuid
+  total_price Decimal @db.Decimal(10, 2)
+  tax_price Decimal @db.Decimal(10, 2)
+  shipping_price Decimal @db.Decimal(10, 2)
+  order_status OrderStatus @default(Processing)
+  paid_at DateTime? 
+  created_at DateTime @default(now()) 
+
+
+  // all the relations comes here
+  user User @relation(fields: [buyer_id], references: [id], onDelete: Cascade)
+
+  // all one to many relation
+  payments Payments[]
+  orderItemList OrderItem[]
+  shippingInfoList ShippingInfo?
+
+}
+
+
+
+enum OrderStatus{
+  Processing
+  Shipped
+  Delivered
+  Cancelled
+}
+
+
+
+model Reviews{
+  id String @id @default(uuid()) @db.Uuid
+  product_id  String @db.Uuid
+  user_id String @db.Uuid
+  rating Decimal @db.Decimal(3, 2)
+  comment String
+  created_at DateTime @default(now())
+
+
+  // relations come here 
+
+  // 1. each review will be given by a single user. And each user can have 
+  // multiple reviews at a time. Hence this is one to many relation from user to reviews. 
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // 2. each review will be given for a particular product
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+
+model Payments{
+  id String @id @default(uuid()) @db.Uuid
+  order_id String @db.Uuid
+  payment_type PaymentType @default(Online)
+  payment_status PaymentStatus @default(Pending)
+  payment_intent_id String @db.VarChar(255) @unique
+  created_at DateTime @default(now())
+
+
+  // all one to one relation comes here 
+  // one payment will corresponds to a single order itself 
+  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  // all one to many relations comes here
+}
+
+
+model OrderItem{
+  id String @id @default(uuid()) @db.Uuid
+  order_id String @db.Uuid
+  product_id String @db.Uuid
+  quantity Int 
+  price Decimal @db.Decimal(10, 2)
+  image String 
+  title String
+  created_at DateTime @default(now())
+
+
+  // all the relations comes here
+
+  // all the one to many relation comes here 
+  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+
+  // all the many to one relation comes here
+}
+
+
+enum PaymentType {
+  Online
+  Offline
+}
+
+
+enum PaymentStatus{
+  Paid
+  Pending
+  Failed
 }
