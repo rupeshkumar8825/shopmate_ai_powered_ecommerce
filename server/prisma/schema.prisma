@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id String @id @default(uuid()) @db.Uuid()
+  name String @db.VarChar(100)
+  email String @unique @db.VarChar(100)
+  password String
+  role Role @default(User)
+  avatar Json?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
+  createdAt DateTime @default(now())
+
+  // all relations related code comes here 
+  // user can create multiple products. 
+  productList Product[]
+}
+
+
+// defining the role enum that is allowed in the database for this purpose 
+enum Role{
+  User 
+  Admin
+}
+
+// defining the products table. 
+// Please note that the products will be created by some user itself.
+// so there will be a one to many relation between the user and products table
+model Product {
+  id String @id @default(uuid())
+  name String @db.VarChar(100)
+  description String
+  price Decimal @db.Decimal(10, 2)
+  category String @db.VarChar(100)
+  ratings Decimal @db.Decimal(3, 2) @default(0)
+  images Json[] @default([])
+  stock Int
+  created_by String
+  created_at DateTime @default(now())
+
+  // all relations comes here
+
+  // each product will belong to exactly one user. Further if we delete the user entry 
+  // the product should automatically gets deleted
+  user User @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
+  // all the relevant checks comes here 
+  // it turns out that for implementing all the checks we will have to 
+  // edit the generated sql migration file itself and there is no workaround for this may be
+  // in that case for all the checks we would edit the migration file itself in that case 
+
+}
