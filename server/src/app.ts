@@ -3,6 +3,7 @@ import express from "express"
 import { Express } from "express";
 import { ENV } from "./config/env";
 import cors from "cors"
+import { ErrorHandler } from "./middlware/errorHandler";
 
 
 
@@ -23,5 +24,9 @@ app.use(express.urlencoded({extended : true}))
 
 
 
+
+// at last we must keep the error handling middleware at the last
+// but why we do we have to do this???? need to check on this 
+app.use(ErrorHandler)
 
 export default app;
