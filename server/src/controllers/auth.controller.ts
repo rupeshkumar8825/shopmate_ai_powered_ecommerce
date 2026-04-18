@@ -5,6 +5,7 @@ import AppError from "../middlware/errorHandler";
 import prisma from "../config/prisma";
 import { User } from "../generated/prisma/client";
 import { ErrorCodes } from "../error/errorCodes";
+import { AuthService } from "../services/auth.service";
 
 export class AuthController {
     static  registerUser = async (req: Request, res: Response) => {
@@ -18,28 +19,9 @@ export class AuthController {
             throw new AppError("Please provide all fields", 400);
         }
 
-
-
-        const isEmailAlreadyExists : User[] = await prisma.user.findMany({
-            where:{
-                email : email    
-            }
-        })
-
-        
-        if(isEmailAlreadyExists.length > 0)
-        {
-            // this means that this email is already taken hence throw an error 
-            throw new AppError("Duplicate Email Found", ErrorCodes.BAD_REQUEST)
-        }
-
-        //otherwise we are good to go and create a new entry for this user 
-        //in this particular database
-        // for this we may call the function from the service layer itself 
-
-
-
-
+        const createUser = await AuthService.registerUserService(name, email, password);
 
     }
+
+    
 }

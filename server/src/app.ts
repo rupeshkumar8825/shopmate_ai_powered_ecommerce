@@ -6,7 +6,6 @@ import cors from "cors"
 import { ErrorHandler } from "./middlware/errorHandler";
 
 
-
 const app : Express = express();
 
 // dedining the different types of the middlewares here for this purpose 
@@ -29,4 +28,9 @@ app.use(express.urlencoded({extended : true}))
 // but why we do we have to do this???? need to check on this 
 app.use(ErrorHandler)
 
+
+
+// now we will be exporting the application so that we can use it properly in this case 
+// also this file consists of all the settings about server and middlewares that we
+// require for our application in this case for this purpose 
 export default app;
