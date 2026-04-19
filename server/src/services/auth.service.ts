@@ -7,6 +7,7 @@ import { ErrorCodes } from "../error/errorCodes"
 import { User } from "../generated/prisma/client"
 import AppError from "../middlware/errorHandler"
 import bcrypt from "bcrypt"
+import { JWTTokenService } from "./jwt.token.service"
 
 // using an prisma ORM. And generally ORMs are enough to act as an abstraction layer 
 export class AuthService {
@@ -37,10 +38,16 @@ export class AuthService {
             }
         })
         
+        // check if the user creation was successfull 
+        if(!userCreate)
+        {
+            // there was some problem creating the user 
+            throw new AppError("Some problem occurred while creating new user in database", ErrorCodes.INTERNAL_ERROR);
+        }
 
         // need to get the token and then need to set the cookie in the user's 
         // browser for this purpose
+        const token = await JWTTokenService.generateNewToken(userCreate)
         
-
     }
 }

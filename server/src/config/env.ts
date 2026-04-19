@@ -7,6 +7,8 @@ const envSchema = z.object(
         PORT : z.string().optional(), 
         FRONTEND_URL : z.string(), 
         DASHBOARD_URL : z.string(),
+        JWT_SECRET_KEY : z.string(),
+        JWT_EXPIRES_IN : z.string(),
     }
 )
 
