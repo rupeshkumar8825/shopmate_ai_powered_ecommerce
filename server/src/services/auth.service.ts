@@ -78,9 +78,10 @@ export class AuthService {
 
         // else user was found. lets check whether the password matches or not. 
         const userHashedPassword : string = user.password;
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const isPasswordMatch = await bcrypt.compare(password, userHashedPassword);
+
         // compare both the passwords
-        if(userHashedPassword !== hashedPassword)
+        if(!isPasswordMatch)
         {
             // passwords do not match 
             throw new AppError("Incorrect password was entered.", StatusCodes.BAD_REQUEST_400);
@@ -92,5 +93,13 @@ export class AuthService {
         // say everything went fine 
         return token;
 
+    }
+
+
+    static async logoutUserService() {
+        // let logoutSuccess : Promise<boolean= null;
+
+        // // say everything went fine 
+        // return logoutSuccess
     }
 }

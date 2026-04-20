@@ -47,12 +47,16 @@ export class AuthController {
         const token = AuthService.loginUserService(email, password);
 
 
-        // say everything went fine 
-        response.status(StatusCodes.SUCCESS_200).json({
+        // say everything went fine and lets set the cookie for the user
+        response.status(StatusCodes.SUCCESS_200).cookie("token", token, {
+            expires : new Date(Date.now() + ENV.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000), 
+            httpOnly : true
+        }).json({
             success : "true", 
-            message : "User login successfully", 
+            message : "User logged in successfully", 
             token : token
-        })
+        }) 
+        
     } 
 
 
