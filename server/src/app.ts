@@ -5,6 +5,8 @@ import { ENV } from "./config/env";
 import cors from "cors"
 import { ErrorHandler } from "./middlware/errorHandler";
 
+import authRoutes from "./routes/auth.routes"
+
 
 const app : Express = express();
 
@@ -21,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 // app.use(file)
 
+app.use("/v1/auth", authRoutes)
 
 
 

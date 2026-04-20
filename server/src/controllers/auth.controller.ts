@@ -13,6 +13,8 @@ export class AuthController {
         // first validate the client data received. Ideally we should use zod validation
         // but for now we will do validation of the client data by ourselves itself
         // after proper validation we will call the service layer function
+        console.log("the api end point to register the user got successfully hit")
+        console.log("the value of request body is as follows : ", request.body);
         const {name, email, password} = request.body;
         if(!name || !email || !password)
         {
@@ -22,6 +24,9 @@ export class AuthController {
 
         const [userCreated, token] = await AuthService.registerUserService(name, email, password);
         
+
+        // say everything went fine 
+
         // here lets set the cookies for the user with the help of received token
         response.status(StatusCodes.SUCCESS_200).cookie("token", token, {
             expires: new Date(Date.now() + ENV.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000), 

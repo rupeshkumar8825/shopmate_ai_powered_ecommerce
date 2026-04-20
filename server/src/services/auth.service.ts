@@ -8,6 +8,7 @@ import { User } from "../generated/prisma/client"
 import AppError from "../middlware/errorHandler"
 import bcrypt from "bcrypt"
 import { JWTTokenService } from "./jwt.token.service"
+import { PrismaClientKnownRequestError } from "../generated/prisma/internal/prismaNamespace"
 
 // using an prisma ORM. And generally ORMs are enough to act as an abstraction layer 
 export class AuthService {
@@ -27,16 +28,36 @@ export class AuthService {
 
 
         // get the hash of the password 
-        const hashedPassword = await bcrypt.hash(password, ENV.DASHBOARD_URL)
-        //now lets create a new user 
-        const userCreate = await prisma.user.create({
-            data:
+        const hashedPassword = await bcrypt.hash(password, 10)
+        let userCreate = null;
+        //now lets create a new user
+        try{
+            
+                userCreate = await prisma.user.create({
+                    data:
+                    {
+                        name : name,
+                        email : email, 
+                        password : hashedPassword
+                    }
+                })
+        } catch(error)
+        {
+            if(error instanceof PrismaClientKnownRequestError)
             {
-                name : name,
-                email : email, 
-                password : hashedPassword
+                // this is a known error. we need to get the following fields
+                // code : the error code 
+                // message : this will return the error message
+                const code = error.code;
+                const message =  "Error Occurred with message : " + error.message + " and with error code" + code;
+                
+                // lets the throw the error with proper message
+                throw new AppError(message, StatusCodes.BAD_REQUEST_400)
             }
-        })
+            
+            // otherwise this is some unknown message 
+            throw new AppError("Something went wrong", StatusCodes.INTERNAL_ERROR_500)
+        }
         
         // check if the user creation was successfull 
         if(!userCreate)
