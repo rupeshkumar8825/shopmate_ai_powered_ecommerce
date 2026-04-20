@@ -39,4 +39,21 @@ export class AuthController {
     }
 
 
+    //controller function to handle login of the user
+    static loginUser (request : Request, response : Response){
+        const email = request.body.email;
+        const password = request.body.password;
+        // lets call service function 
+        const token = AuthService.loginUserService(email, password);
+
+
+        // say everything went fine 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : "true", 
+            message : "User login successfully", 
+            token : token
+        })
+    } 
+
+
 }

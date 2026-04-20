@@ -29,35 +29,16 @@ export class AuthService {
 
         // get the hash of the password 
         const hashedPassword = await bcrypt.hash(password, 10)
-        let userCreate = null;
+
         //now lets create a new user
-        try{
-            
-                userCreate = await prisma.user.create({
-                    data:
-                    {
-                        name : name,
-                        email : email, 
-                        password : hashedPassword
-                    }
-                })
-        } catch(error)
-        {
-            if(error instanceof PrismaClientKnownRequestError)
+        const userCreate = await prisma.user.create({
+            data:
             {
-                // this is a known error. we need to get the following fields
-                // code : the error code 
-                // message : this will return the error message
-                const code = error.code;
-                const message =  "Error Occurred with message : " + error.message + " and with error code" + code;
-                
-                // lets the throw the error with proper message
-                throw new AppError(message, StatusCodes.BAD_REQUEST_400)
+                name : name,
+                email : email, 
+                password : hashedPassword
             }
-            
-            // otherwise this is some unknown message 
-            throw new AppError("Something went wrong", StatusCodes.INTERNAL_ERROR_500)
-        }
+        })
         
         // check if the user creation was successfull 
         if(!userCreate)
@@ -73,5 +54,43 @@ export class AuthService {
         // say everything went fine 
         return [userCreate, token]
         
+    }
+
+
+    /// service function to handle the login of the user. 
+    /// if the login is successfull then this function will return the token 
+    /// else it will throw the relevant error which will be then handled by the 
+    /// global middleware that we have defined
+    static async loginUserService(email : string, password : string) : Promise<string> {
+        // check if the email exist
+        const user : User | null = await prisma.user.findFirst({
+            where: {
+                email : email
+            }
+        })
+
+        if (!user)
+        {
+            // was not able to find any user with this email id
+            // hence lets throw an error with appropriate message 
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // else user was found. lets check whether the password matches or not. 
+        const userHashedPassword : string = user.password;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // compare both the passwords
+        if(userHashedPassword !== hashedPassword)
+        {
+            // passwords do not match 
+            throw new AppError("Incorrect password was entered.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // otherwise we need to send back the token to the controller
+        const token = JWTTokenService.generateNewToken(user);
+
+        // say everything went fine 
+        return token;
+
     }
 }
