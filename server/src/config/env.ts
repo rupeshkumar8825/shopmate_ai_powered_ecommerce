@@ -9,6 +9,7 @@ const envSchema = z.object(
         DASHBOARD_URL : z.string(),
         JWT_SECRET_KEY : z.string(),
         JWT_EXPIRES_IN : z.string(),
+        COOKIE_EXPIRES_IN : z.string().transform((val) => Number(val)),
     }
 )
 

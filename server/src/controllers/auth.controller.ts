@@ -1,27 +1,37 @@
 // this handles all logic related to authenticated related routes
 
-import { Request } from "express";
+import { Request, Response } from "express";
 import AppError from "../middlware/errorHandler";
 import prisma from "../config/prisma";
 import { User } from "../generated/prisma/client";
-import { ErrorCodes } from "../error/errorCodes";
+import { StatusCodes } from "../error/statusCodes";
 import { AuthService } from "../services/auth.service";
+import { ENV } from "../config/env";
 
 export class AuthController {
-    static  registerUser = async (req: Request, res: Response) => {
+    static  registerUser = async (request: Request, response: Response) => {
         // first validate the client data received. Ideally we should use zod validation
         // but for now we will do validation of the client data by ourselves itself
         // after proper validation we will call the service layer function
-        const {name, email, password} = req.body;
+        const {name, email, password} = request.body;
         if(!name || !email || !password)
         {
             // if any of the fields are not defined then we will throw an apperror
             throw new AppError("Please provide all fields", 400);
         }
 
-        const createUser = await AuthService.registerUserService(name, email, password);
-
+        const [userCreated, token] = await AuthService.registerUserService(name, email, password);
+        
+        // here lets set the cookies for the user with the help of received token
+        response.status(StatusCodes.SUCCESS_200).cookie("token", token, {
+            expires: new Date(Date.now() + ENV.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000), 
+            httpOnly : true
+        }).json({
+            success : true, 
+            user : userCreated, 
+            message : "User registered successfully", 
+        });
     }
 
-    
+
 }

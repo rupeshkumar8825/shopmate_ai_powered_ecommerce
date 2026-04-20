@@ -4,6 +4,7 @@ import { User } from "../generated/prisma/client"
 import { ENV } from "../config/env"
 import { env } from "node:process"
 import AppError from "../middlware/errorHandler"
+import { StatusCodes } from "../error/statusCodes"
 
 
 export class JWTTokenService {
@@ -20,7 +21,7 @@ export class JWTTokenService {
             // or some other service from which this is being called but still 
             // the exception will bubble up and eventually will be catched by the 
             // global error middleware handler for this purpose. 
-            throw new AppError("JWT Environment variables are not defined", 401);
+            throw new AppError("JWT Environment variables are not defined", StatusCodes.NOT_AUTHORIZED_401);
         }
 
 

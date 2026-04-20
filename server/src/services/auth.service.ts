@@ -3,7 +3,7 @@
 // kindly note that we are not going to using the user repository as we are already 
 import { ENV } from "../config/env"
 import prisma from "../config/prisma"
-import { ErrorCodes } from "../error/errorCodes"
+import { StatusCodes } from "../error/statusCodes"
 import { User } from "../generated/prisma/client"
 import AppError from "../middlware/errorHandler"
 import bcrypt from "bcrypt"
@@ -11,7 +11,7 @@ import { JWTTokenService } from "./jwt.token.service"
 
 // using an prisma ORM. And generally ORMs are enough to act as an abstraction layer 
 export class AuthService {
-    static registerUserService = async (name : string, email : string, password : string) => {
+    static registerUserService = async (name : string, email : string, password : string) : Promise<[User, string]> => {
         // check whether the email is already taken or not
         const isEmailAlreadyExists : User[] = await prisma.user.findMany({
             where:{
@@ -22,7 +22,7 @@ export class AuthService {
         if(isEmailAlreadyExists.length > 0)
         {
             // this means that this email is already taken hence throw an error 
-            throw new AppError("Duplicate Email Found", ErrorCodes.BAD_REQUEST)
+            throw new AppError("Duplicate Email Found", StatusCodes.BAD_REQUEST_400)
         }
 
 
@@ -42,12 +42,15 @@ export class AuthService {
         if(!userCreate)
         {
             // there was some problem creating the user 
-            throw new AppError("Some problem occurred while creating new user in database", ErrorCodes.INTERNAL_ERROR);
+            throw new AppError("Some problem occurred while creating new user in database", StatusCodes.INTERNAL_ERROR_500);
         }
 
         // need to get the token and then need to set the cookie in the user's 
         // browser for this purpose
         const token = await JWTTokenService.generateNewToken(userCreate)
+        
+        // say everything went fine 
+        return [userCreate, token]
         
     }
 }
