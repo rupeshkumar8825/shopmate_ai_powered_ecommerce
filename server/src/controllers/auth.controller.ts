@@ -60,6 +60,19 @@ export class AuthController {
     } 
 
 
+    static async logoutUser(request : Request, response : Response){
+        // we simply need to delete the cookies 
+        // and since this can be done in the controller itself 
+        // hence we will not call any function from the service layer
+        response.status(StatusCodes.SUCCESS_200).cookie("token", "", {
+            expires : new Date(Date.now()), 
+            httpOnly : true
+        }).json({
+            success : "true", 
+            message : "User successfully logged out"
+        });
+    }
+
     // controller function to get the details of a given user
     static async  getUserDetails(request : Request, response : Response){
         // here by now we can assume that the authmiddleware would have validated the token already 
