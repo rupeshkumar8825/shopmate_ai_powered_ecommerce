@@ -103,6 +103,10 @@ export class AuthService {
         // return logoutSuccess
     }
 
+
+
+    // service function to return the user if found else throws an error for this purpose
+    // this function takes the userId as the argument passed by the controller
     static async getUserInformationService(userId : string) : Promise<User> {
         const user = await prisma.user.findUnique({
             where : {

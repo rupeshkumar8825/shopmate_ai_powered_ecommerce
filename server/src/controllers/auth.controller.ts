@@ -60,4 +60,21 @@ export class AuthController {
     } 
 
 
+    // controller function to get the details of a given user
+    static async  getUserDetails(request : Request, response : Response){
+        // here by now we can assume that the authmiddleware would have validated the token already 
+        const userId = request.userId as string;
+        const user = await AuthService.getUserInformationService(userId)
+
+
+        // say everything went fine
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : "true", 
+            message : "User details successfully fetched", 
+            user : user
+        })
+    }
+
+
+
 }
