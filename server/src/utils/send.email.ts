@@ -8,6 +8,7 @@ export const sendEmail = async (email : string, subject : string, message : stri
         host : ENV.SMTP_HOST, 
         service : ENV.SMTP_SERVICE, 
         port : ENV.SMTP_PORT, 
+        
         auth : {
             user : ENV.SMTP_MAIL, 
             pass : ENV.SMTP_PASSWORD

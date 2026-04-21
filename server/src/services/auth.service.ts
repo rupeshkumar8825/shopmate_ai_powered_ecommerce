@@ -9,6 +9,9 @@ import AppError from "../middlware/errorHandler"
 import bcrypt from "bcrypt"
 import { JWTTokenService } from "./jwt.token.service"
 import { PrismaClientKnownRequestError } from "../generated/prisma/internal/prismaNamespace"
+import { generatePasswordResetToken } from "../utils/password.utils"
+import { generatePasswordResetEmailTemplate } from "../utils/generate.email.template.utils"
+import { sendEmail } from "../utils/send.email"
 
 // using an prisma ORM. And generally ORMs are enough to act as an abstraction layer 
 export class AuthService {
@@ -122,5 +125,71 @@ export class AuthService {
 
         // say everything went fine 
         return user;
+    }
+
+
+    // service layer function to handle the forgot password related action
+    static async forgotPasswordService(email : string, frontendUrl : string) {
+        /// Actions to do : 
+        ///     1. First find the user with the given emailid
+        ///     2. Send an email for setting the password. 
+        ///     3. We will send the link with the generated token in the email too 
+        ///     4. Update the reset_password_token field with the generated token 
+        ///     5. Update the reset_password_expire field to the expiry date of the token
+        ///     6. Finally send the email and check its response
+
+        // check whether the user exists of not 
+        const user = await prisma.user.findUnique({
+            where : {email : email}
+        })
+        if(!user)
+        {
+            // user was not found. Lets throw an error for this 
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // else lets generate the password reset token here 
+        const generatTokenResponse = generatePasswordResetToken();
+        const resetToken = generatTokenResponse.resetToken;
+        const hashedToken = generatTokenResponse.hashedToken;
+        const tokenExpiryTime = generatTokenResponse.resetPasswordTokenExpiry;
+        
+        // now lets update the database entries
+        const userUpdateResponse = await prisma.user.update({
+            where : {email : email},
+            data : {
+                resetPasswordToken : hashedToken, 
+                resetPasswordExpires : new Date(tokenExpiryTime)
+            }
+        })
+
+        if(!userUpdateResponse)
+        {
+            // this means that the user update failed. Hence lets throw error 
+            throw new AppError("User update failed", StatusCodes.INTERNAL_ERROR_500);
+        }
+        
+
+        // now lets generate the frontend url to be sent to the user 
+        const resetPasswordURL = `${frontendUrl}/password/reset/${resetToken}`;
+
+        // lets generate the gmail content to be sent to the user 
+        const generatedGmailContent = generatePasswordResetEmailTemplate(resetPasswordURL);
+
+        // lets send the email now 
+        // this we want to keep it inside the try catch block because 
+        // we want to send the custom message otherwise our server will throw 
+        // the 500 internal server error which we may not want to do
+        try{
+            const emailSendResponse = await sendEmail(email, "Ecommerce Password Recovery", generatedGmailContent);
+        }
+        catch(error)
+        {
+            throw new AppError("Failed to send the Ecommerce Password Reset Email", StatusCodes.INTERNAL_ERROR_500);
+        }
+
+        // say everything went fine 
+        return;
+
     }
 }
