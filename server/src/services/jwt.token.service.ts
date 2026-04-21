@@ -10,6 +10,7 @@ import { StatusCodes } from "../error/statusCodes"
 export class JWTTokenService {
     // define the important functions here for this purpose 
     static async generateNewToken(user : User) : Promise<string>{
+        console.log("inside generate newtoken service function")
         // check whether all the environment variables are defined properly or not
         if(!ENV.JWT_SECRET_KEY || !ENV.JWT_EXPIRES_IN)
         {
@@ -24,7 +25,7 @@ export class JWTTokenService {
             throw new AppError("JWT Environment variables are not defined", StatusCodes.NOT_AUTHORIZED_401);
         }
 
-
+        console.log("the jwt secrets and expiry related information are already defined")
         const expiresIn = ENV.JWT_EXPIRES_IN as SignOptions["expiresIn"] ?? "1d"
         const tokenOptions  = {
             expiresIn : expiresIn
@@ -34,9 +35,9 @@ export class JWTTokenService {
             id : user.id,
             email : user.email
         }
-
+        console.log("the payload on which we need to create the token is ", payload)
         const token = jwt.sign(payload, ENV.JWT_SECRET_KEY, tokenOptions)
-        
+        console.log("the generated token is as follows", token);
         // say everything went fine 
         return token;
     }

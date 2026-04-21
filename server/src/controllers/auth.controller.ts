@@ -40,11 +40,11 @@ export class AuthController {
 
 
     //controller function to handle login of the user
-    static loginUser (request : Request, response : Response){
+    static async loginUser (request : Request, response : Response){
         const email = request.body.email;
         const password = request.body.password;
         // lets call service function 
-        const token = AuthService.loginUserService(email, password);
+        const token = await AuthService.loginUserService(email, password);
 
 
         // say everything went fine and lets set the cookie for the user

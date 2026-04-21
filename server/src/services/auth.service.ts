@@ -88,7 +88,7 @@ export class AuthService {
         }
 
         // otherwise we need to send back the token to the controller
-        const token = JWTTokenService.generateNewToken(user);
+        const token = await JWTTokenService.generateNewToken(user);
 
         // say everything went fine 
         return token;

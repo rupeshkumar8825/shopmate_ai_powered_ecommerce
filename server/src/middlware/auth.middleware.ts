@@ -13,7 +13,7 @@ import { ENV } from "../config/env";
 // to us. This middleware would be called almost each of the api hits. 
 export function authMiddleware (request : Request, response : Response, next : NextFunction) {
     // need to fetch the token from the authorization header itself
-    const authorizationHeader = request.headers.authorization;
+    const authorizationHeader = request.cookies;
     if(!authorizationHeader)
     {
         // this means that authorization header is not present 
@@ -22,7 +22,7 @@ export function authMiddleware (request : Request, response : Response, next : N
     }  
 
     // otherwise lets fetch the token from it
-    const token = authorizationHeader.split(' ')[1];
+    const token = authorizationHeader.token;
     if(!token)
     {
         // token was not found hence lets throw an error here
