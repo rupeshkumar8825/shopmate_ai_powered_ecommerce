@@ -7,6 +7,10 @@ import { StatusCodes } from "../error/statusCodes";
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { ENV } from "../config/env";
 
+
+
+// middleware function to handle the authentication of the user hitting the api request 
+// to us. This middleware would be called almost each of the api hits. 
 export function authMiddleware (request : Request, response : Response, next : NextFunction) {
     // need to fetch the token from the authorization header itself
     const authorizationHeader = request.headers.authorization;
@@ -30,9 +34,14 @@ export function authMiddleware (request : Request, response : Response, next : N
     const userId = decodedToken.id;
     const email = decodedToken.email;
 
-    // TODO :- need to find a way to embed the decoded id and email into the 
-    // request itself so that we do not need to again decode the same token 
-    // to get back the user's id and email
+    console.log("the decoded value of the userid from token is : ", userId)
+    console.log("the decoded value of the email from token is : ", email)
+
+    // embed these decoded values about the user into the request object itself
+    // this our controllers will be able to get the userid and email without
+    // having to decode it again and again for this purpose
+    request.userId = userId;
+    request.email = email;
 
     // since the token decoding was successfully hence lets call the next function
     // say everything went fine 

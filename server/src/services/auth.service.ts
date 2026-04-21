@@ -102,4 +102,21 @@ export class AuthService {
         // // say everything went fine 
         // return logoutSuccess
     }
+
+    static async getUserInformationService(userId : string) : Promise<User> {
+        const user = await prisma.user.findUnique({
+            where : {
+                id : userId
+            }
+        })
+
+        if(!user)
+        {
+            // user was not found lets return an error for this purpose
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // say everything went fine 
+        return user;
+    }
 }
