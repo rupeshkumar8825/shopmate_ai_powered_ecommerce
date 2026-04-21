@@ -10,6 +10,12 @@ const envSchema = z.object(
         JWT_SECRET_KEY : z.string(),
         JWT_EXPIRES_IN : z.string(),
         COOKIE_EXPIRES_IN : z.string().transform((val) => Number(val)),
+        SMTP_HOST : z.string(), 
+        SMTP_SERVICE : z.string(), 
+        SMTP_PORT : z.string(), 
+        SMTP_MAIL : z.string(), 
+        SMTP_PASSWORD : z.string()
+
     }
 )
 
