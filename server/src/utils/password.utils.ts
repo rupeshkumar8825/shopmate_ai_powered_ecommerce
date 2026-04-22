@@ -20,3 +20,32 @@ export const generatePasswordResetToken = () => {
     // say everything went fine 
     return dataToReturn
 }
+
+
+
+// utility function to check the resetPasswordToken and hashedPasswordToken matches or not
+export const verifyPasswordResetToken = (resetPasswordToken : string, hashedPasswordToken : string) => {
+    // lets hash the current reset token 
+    const hashedPasswordTokenToVerify = crypto.createHash("sha-256").update(resetPasswordToken).digest("hex");
+
+    if(hashedPasswordTokenToVerify === hashedPasswordToken)
+    {
+        // say everything went fine
+        return true;
+    }
+
+    // token mismatched happened 
+    return false;
+
+}
+
+
+// given a normal token its returns the hashed token
+export const getHashedResetPasswordToken = (resetPasswordToken : string) => {
+    const hashedResetPasswordToken = crypto.createHash("sha-256")
+                                    .update(resetPasswordToken)
+                                    .digest("hex")
+
+    // say everything went fine 
+    return hashedResetPasswordToken;
+}

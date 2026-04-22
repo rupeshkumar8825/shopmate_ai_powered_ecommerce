@@ -9,7 +9,7 @@ import AppError from "../middlware/errorHandler"
 import bcrypt from "bcrypt"
 import { JWTTokenService } from "./jwt.token.service"
 import { PrismaClientKnownRequestError } from "../generated/prisma/internal/prismaNamespace"
-import { generatePasswordResetToken } from "../utils/password.utils"
+import { generatePasswordResetToken, getHashedResetPasswordToken, verifyPasswordResetToken } from "../utils/password.utils"
 import { generatePasswordResetEmailTemplate } from "../utils/generate.email.template.utils"
 import { sendEmail } from "../utils/send.email"
 
@@ -198,6 +198,84 @@ export class AuthService {
         }
 
         // say everything went fine 
+        return;
+
+    }
+
+
+    static async resetPasswordService(resetPasswordToken : string, newPassword : string, confirmNewPassword : string) {
+        /// Following actions we need to do : 
+        ///     1. Find the user using email whose email needs to be sent
+        ///     2. Validate the resetPasswordToken whether its valid. 
+        ///     3. If valid then check whether this is associated with this user or not
+        ///     4. If this token belongs to this user, then check whether the timeout occurred or not
+        ///     5. If timeout did not occur then we update the password in the database. 
+        ///     6. Make the fields related to the token as null  
+
+        /// Also if any occur at any of the steps then we will take appropriate actions. 
+        
+        
+        // user was found, lets get the current hashedresetpassword token from the user
+        const hashedPasswordResetToken = getHashedResetPasswordToken(resetPasswordToken)
+        const userList = await prisma.user.findMany({
+            where : {
+                AND : [
+                    {resetPasswordToken : hashedPasswordResetToken},
+                    {resetPasswordExpires : { gt : Date.now.toString()}}
+                ]
+            }
+        })
+
+        if(!userList || userList.length == 0)
+        {
+            // user not found hence return an error 
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404)
+        }
+        else if (userList.length > 1)
+        {
+            // there were two users who assigned the same token. 
+            // since the possibility of having this is very low hence 
+            // we will log this in the server and then we will just move forward
+            console.log("Unexpected happened. Same token was assigned to two different user");
+            console.log("The list of users are as follows: -", userList)
+        }
+
+        // lets take the first user itself 
+        const user = userList[0];
+        if(!user)
+        {
+            // lets throw an error
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404)
+            
+        }
+        // now we will validate the passwords 
+        if(newPassword !== confirmNewPassword)
+        {
+            // the passwords do not match hence throw an error here
+            throw new AppError("Passwords do not match", StatusCodes.BAD_REQUEST_400);
+        }
+
+        if((newPassword.length < 8) || (newPassword.length > 16))
+        {
+            // the password length is not as expected. lets throw an error here too
+            throw new AppError("Password length should be between 8 and 16 characters", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // hash the password using the bcrypt 
+        const hashedPassowrd = bcrypt.hash(newPassword, 10);
+
+        //everything passed lets now try to update the password of the user
+        await prisma.user.update({
+            where : {id : user.id},
+            data : {
+                password : newPassword
+            } 
+        });
+
+
+        // ideally we should also delete the resettokenpassword and resettokenpasswordexpires
+        // from the database but we can ignore that because anyways it is not harming us
+        // say everything went fine and simply return from here for this purpose
         return;
 
     }
