@@ -110,4 +110,22 @@ export class AuthController {
 
     }
 
+    static async resetPassword(request : Request, response : Response){
+        // considering that the zod would have validated the user input lets read the values 
+        const password = request.body.password;
+        const confirmPassword = request.body.confirmPassword;
+
+        const resetPasswordToken = request.params.token as string;
+
+        // call the service layer function by passing this token and also the passwords
+        AuthService.resetPasswordService(resetPasswordToken, password, confirmPassword)
+
+        // if control reaches then we know that the password change is now successfull 
+        // hence lets return the positive response itself 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : true,
+            message : "Password successfully changed"
+        })
+    }
+
 }

@@ -11,6 +11,7 @@ router.post("/login", AuthController.loginUser);
 router.get("/me", authMiddleware, AuthController.getUserDetails);
 router.post("/logout", authMiddleware, AuthController.logoutUser);
 router.post("/password/forgot", authMiddleware, AuthController.forgotPassword)
+router.post("/password/reset/:token", authMiddleware, AuthController.resetPassword)
 
 
 export default router
