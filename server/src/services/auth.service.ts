@@ -185,6 +185,15 @@ export class AuthService {
         }
         catch(error)
         {
+            // since the send email failed hence we should rollback the changes related to 
+            // the token entry in the database. lets do that now. 
+            const userTokenRelatedDataUpdateResponse = await prisma.user.update({
+                where : {email : email}, 
+                data : { resetPasswordToken : null, resetPasswordExpires : null }
+            });
+
+            // now since the database changes has been rollbacked
+            // now lets send the error to the error middleware
             throw new AppError("Failed to send the Ecommerce Password Reset Email", StatusCodes.INTERNAL_ERROR_500);
         }
 

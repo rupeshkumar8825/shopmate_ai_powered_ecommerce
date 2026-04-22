@@ -89,5 +89,25 @@ export class AuthController {
     }
 
 
+    // controller for the forgot password 
+    // this will call the service layer forgotPassword 
+    static async forgotPassword(request : Request, response : Response) {
+        // considering that the zod would have validated the data being sent from
+        // the user/client is correct we will take the email and the frontendURL
+        const email : string = request.body.email;
+        // const frontendURL : string = request.query;
+        const frontendURL = "";
+
+        // lets pass these arguments to the service layer function
+        AuthService.forgotPasswordService(email, frontendURL);
+
+        // if the control reaches here this means that the service 
+        // layer worked as expected. lets return the positive response to the user
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true,
+            message : "Password change email successfully sent", 
+        })
+
+    }
 
 }
