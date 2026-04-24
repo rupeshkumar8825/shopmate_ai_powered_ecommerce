@@ -135,10 +135,10 @@ export class AuthController {
         const password : string = request.body.password;
         const newPassword : string = request.body.newPassword;
         const confirmPassword : string = request.body.confirmPassword;
-
+        const userId = request.userId? request.userId : "";
         // take the userid from the request parameters
-        const userId = request.params.userId? request.params.userId as string : "";
-
+        // const userId = request.params.userId? request.params.userId as string : "";
+        console.log("the value of ")
         // lets pass all these values to the service layer function 
         await AuthService.updatePasswordService(userId, password, newPassword, confirmPassword)
 
@@ -149,5 +149,16 @@ export class AuthController {
             message : "User password successfully changed"
         });
     }
+
+
+    // controller for updating the user's profile
+    // in this we will update the name, email and the avatar/profile of user
+    static async updateProfile(request : Request, response : Response) {
+        // consider that the data that is sent by the user is correct by zod
+        // validation. Hence lets read the data directly from request object 
+        const updatedName = request.body.name;
+        const updatedEmail = request.body.email;
+        // const avatar = request.
+    } 
 
 }
