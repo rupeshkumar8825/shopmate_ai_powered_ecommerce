@@ -132,7 +132,22 @@ export class AuthController {
     static async updatePassword (request : Request, response : Response) {
         // assume that the zod will validate the user input and then the controller
         // will be called. Hence lets just directly take the value from the request object 
-        
+        const password : string = request.body.password;
+        const newPassword : string = request.body.newPassword;
+        const confirmPassword : string = request.body.confirmPassword;
+
+        // take the userid from the request parameters
+        const userId = request.params.userId? request.params.userId as string : "";
+
+        // lets pass all these values to the service layer function 
+        await AuthService.updatePasswordService(userId, password, newPassword, confirmPassword)
+
+        // if control reaches here then we are sure that the user password got changed
+        // hence lets return positive response to the user here in this case 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "User password successfully changed"
+        });
     }
 
 }

@@ -281,6 +281,15 @@ export class AuthService {
     }
 
     static async updatePasswordService (userId : string, oldPassword : string, newPassword : string, newConfirmPassword : string) {
+        if(!userId || !oldPassword || !newPassword || !newConfirmPassword
+            || userId==="" || oldPassword==="" || newPassword==="" || newConfirmPassword==="")
+        {
+            // all required fields are not present here in this case
+            // hence lets throw an error 
+            throw new AppError("Field cannot be empty or null", StatusCodes.BAD_REQUEST_400)
+        }
+
+        // lets find the user with the given user id
         const currentUser : User|null = await prisma.user.findUnique({
             where : {id : userId}
         });
