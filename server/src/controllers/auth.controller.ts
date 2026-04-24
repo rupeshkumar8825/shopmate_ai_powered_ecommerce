@@ -128,4 +128,11 @@ export class AuthController {
         })
     }
 
+    // define the controller function for updating the password of the user 
+    static async updatePassword (request : Request, response : Response) {
+        // assume that the zod will validate the user input and then the controller
+        // will be called. Hence lets just directly take the value from the request object 
+        
+    }
+
 }

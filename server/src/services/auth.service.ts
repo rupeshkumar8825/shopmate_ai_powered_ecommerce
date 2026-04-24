@@ -279,4 +279,44 @@ export class AuthService {
         return;
 
     }
+
+    static async updatePasswordService (userId : string, oldPassword : string, newPassword : string, newConfirmPassword : string) {
+        const currentUser : User|null = await prisma.user.findUnique({
+            where : {id : userId}
+        });
+
+        // check whether user exists or not with this particular thing 
+        if(!currentUser)
+        {
+            // user does not exists hence lets throw an error here 
+            throw new AppError("User does not exist.", StatusCodes.NOT_FOUND_404);
+        }
+
+        // lets get the current password and match it with old password 
+        const isCurrentPasswordMatch = await bcrypt.compare(oldPassword, currentUser.password);
+        if(!isCurrentPasswordMatch)
+        {
+            // password mismatch happened hence lets throw an error 
+            throw new AppError("Password mismatch", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // check whether the new password and the confirm password does not match 
+        if(newPassword !== newConfirmPassword)
+        {
+            // throw an error here 
+            throw new AppError("New password and confirm password do not match", StatusCodes.BAD_REQUEST_400)
+        }
+        // hash the password 
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // every check password lets now update the password in the database 
+        await prisma.user.update({
+            where : {id : currentUser.id}, 
+            data : {
+                password : hashedPassword
+            }
+        });
+
+        // say everything went fine 
+        return;
+    }
 }
