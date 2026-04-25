@@ -2,6 +2,8 @@
 // related things
 
 import { Request, Response } from "express";
+import { ProductService } from "../services/product.service";
+import { StatusCodes } from "../error/statusCodes";
 
 export class ProductController {
     // controller function to create the product
@@ -16,11 +18,20 @@ export class ProductController {
         // numbers can store the integer as well as the float values.
         const price : number = parseFloat(request.body.price);
         const category : string = request.body.category; 
-        const images = request.files;
+        const files = request.files;
         const stock : number = parseInt(request.body.stock)
+        const userId : string = request.body.userId
         
         // lets pass all these to the service layer
+        const createProductResponse = await ProductService.createProductService(userId, productName, description, price, category, files, stock);
 
+        // if control reaches here this means that the product creation is working great
+        // lets return the positive response to the client for this purpose. 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Product created successfully", 
+            product : createProductResponse
+        });
 
     }
 
