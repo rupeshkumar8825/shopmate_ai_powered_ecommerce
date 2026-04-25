@@ -12,6 +12,9 @@ import { PrismaClientKnownRequestError } from "../generated/prisma/internal/pris
 import { generatePasswordResetToken, getHashedResetPasswordToken, verifyPasswordResetToken } from "../utils/password.utils"
 import { generatePasswordResetEmailTemplate } from "../utils/generate.email.template.utils"
 import { sendEmail } from "../utils/send.email"
+import fileUpload, { UploadedFile } from "express-fileupload"
+import { CloudinaryService } from "./cloudinary.service"
+import { JsonValue } from "@prisma/client/runtime/library"
 
 // using an prisma ORM. And generally ORMs are enough to act as an abstraction layer 
 export class AuthService {
@@ -327,5 +330,64 @@ export class AuthService {
 
         // say everything went fine 
         return;
+    }
+
+    // service function to upload/update the avatar of the user
+    static async updateProfileService(userId : string, updatedName : string, updatedEmail : string, files : fileUpload.FileArray | null | undefined){
+        // lets first check whether the files does have actually an valid avatar for this purpose
+        if((files === null) || (files === undefined) || (files.avatar === null)
+            || (files.avatar === undefined))
+        {
+            // the list of files do not consists of the avatar hence lets throw an error 
+            throw new AppError("Avatar not found", StatusCodes.BAD_REQUEST_400);
+        }
+
+        if(!userId)
+        {
+            // userid is not defined hence lets return the error
+            throw new AppError("User id not defined ", StatusCodes.BAD_REQUEST_400)
+        }
+
+        // lets fetch the current user 
+        const currentUser = await prisma.user.findUnique({
+            where : {id : userId}
+        });
+
+        if(!currentUser)
+        {
+            // user not found 
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // the control reaches means the database query was able to find the 
+        // valid user with the given user
+        // lets destroy the current avatar that is stored. 
+        const avatar = currentUser.avatar as {public_id? : string, url? : string} | null;
+        if(avatar && avatar.public_id)
+        {
+            await CloudinaryService.deleteFromCloudinaryService(avatar.public_id)
+        }
+
+
+        // control reaches here means that the avatar was destroyed in the cloudinary.
+        // now lets try to upload the new avatar for the user 
+        // since we know that there is only one avatar allowed to be uploaded at a given 
+        // point lets try to typecast this 
+        const newAvatar = files.avatar as UploadedFile
+        const newAvatarData = await CloudinaryService.uploadToCloudinaryService(newAvatar, {
+            folder : "Ecommerce_Avatars", 
+            width : 150, 
+            crop: "scale"
+        });
+        
+        // lets update the database entry with this updated avatar and other details too 
+        const updatedUser = await prisma.user.update({
+            where : {id : currentUser.id}, 
+            data : {name : updatedName, email : updatedEmail, avatar : newAvatarData}
+        });
+
+         
+        // say everything went fine
+        return updatedUser
     }
 }

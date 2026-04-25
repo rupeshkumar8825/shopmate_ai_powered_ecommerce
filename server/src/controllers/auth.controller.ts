@@ -156,9 +156,21 @@ export class AuthController {
     static async updateProfile(request : Request, response : Response) {
         // consider that the data that is sent by the user is correct by zod
         // validation. Hence lets read the data directly from request object 
-        const updatedName = request.body.name;
-        const updatedEmail = request.body.email;
-        // const avatar = request.
+        const updatedName : string = request.body.name;
+        const updatedEmail : string = request.body.email as string;
+        const files = request.files; 
+        const userId : string = request.userId ?? "";
+        // lets call the service layer function 
+        const updateProfileResponse = await AuthService.updateProfileService(userId, updatedName, updatedEmail, files)
+        
+
+        // control reaches here meaning all the operations are done 
+        // lets return the positive response from here to the client application 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Successfully updated the user profile", 
+            user : updateProfileResponse
+        })
     } 
 
 }
