@@ -4,6 +4,7 @@ import { Express } from "express";
 import { ENV } from "./config/env";
 import cors from "cors"
 import { ErrorHandler } from "./middlware/errorHandler";
+import expressFileUpload  from "express-fileupload"
 
 import authRoutes from "./routes/auth.routes"
 
@@ -22,6 +23,18 @@ app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 // app.use(file)
+
+// lets define the middleware for uploading the files 
+// setup the middlewares 
+app.use(
+    expressFileUpload({
+        tempFileDir : "./uploads", 
+        useTempFiles : true,
+        limits : {fileSize : 5 * 1024 * 1024}, // 5MB 
+        abortOnLimit : true, 
+        createParentPath : true,
+    })
+)
 
 app.use("/v1/auth", authRoutes)
 
