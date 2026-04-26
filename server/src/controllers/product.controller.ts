@@ -43,23 +43,27 @@ export class ProductController {
         // lets read about the different filters that we have to apply before
         // fetching the list of the products. 
         // assume that the basic validation would be done by the zod itself
-        const availability = request.query.availability;
+        const availability = request.query.availability? request.query.availability as string : undefined;
         const minPrice = request.query.minPrice? parseInt(request.query.minPrice as string) : undefined;
         const maxPrice = request.query.maxPrice? parseInt(request.query.maxPrice as string) : undefined;
-        const category = request.query.category;
+        const category = request.query.category? request.query.category as string : undefined;
         const minRating : number|undefined = request.query.minRating? parseFloat(request.query.minRating as string) : undefined;
         const maxRating : number|undefined = request.query.maxRating? parseFloat(request.query.maxRating as string) : undefined;
-        const search = request.params.search;
+        const search = request.query.search? request.query.search as string : undefined;
+        const page : number|undefined = request.query.page? parseInt(request.query.page as string) : undefined;
 
         
-        const allProductList = await ProductService.fetchAllProductsService(availability, minPrice, maxPrice, minRating, maxRating, search, category);
+        const [totalNumberOfProducts, allProductList, newlyCreatedProductListFinal, topRatedProducts] = await ProductService.fetchAllProductsService(availability, minPrice, maxPrice, minRating, maxRating, search, category, page);
 
         // control reaches means this executed perfectly right 
         // lets return an positive response to the user 
         response.status(StatusCodes.SUCCESS_200).json({
             success : true,
-            message : "successfully fetched all products", 
-            productList : allProductList
+            message : "Successfully fetched all products", 
+            totalNumberOfProducts : totalNumberOfProducts, 
+            productList : allProductList, 
+            newlyCreatedProductList : newlyCreatedProductListFinal, 
+            topRatedProducts : topRatedProducts
         })
     }
 
