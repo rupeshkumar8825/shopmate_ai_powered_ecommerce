@@ -36,6 +36,33 @@ export class ProductController {
     }
 
 
+    // controller function to get the list of all the products in detail 
+    // note that this controller name is slightly misleading. 
+    // in this we fetch all the products that matches the filter
+    static async fetchAllProductsController(request : Request, response : Response) {
+        // lets read about the different filters that we have to apply before
+        // fetching the list of the products. 
+        // assume that the basic validation would be done by the zod itself
+        const availability = request.query.availability;
+        const minPrice = request.query.minPrice? parseInt(request.query.minPrice as string) : undefined;
+        const maxPrice = request.query.maxPrice? parseInt(request.query.maxPrice as string) : undefined;
+        const category = request.query.category;
+        const minRating : number|undefined = request.query.minRating? parseFloat(request.query.minRating as string) : undefined;
+        const maxRating : number|undefined = request.query.maxRating? parseFloat(request.query.maxRating as string) : undefined;
+        const search = request.params.search;
+
+        
+        const allProductList = await ProductService.fetchAllProductsService(availability, minPrice, maxPrice, minRating, maxRating, search, category);
+
+        // control reaches means this executed perfectly right 
+        // lets return an positive response to the user 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : true,
+            message : "successfully fetched all products", 
+            productList : allProductList
+        })
+    }
+
     static async getProductController() {
 
     }
@@ -45,7 +72,9 @@ export class ProductController {
 
     }
 
-    static async getListOfAllProductsGivenUserController() {
 
+    // controller to fetch the list of all the products created by a user
+    static async getListOfAllProductsGivenUserController() {
+        
     }
 }

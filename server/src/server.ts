@@ -8,6 +8,9 @@ import { ENV } from "./config/env"
 import app from "./app"
 
 
+// define the credentials of the cloudinary 
+
+
 app.listen(ENV.PORT, () => {
     console.log(`Server is running on port ${ENV.PORT}`);
 });

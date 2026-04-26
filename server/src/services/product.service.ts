@@ -21,7 +21,6 @@ export class ProductService {
     ) {
 
         // basic validations and checks comes here 
-
         if(!userId || !productName || !description || !price || !stock || !category
             || (productName.trim().length == 0) || (description.trim().length == 0) 
             || (category.trim().length == 0) || (price < 0) || (stock < 0))
@@ -68,7 +67,7 @@ export class ProductService {
                     console.log("The upload to cloudinary failed for this product image")
                     
                 }else {
-                    const avatar :avatarType = {
+                    const avatar : avatarType = {
                         public_id : cloudinaryUploadResponse.public_id, 
                         url : cloudinaryUploadResponse.url
                     }
@@ -100,6 +99,35 @@ export class ProductService {
         // return the response to the controller layer 
         // say everything went fine 
         return createdProduct;
+    }
+
+
+    // service layer function to fetch the list of all the products
+    static async fetchAllProductsService(availability : string, minPrice : number, maxPrice : number, minRating : number, maxRating : string, search : string, category : string) {
+
+        // based on the filters we need to frame the prisma query to be passed
+        let whereObject = [];
+        let andFilters = [];
+        
+        // based on the returned 
+        const allProductList = await prisma.product.findMany();
+        // const allProductList = await prisma.product.findMany({
+        //     where : {
+        //         // the objects with proper filter should come here 
+        //         AND : [
+        //             {price : {lt : 500, gt : 200}}, 
+        //             {rating : {lt : 5.0, gt : 3.5}},
+        //             {stock : {lt : 10, gt : 5}}, 
+        //             {category : {equals : categoryFilter}}, 
+        //             {description : {contains : searchFilter, mode : "insensitive"}}, 
+        //             {name : {contains : searchFilter, mode : "insensitive"}} 
+        //         ]
+        //     }
+        // });
+
+        // say everything went fine 
+        return allProductList;
+
     }
 
     static async getProductService () {
