@@ -55,12 +55,21 @@ export class ProductService {
                     folder : "product", 
                         width : 150, 
                         crop : "scale"
-                    })
+                })
+                // check whether the upload was successfull or not 
+                if(!cloudinaryUploadResponse.public_id || !cloudinaryUploadResponse.url)
+                {
+                    // if any of the fields are empty then we know that the upload was
+                    // not successfull. In this case we will simply log on the server and continue 
+                    console.log("The upload to cloudinary failed for this product image")
+                    
+                }else {
                     const avatar :avatarType = {
                         public_id : cloudinaryUploadResponse.public_id, 
                         url : cloudinaryUploadResponse.url
                     }
                     uploadedImages.push(avatar)
+                }
             });
 
 

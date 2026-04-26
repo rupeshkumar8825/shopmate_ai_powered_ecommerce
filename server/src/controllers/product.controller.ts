@@ -27,7 +27,7 @@ export class ProductController {
 
         // if control reaches here this means that the product creation is working great
         // lets return the positive response to the client for this purpose. 
-        response.status(StatusCodes.SUCCESS_200).json({
+        response.status(StatusCodes.CREATED_201).json({
             success : true, 
             message : "Product created successfully", 
             product : createProductResponse
