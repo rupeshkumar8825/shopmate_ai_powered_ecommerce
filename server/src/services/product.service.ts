@@ -26,6 +26,9 @@ export class ProductService {
             || (productName.trim().length == 0) || (description.trim().length == 0) 
             || (category.trim().length == 0) || (price < 0) || (stock < 0))
         {
+            // lets log the values that we have received from the server
+            console.log(`[Product Service, createProductService]:- The received values are : UserId-${userId}
+                , productName-${productName}, description-${description}, stock-${stock}, price-${price}, category-${category} `)
             // the input values are not valid hence lets throw an error 
             throw new AppError("One or more input fields are invalid", StatusCodes.BAD_REQUEST_400)   
         }
@@ -46,11 +49,12 @@ export class ProductService {
         let uploadedImages : avatarType[]  = []
         // check if the user has uploaded any images or not 
         if(files && files.images){
+            console.log(`(${new Date()})[ProductService, createService] :- Got the files and files.images object`)
             // upload the product images on the cloudinary 
             const images = Array.isArray(files.images)? files.images : [files.images]
-
+            console.log(`(${new Date()})[ProductService, createService] :- The list of received images are : ${images}`)
             // lets upload each one of the images to cloudinary
-            images.forEach(async function(element) {
+            for(const element of images){
                 const cloudinaryUploadResponse  = await CloudinaryService.uploadToCloudinaryService(element, {
                     folder : "product", 
                         width : 150, 
@@ -70,11 +74,11 @@ export class ProductService {
                     }
                     uploadedImages.push(avatar)
                 }
-            });
+            };
 
 
         }else {
-            console.log("No product images were uploaded")
+            console.log(`(${new Date()})[ProductService, createService] :- the files or the files.images field not found. Files - ${files}`)
             // lets continue and keep going. we should not exit here.
         }
         

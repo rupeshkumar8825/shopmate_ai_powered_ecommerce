@@ -34,8 +34,8 @@ export function authMiddleware (request : Request, response : Response, next : N
     const userId = decodedToken.id;
     const email = decodedToken.email;
 
-    console.log("the decoded value of the userid from token is : ", userId)
-    console.log("the decoded value of the email from token is : ", email)
+    console.log(`[(${Date.now()})Authmiddleware :- ]the decoded value of the userid from token is : `, userId)
+    console.log(`[(${Date.now()})Authmiddleware :- ]the decoded value of the email from token is : `, email)
 
     // embed these decoded values about the user into the request object itself
     // this our controllers will be able to get the userid and email without

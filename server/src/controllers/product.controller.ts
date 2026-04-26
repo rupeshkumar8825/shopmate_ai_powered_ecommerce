@@ -20,7 +20,7 @@ export class ProductController {
         const category : string = request.body.category; 
         const files = request.files;
         const stock : number = parseInt(request.body.stock)
-        const userId : string = request.body.userId
+        const userId : string = request.userId ?? "";
         
         // lets pass all these to the service layer
         const createProductResponse = await ProductService.createProductService(userId, productName, description, price, category, files, stock);

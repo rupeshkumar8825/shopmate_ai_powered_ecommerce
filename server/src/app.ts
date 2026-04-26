@@ -7,6 +7,7 @@ import { ErrorHandler } from "./middlware/errorHandler";
 import expressFileUpload  from "express-fileupload"
 
 import authRoutes from "./routes/auth.routes"
+import productRoutes from "./routes/product.routes";
 
 
 const app : Express = express();
@@ -37,6 +38,7 @@ app.use(
 )
 
 app.use("/v1/auth", authRoutes)
+app.use("/v1/product", productRoutes)
 
 
 
