@@ -87,6 +87,15 @@ export class ProductController {
         const stock = request.body.stock? parseInt(request.body.stock as string) : undefined;
         
         // lets call the service layer function
+        const updatedProduct = await ProductService.updateProductService(productId, updatedProductName, updatedDescription, updatedPrice, category, images, stock);
+
+        // if the control reaches here then this means that the product updated was successfull. 
+        // lets return the positive response to the user. 
+        response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Product updated successfully", 
+            updatedProduct : updatedProduct
+        });
     }
 
     static async getProductController() {

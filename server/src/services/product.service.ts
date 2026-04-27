@@ -1,6 +1,6 @@
 // file having all the service functions related to the product 
 
-import fileUpload from "express-fileupload";
+import fileUpload, { FileArray } from "express-fileupload";
 import prisma from "../config/prisma";
 import AppError from "../middlware/errorHandler";
 import { StatusCodes } from "../error/statusCodes";
@@ -222,6 +222,45 @@ export class ProductService {
         // say everything went fine 
         return [totalNumberOfProducts, allProductList, newlyCreatedProductListFinal, topRatedProducts];
 
+    }
+
+    // service function to handle the logic to update the products
+    static async updateProductService(productId : string, updatedProductName : string, updatedDescription : string, updatedPrice : number | undefined, category : string, images : FileArray|undefined, stock : number|undefined) {
+        // depending on whether the values are valid and defined or not we will 
+        // udpate the relevant fields 
+        if(!productId){
+            // productId itself is bad lets throw an error 
+            throw new AppError("Product Id is not defined.", StatusCodes.BAD_REQUEST_400)
+        }
+
+        let updatedDataObject = {}
+        
+        if(updatedProductName){
+            updatedDataObject = {...{name : updatedProductName}}
+        }
+        if(updatedDescription){
+            updatedDataObject = {...{description : updatedDescription}}
+        }
+        if(updatedPrice){
+            updatedDataObject = {...{price : updatedPrice}}
+        }
+        if(category){
+            updatedDataObject = {...{category : category}}
+        }
+        if(stock){
+            updatedDataObject = {...{stock : stock}}
+        }
+
+        // lets update these many fields and we will handle the uploading the images 
+        // to cloudinary later in this code 
+        const updatedProduct = await prisma.product.update({
+            where : {id : productId}, 
+            data : updatedDataObject
+        });
+
+
+        // say everything went fine 
+        return updatedProduct;
     }
 
     static async getProductService () {
