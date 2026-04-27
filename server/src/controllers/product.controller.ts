@@ -8,8 +8,9 @@ import { StatusCodes } from "../error/statusCodes";
 export class ProductController {
     // controller function to create the product
     static async createProductController (request : Request, response : Response) {
-        // consider that the data from user is already validated using zod
-        // lets start using the data as it is
+        // TODO : need to add ZOD validation in the project so that 
+        // we avoid directly accessing the values from the request object
+        // as we cannot trust the values from the client side. 
         const productName : string = request.body.name;
         const description : string = request.body.description; 
         // note that the using parseFloat may not be ideal. Either its better to use 
@@ -65,6 +66,27 @@ export class ProductController {
             newlyCreatedProductList : newlyCreatedProductListFinal, 
             topRatedProducts : topRatedProducts
         })
+    }
+
+
+    // controlle to handle the update product related actions
+    static async updateProductController(request : Request, response : Response) {
+        // following things can be updated by the admin user 
+        // 1. name
+        // 2. description
+        // 3. price 
+        // 4. category
+        // 5. images 
+        // 6. stock
+        const productId : string = request.params.productId? request.params.productId as string : "";
+        const updatedProductName : string = request.body.name? request.body.name as string : "";
+        const updatedDescription = request.body.description? request.body.description as string : "";
+        const updatedPrice : number|undefined = request.body.price? parseFloat(request.body.price as string) : undefined;
+        const category = request.body.category? request.body.category as string : "";
+        const images = request.files? request.files : undefined;
+        const stock = request.body.stock? parseInt(request.body.stock as string) : undefined;
+        
+        // lets call the service layer function
     }
 
     static async getProductController() {

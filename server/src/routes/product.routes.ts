@@ -7,5 +7,6 @@ const productRoutes = Router();
 
 // lets define the outline of all the possible routes
 productRoutes.post("/admin/create", authMiddleware, validateRole("Admin"), ProductController.createProductController)
+productRoutes.get("/", ProductController.fetchAllProductsController)
 // say everything went fine 
 export default productRoutes
