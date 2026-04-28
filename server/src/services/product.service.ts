@@ -256,6 +256,23 @@ export class ProductService {
             }
         })
 
+
+        // lets first delelete all the images which are currently present in the database 
+        const currImageList : avatarType[] = updatedProduct.images as avatarType[];
+        console.log(`(${new Date()})[ProductService, updateProductService] :- there were no files which were sent. Hence deleting all from the cloudinary`);
+
+        // use a for loop to delete the files from cloudinary
+        for (const currImage of currImageList) {
+            try{
+                await CloudinaryService.deleteFromCloudinaryService(currImage.public_id)
+            }catch(error){
+                // due to some reason the delete from cloudinary failed. 
+                // let continue 
+                console.log(`(${new Date()})[ProductService, updateProductService] : - delete from cloudinary failed. But still moving forward`)
+                continue;
+            }
+        }
+
         // control reaches here this means that all the values except the images section 
         // lets now upload the images over the cloudinary 
         let cloudinaryResult : avatarType[]= [];
@@ -283,22 +300,8 @@ export class ProductService {
             }
         }
         else {
-            console.log(`(${new Date()})[ProductService, updateProductService] :- there were no files which were sent. Hence deleting all from the cloudinary`);
-            let currImageList : avatarType[] = updatedProduct.images as avatarType[];
-
-            // use a for loop for delete the files from cloudinary
-            for (const currImage of currImageList) {
-                try{
-                    await CloudinaryService.deleteFromCloudinaryService(currImage.public_id)
-                }catch(error){
-                    // due to some reason the delete from cloudinary failed. 
-                    // let continue 
-                    console.log(`(${new Date()})[ProductService, updateProductService] : - delete from cloudinary failed. But still moving forward`)
-                    continue;
-                }
-            }
-
-            cloudinaryResult = []
+            // just set the cloudinary to empty array for this purpose
+            cloudinaryResult = [];
         }
 
         // lets update the images field of this product 
