@@ -57,8 +57,8 @@ export class ProductService {
             for(const element of images){
                 const cloudinaryUploadResponse  = await CloudinaryService.uploadToCloudinaryService(element, {
                     folder : "product", 
-                        width : 150, 
-                        crop : "scale"
+                    width : 150, 
+                    crop : "scale"
                 })
                 // check whether the upload was successfull or not 
                 if(!cloudinaryUploadResponse.public_id || !cloudinaryUploadResponse.url)
@@ -233,31 +233,81 @@ export class ProductService {
             throw new AppError("Product Id is not defined.", StatusCodes.BAD_REQUEST_400)
         }
 
-        let updatedDataObject = {}
-        
-        if(updatedProductName){
-            updatedDataObject = {...{name : updatedProductName}}
-        }
-        if(updatedDescription){
-            updatedDataObject = {...{description : updatedDescription}}
-        }
-        if(updatedPrice){
-            updatedDataObject = {...{price : updatedPrice}}
-        }
-        if(category){
-            updatedDataObject = {...{category : category}}
-        }
-        if(stock){
-            updatedDataObject = {...{stock : stock}}
-        }
+        // check here that none of the fields should be empty as even though user would have 
+        // updated only one of the fields but still the client application should send 
+        // all the required fields. Lets check that
+        if(!updatedProductName || !updatedDescription || !updatedPrice || !category
+            || !images || !stock){
+            // not all the required fields were found hence lets simply 
+            // return an error directly. 
+            throw new AppError("One or more field either missing or they are null", StatusCodes.BAD_REQUEST_400)
+        } 
 
-        // lets update these many fields and we will handle the uploading the images 
-        // to cloudinary later in this code 
-        const updatedProduct = await prisma.product.update({
+        // else all the fields are already defined lets update those first 
+        // later we will try to upload the images to the cloudinary
+        let updatedProduct = await prisma.product.update({
             where : {id : productId}, 
-            data : updatedDataObject
-        });
+            data : {
+                name : updatedProductName, 
+                description : updatedDescription, 
+                price : updatedPrice, 
+                category : category, 
+                stock : stock
+            }
+        })
 
+        // control reaches here this means that all the values except the images section 
+        // lets now upload the images over the cloudinary 
+        let cloudinaryResult : avatarType[]= [];
+        if(images && images.images){
+            // check if its of type of array or not 
+            const productImageList = Array.isArray(images.images)? images.images : [images.images]
+            // lets use the for loop for this purpose
+            for(const productImage of productImageList){
+                // lets use the cloudinary service and then try to upload it 
+                const uploadResponse = await CloudinaryService.uploadToCloudinaryService(productImage, {
+                    folder : "product", 
+                    width : 150, 
+                    crop : "scale"
+                })
+                if(!uploadResponse || !uploadResponse.public_id || !uploadResponse.url){
+                    // this means the image upload failed. 
+                    // we will continue 
+                    console.log(`(${new Date})[ProductService, updateProductService] :- Upload to cloudinary failed. But still moving forward`)
+                    continue;
+                }
+                cloudinaryResult.push({
+                    public_id : uploadResponse.public_id, 
+                    url : uploadResponse.url
+                })
+            }
+        }
+        else {
+            console.log(`(${new Date()})[ProductService, updateProductService] :- there were no files which were sent. Hence deleting all from the cloudinary`);
+            let currImageList : avatarType[] = updatedProduct.images as avatarType[];
+
+            // use a for loop for delete the files from cloudinary
+            for (const currImage of currImageList) {
+                try{
+                    await CloudinaryService.deleteFromCloudinaryService(currImage.public_id)
+                }catch(error){
+                    // due to some reason the delete from cloudinary failed. 
+                    // let continue 
+                    console.log(`(${new Date()})[ProductService, updateProductService] : - delete from cloudinary failed. But still moving forward`)
+                    continue;
+                }
+            }
+
+            cloudinaryResult = []
+        }
+
+        // lets update the images field of this product 
+        updatedProduct = await prisma.product.update({
+            where : {id : productId}, 
+            data : {
+                images : cloudinaryResult
+            }
+        })
 
         // say everything went fine 
         return updatedProduct;
