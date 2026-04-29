@@ -321,8 +321,56 @@ export class ProductService {
     }
 
 
-    static async deleteProductService () {
+    //service layer function to delete the product given the productId
+    // validated the productId, finds the product and then deletes it
+    // note that this function also deletes the product images which were uploaded 
+    // on the cloudinary
+    static async deleteProductService (productId : string) {
+        if(!productId){
+            // this is unexpected, but still we got empty or not defined productId 
+            // need to throw an error 
+            throw new AppError("Product Id is either null or empty", StatusCodes.BAD_REQUEST_400);
+        }
 
+        // else lets fetch the product with this product id 
+        const productToDelete = await prisma.product.findUnique({
+            where : {id : productId}
+        });
+
+        if(!productToDelete){
+            // throw an error
+            throw new AppError("Product not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // else lets first try to delete the images from the cloudinary itself 
+        let cloudinaryImagesList : avatarType[] = productToDelete.images as avatarType[];
+        for(const currImage of cloudinaryImagesList){
+            // lets call the service from the cloudinary itself 
+            try{
+                await CloudinaryService.deleteFromCloudinaryService(currImage.public_id);
+            }catch(error){
+                // this throwed an error meaning some thing went wrong
+                // lets continue deleting the other images.
+                // ideally here we should implement the retry logic itself. 
+                // but for now we will log only 
+                console.log(`(${new Date()})[ProductService, deleteProductService] : - Deletion of one of the product images failed with public_id as ${currImage.public_id}`);
+                console.log(`(${new Date()})[ProductService, deleteProductService] : - But for now moving ahead to delete the other remaining images`);
+            }
+
+        }
+
+        // considering that the images would have deleted by now
+        // lets delete the product itself 
+        // please note that ideally we must delete all the reviews too from 
+        // the reviews table. luckily this will already be handled in the database layer 
+        // itself as we have defined a property of oncascade delete. 
+        // so no need to handle the deletion of the reviews from application code.
+        await prisma.product.delete({
+            where : {id : productId}
+        })
+
+        // say everything went fine 
+        return;
     }
 
     static async getListOfAllProductsGivenUserService () {

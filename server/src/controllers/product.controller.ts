@@ -103,8 +103,41 @@ export class ProductController {
     }
 
 
-    static async deleteProductController() {
+    // controller function to handle the delete product
+    // this will internally calls the service function
+    static async deleteProductController(request : Request, response : Response) {
+        // get the input data
+        // TODO : add the zod validation 
+        // since we do not have the zod validation yet hence we will simply use 
+        // our custom made validation
+        let productId : string = "";
+        if(!request.params.productId){
+            //this is not defined hence lets return the bad response hence itself 
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : false, 
+                message : "Product id is not defined"
+            }); 
+        }else if (Array.isArray(request.params.productId)){
+            // this means that we received an array of params 
+            // this is not expected, hence lets return a negative response to the client
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : false, 
+                message : "Product Id not found"
+            });
+        }
 
+        // if control reaches here this means that we have got the correct parameter format 
+        productId = request.params.productId; 
+
+        // need to pass this to the service layer function to actually delete the product
+        await ProductService.deleteProductService(productId);
+
+        // if the control reaches here then we are sure that the product is not deleted
+        // say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Product deleted successfully."
+        });
     }
 
 
