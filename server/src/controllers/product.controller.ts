@@ -98,9 +98,6 @@ export class ProductController {
         });
     }
 
-    static async getProductController() {
-
-    }
 
 
     // controller function to handle the delete product
@@ -141,8 +138,36 @@ export class ProductController {
     }
 
 
-    // controller to fetch the list of all the products created by a user
-    static async getListOfAllProductsGivenUserController() {
+
+    // controller to get the single product given the product id
+    static async getSingleProductController(request : Request, response : Response) {
+        let productId : string = "";
+
+        if(!request.params.productId){
+            // the product id is not defined at all 
+            // lets return a negative response
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : false, 
+                message : "Product Id not found"
+            });
+        }else if (Array.isArray(request.params.productId)){
+            // this is the array but we expected a single string argument
+            // something is wrong lets pass a negative response 
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : false, 
+                message : "Product id not found"
+            });
+        }
+
+        // otherwise we can consider the value as product id 
+        productId = request.params.productId;
+
+        // call the service layer function here 
+
+        // control reaches here meaning we have got the product that we wanted from DB. 
+        // say everything went fine and return a positive response
         
     }
+
+
 }

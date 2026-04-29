@@ -316,9 +316,6 @@ export class ProductService {
         return updatedProduct;
     }
 
-    static async getProductService () {
-
-    }
 
 
     //service layer function to delete the product given the productId
@@ -371,6 +368,27 @@ export class ProductService {
 
         // say everything went fine 
         return;
+    }
+
+
+    // service layer function to find a single product
+    static async getProductService (produtId : string) {
+        if(!produtId){
+            // this was unexpected but still lets throw an error in this case
+            throw new AppError("Product Id is empty", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // we have got the productId to find
+        // we need to get the following details about the product : 
+        //  1. total number of reviews 
+        //  2. average rating of the product
+        //  3. 
+        const productResponse = await prisma.product.findUnique({
+            where : {id : produtId}, 
+            include : {
+                reviewList : true
+            }
+        })
     }
 
     static async getListOfAllProductsGivenUserService () {
