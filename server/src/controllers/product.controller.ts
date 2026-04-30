@@ -163,10 +163,15 @@ export class ProductController {
         productId = request.params.productId;
 
         // call the service layer function here 
+        const productResponse = await ProductService.getProductService(productId);
 
         // control reaches here meaning we have got the product that we wanted from DB. 
         // say everything went fine and return a positive response
-        
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Product details found successfully.", 
+            productDetails : productResponse
+        })
     }
 
 

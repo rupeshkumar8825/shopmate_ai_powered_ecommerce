@@ -386,9 +386,21 @@ export class ProductService {
         const productResponse = await prisma.product.findUnique({
             where : {id : produtId}, 
             include : {
-                reviewList : true
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                }
             }
-        })
+        });
+
+        if(!productResponse){
+            // no product was found. Lets throw an error here itself 
+            throw new AppError("Product not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // otherwise we have found the product lets simply return this to the controller layer
+        return productResponse;
     }
 
     static async getListOfAllProductsGivenUserService () {
