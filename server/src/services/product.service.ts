@@ -406,4 +406,45 @@ export class ProductService {
     static async getListOfAllProductsGivenUserService () {
 
     }
+
+
+    // service layer function to post a review from the user side
+    static async postProductReviewService (userId : string|undefined, rating : number|undefined, comment : string, productId : string){
+        // lets validate the product id and other fields here in the service layer itself 
+        if(!productId || !userId || !rating){
+            // required fields are not sent by the user 
+            // lets throw an error for this purpose
+            throw new AppError("Some required fields are missing.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // lets check whether product is there or not 
+        const productResponse = await prisma.product.findUnique({
+            where : {id : productId}
+        });
+
+        if(!productResponse){
+            // no product exists with the given product id 
+            // hence lets throw an error to the client 
+            throw new AppError("Product not found.", StatusCodes.NOT_FOUND_404);
+        }
+
+        // else lets update the product entry itself with the user's review 
+        const newReviewResponse = await prisma.reviews.create({
+            data : {
+                product_id : productId,
+                user_id : userId, 
+                rating : rating, 
+                comment : comment, 
+            }
+        });
+
+        if(!newReviewResponse){
+            // this means that new review addition failed 
+            // lets throw an error for this purpose 
+            throw new AppError("Review addition failed due to some internal server error", StatusCodes.INTERNAL_ERROR_500);
+        }
+
+        // else everything went fine 
+        return newReviewResponse;
+    }
 }

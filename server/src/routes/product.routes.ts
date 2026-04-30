@@ -10,6 +10,6 @@ productRoutes.post("/admin/create", authMiddleware, validateRole("Admin"), Produ
 productRoutes.get("/", ProductController.fetchAllProductsController) // note that we do not need to pass the auth middleware here
 productRoutes.put("/:productId",authMiddleware, validateRole("Admin"),  ProductController.updateProductController);
 productRoutes.delete("/:productId", authMiddleware, validateRole("Admin"), ProductController.deleteProductController);
-
+productRoutes.get("/:productId", authMiddleware, ProductController.getSingleProductController);
 // say everything went fine 
 export default productRoutes

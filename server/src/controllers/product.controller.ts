@@ -175,4 +175,44 @@ export class ProductController {
     }
 
 
+    // controller function to post a review for a given product
+    static async postProductReviewController(request : Request, response : Response) {
+        const userId : string|undefined = request.userId;
+        const rating : number|undefined = request.body.rating ? parseFloat(request.body.rating) : undefined;
+        const comment : string = request.body.comment ? request.body.comment : "";
+
+        // lets get the product id first from the request params
+        let productId : string = "";
+        if(!request.params.productId){
+            // this is not defined at all hence lets return a negative response for this purpose 
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : true, 
+                message : "ProductId could not be found"
+            });
+        }else if(Array.isArray(request.params.productId)){
+            // we are expecting a string but we got string[].
+            // hence lets return a negative response 
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : true, 
+                message : "Product Id not defined"
+            });
+        }else {
+            // this means that we have found the correct product id 
+            productId = request.params.productId;
+        }
+
+        // call the service layer function here 
+        const addReviewResponse = await ProductService.postProductReviewService(userId, rating, comment, productId);
+
+        // if control reaches here this means that we have successfully posted the review 
+        // say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Review added successfully.", 
+            review : addReviewResponse
+        });
+
+
+    }
+
 }
