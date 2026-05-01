@@ -12,6 +12,7 @@ productRoutes.put("/:productId",authMiddleware, validateRole("Admin"),  ProductC
 productRoutes.delete("/:productId", authMiddleware, validateRole("Admin"), ProductController.deleteProductController);
 productRoutes.get("/:productId", authMiddleware, ProductController.getSingleProductController);
 productRoutes.post("/review/:productId", authMiddleware, ProductController.postProductReviewController);
+productRoutes.delete("/review/:productId", authMiddleware, ProductController.deleteReviewController)
 
 
 // say everything went fine 

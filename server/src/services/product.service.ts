@@ -557,4 +557,43 @@ export class ProductService {
 
 
     }
+
+
+    static async deleteReviewService(userId : string|undefined, productId : string|undefined){
+        /**
+         * We need to do the following : 
+         *      1. validate whether the userid, productids are corret or not
+         *      2. delete the review from the reviews table given the userid and product id
+         *      3. update the average rating in the products table
+         * If at any point if any of the operation/action fails then we will simply throw
+         * an error else at the end after everything is successfull we will return the 
+         * updated product to the controller layer for this purpose
+         */
+
+        if(!userId || !productId){
+            throw new AppError("Bad data.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        await prisma.reviews.deleteMany({
+            where : {user_id : userId, product_id : productId}
+        });
+
+        // now lets update the average rating of the product 
+        const averageRatingAggregator = await prisma.reviews.aggregate({
+            where : {user_id : userId, product_id : productId}, 
+            _avg : {rating : true}
+        });
+
+        const updatedAverageRating = averageRatingAggregator._avg.rating ?? 0;
+
+        // lets update the product table now for this purpose 
+        const updatedProductResponse = await prisma.product.update({
+            where : {id : productId}, 
+            data : {ratings : updatedAverageRating}
+        });
+
+        // say everything went fine 
+        return updatedProductResponse;
+
+    }
 }

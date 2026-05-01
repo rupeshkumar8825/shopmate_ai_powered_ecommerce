@@ -216,4 +216,34 @@ export class ProductController {
 
     }
 
+
+    // controller function to delete a review of a product given by the user
+    static async deleteReviewController (request : Request, response : Response){
+        const userId : string | undefined = request.userId;
+        if(!request.params.productId){
+            // this means that the productId is null lets return a negative response to the user 
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : false, 
+                message : "Product Id not found"
+            });
+        }else if (Array.isArray(request.params.productId)) {
+            return response.status(StatusCodes.BAD_REQUEST_400).json({
+                success : false,
+                message : "ProductId not found"
+            });
+        }
+
+        const productId : string|undefined = request.params.productId;
+
+        // call the service layer function 
+        const updatedProductResponse = await ProductService.deleteReviewService(userId, productId);
+        // if control reaches here this means that the delete review api ran well. 
+        // lets return a positive response i.e. say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true,
+            message : "Your review has been deleted",
+            product : updatedProductResponse
+        });
+    }
+
 }
