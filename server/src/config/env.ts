@@ -17,7 +17,8 @@ const envSchema = z.object(
         SMTP_PASSWORD : z.string(), 
         CLOUDINARY_CLIENT_NAME : z.string(), 
         CLOUDINARY_CLIENT_API : z.string(), 
-        CLOUDINARY_CLIENT_SECRET : z.string()
+        CLOUDINARY_CLIENT_SECRET : z.string(),
+        GEMINI_API_KEY : z.string(),
 
     }
 )

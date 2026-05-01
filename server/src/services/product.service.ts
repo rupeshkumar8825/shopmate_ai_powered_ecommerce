@@ -9,6 +9,7 @@ import { CloudinaryService } from "./cloudinary.service";
 import { ProductWhereInput } from "../generated/prisma/models";
 import { BatchPayload } from "../generated/prisma/internal/prismaNamespace";
 import { stopWords } from "../config/stopwords";
+import { AIService } from "./ai.service";
 
 type avatarType = {
     public_id : string, 
@@ -86,7 +87,7 @@ export class ProductService {
         
 
         // update the database
-        const createdProduct = await prisma.product.create({
+        const createdProduct : Product = await prisma.product.create({
             data : {
                 name : productName, 
                 description : description, 
@@ -633,6 +634,7 @@ export class ProductService {
         for (const keyword in keyWords){
             orCondition.push({name : {contains : keyword}})
             orCondition.push({description : {contains : keyword}})
+            orCondition.push({category : {contains : keyword}})
         }
 
         // otherwise the prompt has passed the basic checks let's now filter the products with this 
@@ -650,8 +652,21 @@ export class ProductService {
         }
 
 
-        //otherwise we can pass this to the AI service layer itself 
-        return listOfProductsToBePassed;
+        /**
+         * Lets now pass this on to the AI based filtering to find out the products. 
+         *      1. Basically we have find out the list of products on the basis of the 
+         *          keywords only. But there could be some false positive. 
+         *      2. AI will decrease that particular false positive. 
+         * Lets do that 
+         */
+
+        // call the AI service here
+        const finalListOfPrducts = await AIService.getAIRecommendationService(listOfProductsToBePassed, userPrompt);
+
+        //otherwise we can pass this to the AI service layer itself
+        // control reaches here meaning everything ran as expected. 
+        // lets now return the AI recommended product to the controller layer 
+        return finalListOfPrducts;
 
     }
 }

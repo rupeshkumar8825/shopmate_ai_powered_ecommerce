@@ -13,6 +13,7 @@ productRoutes.delete("/:productId", authMiddleware, validateRole("Admin"), Produ
 productRoutes.get("/:productId", authMiddleware, ProductController.getSingleProductController);
 productRoutes.post("/review/:productId", authMiddleware, ProductController.postProductReviewController);
 productRoutes.delete("/review/:productId", authMiddleware, ProductController.deleteReviewController)
+productRoutes.get("/ai-recommended-products", authMiddleware, ProductController.fetchAIFilteredProductsController);
 
 
 // say everything went fine 
