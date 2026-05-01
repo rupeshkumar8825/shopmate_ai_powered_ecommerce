@@ -202,14 +202,15 @@ export class ProductController {
         }
 
         // call the service layer function here 
-        const addReviewResponse = await ProductService.postProductReviewService(userId, rating, comment, productId);
+        const [reviewResponseToReturn, updatedProductResponse] = await ProductService.postProductReviewService(userId, rating, comment, productId);
 
         // if control reaches here this means that we have successfully posted the review 
         // say everything went fine 
         return response.status(StatusCodes.SUCCESS_200).json({
             success : true, 
             message : "Review added successfully.", 
-            review : addReviewResponse
+            review : reviewResponseToReturn, 
+            product : updatedProductResponse
         });
 
 

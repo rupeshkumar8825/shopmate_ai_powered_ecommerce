@@ -7,6 +7,7 @@ import { StatusCodes } from "../error/statusCodes";
 import { Product } from "../generated/prisma/client";
 import { CloudinaryService } from "./cloudinary.service";
 import { ProductWhereInput } from "../generated/prisma/models";
+import { BatchPayload } from "../generated/prisma/internal/prismaNamespace";
 
 type avatarType = {
     public_id : string, 
@@ -486,31 +487,74 @@ export class ProductService {
             }
         });
 
+        let reviewResponseToReturn = null;
+
         if(hasUserAlreadyAddedReview){
-            // this means that the user has already reviewed the product hence 
-            // we will not let him review again hence lets throw an error from here 
-            throw new AppError("User has already reviewed the product.", StatusCodes.CONFLICT_409);
+            // this means that user would want to update thier own old ratings. 
+            // lets do that now
+            const reviewResponse : BatchPayload = await prisma.reviews.updateMany({
+                where : {
+                    user_id : userId, 
+                    product_id : productId
+                }, 
+                data : {
+                    rating : rating, 
+                    comment : comment
+                }
+            });
+            
+            if(!reviewResponse){
+                // the review update was not successfull due to any reason. 
+                // lets try to return an error message
+                throw new AppError("Review update failed. Please try again", StatusCodes.INTERNAL_ERROR_500);
+            }
+
+            // lets find the updated rating for this product and store it to be returned later. 
+            reviewResponseToReturn = await prisma.reviews.findFirst({
+                where : {user_id : userId, product_id : productId}
+            });
+
+        }else {
+
+            // this means that user has purchased the product and he/she has not yet reviewed  
+            // hence lets update the product entry itself with the user's review 
+            reviewResponseToReturn = await prisma.reviews.create({
+                data : {
+                    product_id : productId,
+                    user_id : userId, 
+                    rating : rating, 
+                    comment : comment, 
+                }
+            });
+    
+            if(!reviewResponseToReturn){
+                // this means that new review addition failed 
+                // lets throw an error for this purpose 
+                throw new AppError("Review addition failed due to some internal server error", StatusCodes.INTERNAL_ERROR_500);
+            }
+    
         }
 
 
-        // this means that user has purchased the product and he/she has not yet reviewed  
-        // hence lets update the product entry itself with the user's review 
-        const newReviewResponse = await prisma.reviews.create({
-            data : {
-                product_id : productId,
-                user_id : userId, 
-                rating : rating, 
-                comment : comment, 
-            }
+        // now lets update the ratings value in the products table 
+        const aggregateResponse = await prisma.reviews.aggregate({
+            where : {product_id : productId}, 
+            _avg: {rating : true}
         });
 
-        if(!newReviewResponse){
-            // this means that new review addition failed 
-            // lets throw an error for this purpose 
-            throw new AppError("Review addition failed due to some internal server error", StatusCodes.INTERNAL_ERROR_500);
-        }
+        const updatedAverageRating  = aggregateResponse._avg.rating? aggregateResponse._avg.rating : 0;
 
-        // else everything went fine 
-        return newReviewResponse;
+        // now lets update this in the product table itself 
+        const updateProducResponse = await prisma.product.update({
+            where : {id : productId},
+            data : {
+                ratings : updatedAverageRating
+            }
+        })
+
+        // say everything went fine 
+        return [reviewResponseToReturn, updateProducResponse]
+
+
     }
 }
