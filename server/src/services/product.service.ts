@@ -8,6 +8,7 @@ import { Product } from "../generated/prisma/client";
 import { CloudinaryService } from "./cloudinary.service";
 import { ProductWhereInput } from "../generated/prisma/models";
 import { BatchPayload } from "../generated/prisma/internal/prismaNamespace";
+import { stopWords } from "../config/stopwords";
 
 type avatarType = {
     public_id : string, 
@@ -594,6 +595,63 @@ export class ProductService {
 
         // say everything went fine 
         return updatedProductResponse;
+
+    }
+
+
+    // service layer function to filter out the products using AI and user prompt
+    static async fetchAIFilteredProductsService (userId : string | undefined, userPrompt : string|undefined) {
+        if(!userId || !userPrompt){
+            // the inputs required for this service layer function are not present 
+            // or are not valid. hence lets throw an error 
+            throw new AppError("One of the required field is empty.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // otherwise else use the AI and get back the response depending on the user prompt
+        // we must define the output format of the AI reply and then we should validate
+        // whether the output is as expected or not for this purpose. 
+        const filterKeyword = (query : string) => {
+            return query.toLowerCase()
+                        .replace(/[^\w\s]/g, "")
+                        .split(/\s+/)
+                        .filter((word) => !stopWords.has(word));
+        }
+        
+
+        const keyWords = filterKeyword(userPrompt);
+
+        if(!keyWords){
+            // this means that after filtering the user prompt there is nothing to search
+            // this means that the user's prompt is very bad
+            // hence lets throw an error to the client for such cases 
+            throw new AppError("Please provide more better prompt.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // lets define the OR conditions 
+        let orCondition = [];
+
+        for (const keyword in keyWords){
+            orCondition.push({name : {contains : keyword}})
+            orCondition.push({description : {contains : keyword}})
+        }
+
+        // otherwise the prompt has passed the basic checks let's now filter the products with this 
+        // i.e. lets do basic prisma filtering for this purpose 
+        const listOfProductsToBePassed = await prisma.product.findMany({
+            where : {
+                // lets filter out those products who consists even a single element 
+                OR:  orCondition
+            }
+        });
+
+        if(!listOfProductsToBePassed){
+            // no products found hence throw an error here itself 
+            throw new AppError("No products found. Try changing the prompt.", StatusCodes.NOT_FOUND_404);
+        }
+
+
+        //otherwise we can pass this to the AI service layer itself 
+        return listOfProductsToBePassed;
 
     }
 }

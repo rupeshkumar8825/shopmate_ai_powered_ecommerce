@@ -246,4 +246,23 @@ export class ProductController {
         });
     }
 
+    static async fetchAIFilteredProductsController (request : Request, response : Response) {
+        // since this is based on the ai hence we must expect the user prompt
+        // in the request body 
+        const userId = request.userId;
+        const userPrompt = request.body.userPrompt;
+
+        // lets call the service layer function here 
+        const listOfProducts = await ProductService.fetchAIFilteredProductsService(userId, userPrompt);
+
+        // if control reaches here then this means that the api ran successfully 
+        // lets return the positive response to the client application itself 
+        // say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Successfully fetched AI filtered products", 
+            productList : listOfProducts
+        });
+    }
+
 }
