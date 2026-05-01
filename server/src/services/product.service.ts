@@ -428,7 +428,73 @@ export class ProductService {
             throw new AppError("Product not found.", StatusCodes.NOT_FOUND_404);
         }
 
-        // else lets update the product entry itself with the user's review 
+        // lets check whether the user has purchased this product or not
+        // for this we need to follow the below steps : 
+        // 1. Fetch all the orders which are made by this user 
+        // 2. Then filter out those orders whose payment was succesfull by the user
+        // 3. Given the successfull orders then check for which products these orders were made
+        // 4. Find the order item corresponding to this userid and the product id
+        // 5. If we are able to find even a single entry in the previous step then we are sure 
+        //    that user has purchased this product at least once in the past. 
+        //    Hence lets allow the user to give review 
+        // 6. Else we will throw an error or return an error message stating that user cannot review
+            
+        const orderListResponse = await prisma.order.findMany({
+            where : {
+                buyer_id : userId, 
+                payments : {
+                    // please note that some here means it will return this order 
+                    // if it finds even a single payments with payment status as single 
+                    // from all the multiple payments which were done in the past history
+                    some : {
+                        payment_status : "Paid"
+                    }
+                }
+            }
+            
+        });
+        
+        if(!orderListResponse){
+            // this means that user do not have any order with successfull payments
+            // need to throw an error which will eventually return to the client 
+            throw new AppError("User cannot rate this product as he has not purchased it", StatusCodes.NOT_AUTHORIZED_401);
+        }
+
+        const orderIds = orderListResponse.map(o => o.id);
+        // otherwise we have got the list of all the orders placed by the user 
+        // now in the order item lets filter out all the entries where we have the product id 
+        const orderItemForGivenProductAndOrders = await prisma.orderItem.findMany({
+            where : {
+                product_id : productId,
+                order_id : {in : orderIds}
+            }
+        })
+
+
+        if(!orderItemForGivenProductAndOrders){
+            // this means that we are sure that this user has not purchased this product
+            // itself. hence lets return the error from this service layer 
+            throw new AppError("User has not purchased this product. Hence cannot review", StatusCodes.NOT_AUTHORIZED_401); 
+        }
+
+        // if control reaches here this means that user is eligible for reviewing
+        // but we need to make one more check which is to make sure that the user has already reviewed the product or not 
+        const hasUserAlreadyAddedReview = await prisma.reviews.findMany({
+            where : {
+                user_id : userId, 
+                product_id : productId
+            }
+        });
+
+        if(hasUserAlreadyAddedReview){
+            // this means that the user has already reviewed the product hence 
+            // we will not let him review again hence lets throw an error from here 
+            throw new AppError("User has already reviewed the product.", StatusCodes.CONFLICT_409);
+        }
+
+
+        // this means that user has purchased the product and he/she has not yet reviewed  
+        // hence lets update the product entry itself with the user's review 
         const newReviewResponse = await prisma.reviews.create({
             data : {
                 product_id : productId,

@@ -188,7 +188,7 @@ enum PaymentType {
 }
 
 
-enum PaymentStatus{
+enum PaymentStatus {
   Paid
   Pending
   Failed
