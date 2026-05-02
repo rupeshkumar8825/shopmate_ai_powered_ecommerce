@@ -24,4 +24,15 @@ export class AdminController {
 
 
     }
+
+
+    static async deleteUserController(request : Request, response : Response) {
+        const adminUserId = request.userId;
+        const userIdToDelete = request.body.userId;
+
+        // call the service layer function here 
+
+        // if control reaches here then this means that the user was successfully deleted
+        // lets return the positive response here for this purpose. 
+    }
 }

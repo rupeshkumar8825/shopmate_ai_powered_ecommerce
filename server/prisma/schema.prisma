@@ -88,8 +88,10 @@ model ShippingInfo{
   pincode String @db.VarChar(20)
   phone String @db.VarChar(20)
 
-  order Order @relation(fields: [order_id], references: [id])
+  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
 }
+
+
 
 model Order{
   id String @id @default(uuid()) @db.Uuid
@@ -158,7 +160,7 @@ model Payments{
 
   // all one to many relations comes here
 }
-
+ 
 
 model OrderItem{
   id String @id @default(uuid()) @db.Uuid

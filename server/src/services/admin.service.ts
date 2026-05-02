@@ -24,4 +24,13 @@ export class AdminService {
         // say everything went fine 
         return [totalUsersCount, userList];
     }
+
+    static async deleteUserService(adminUserId : string | undefined, userIdToDelete : string | undefined) {
+        // validation of the inputs to be done here 
+        if(!adminUserId || !userIdToDelete){
+            // throw error here 
+            throw new error
+        }
+
+    }
 }
