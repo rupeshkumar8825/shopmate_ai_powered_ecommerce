@@ -31,8 +31,15 @@ export class AdminController {
         const userIdToDelete = request.body.userId;
 
         // call the service layer function here 
+        const deletedUserResponse = await AdminService.deleteUserService(adminUserId, userIdToDelete);
 
         // if control reaches here then this means that the user was successfully deleted
         // lets return the positive response here for this purpose. 
+        // say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "User deleted successfully", 
+            deletedUser : deletedUserResponse
+        });
     }
 }

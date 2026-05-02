@@ -1,6 +1,8 @@
 // service layer class to handle all the admin related apis
 
 import prisma from "../config/prisma";
+import { StatusCodes } from "../error/statusCodes";
+import AppError from "../middlware/errorHandler";
 
 export class AdminService {
     static async getAllUsersService(pages : number | undefined) {
@@ -29,8 +31,28 @@ export class AdminService {
         // validation of the inputs to be done here 
         if(!adminUserId || !userIdToDelete){
             // throw error here 
-            throw new error
+            throw new AppError("Invalid admin user or invalid user to delete", StatusCodes.BAD_REQUEST_400);
         }
+
+        /**
+         * Actions to take in order to delete the user : 
+         *      1. Delete all the products and all the reviews given by that particular user
+         *      2. Then finally delete the user itself.
+         * Need to check the cascading effect itself of the database tables. 
+         * 
+         */
+
+        const deleteUserResponse = await prisma.user.delete({
+            where : {id : userIdToDelete}
+        });
+
+        if(!deleteUserResponse){
+            // some error happened 
+            throw new AppError("User deletion failed", StatusCodes.INTERNAL_ERROR_500);
+        }
+
+        // else return this to the 
+        return deleteUserResponse;
 
     }
 }
