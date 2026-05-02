@@ -42,4 +42,10 @@ export class AdminController {
             deletedUser : deletedUserResponse
         });
     }
+
+
+    // controller function to get the dashboard stats to the admin user
+    static async getDashboardStatsController(request : Request , response : Response) {
+        // simply call the service layer function 
+    }
 }
