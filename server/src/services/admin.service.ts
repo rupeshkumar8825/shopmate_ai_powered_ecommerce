@@ -198,10 +198,142 @@ export class AdminService {
 
         const yesterdayRevenue = yesterRevenueQueryResponse._sum.total_price ?? 0;
         
+        // lets find out the monthly sales and then return this data to the client 
+        // so that we can show this data as well on the admin dashboard for this purpose 
+        // since this would be a complex query for the prisma hence we will have to write 
+        // the query into the Raw SQL itself
+        const monthlyRevenueResponse = await prisma.$queryRaw<Array<{month : Date; revenue : string }>>`
+            SELECT 
+                date_trunc('month', o.paid_at) AS month, 
+                COALESCE(SUM(o.total_price), 0) AS revenue
+            FROM "order" o
+            WHERE 
+                o.paid_at IS NOT NULL 
+                AND o.paid_at >= date_trunc('month', CURRENT_DATE) - INTERVAL '11 months'
+                AND EXISTS (
+                    SELECT 1 
+                    FROM "payments" p 
+                    WHERE p.order_id = o.id
+                        AND p.payment_status = 'Paid'
+                )
+            GROUP BY 1 
+            ORDER BY 1;
+        `
 
-        // lets now find out the monthly sales query for this purpose
+        // monthlyRevenueResponse example:
+        // [
+        //   { month: 2026-06-01T00:00:00.000Z, revenue: "15300.50" },
+        //   { month: 2026-07-01T00:00:00.000Z, revenue: "9800.00"  },
+        //   ...
+        // ]
+
+        // lets find the top selling products 
+        const topSellingProductsResponse = await prisma.orderItem.groupBy({
+            by: ["product_id"], 
+            // first write the conditions on which products to look for
+            where : {
+                order : {payments : {some : {payment_status : "Paid"}}}
+            },
+            
+            // once we have found such products then we will tell to sum the quantities. 
+            _sum : {quantity : true}, 
+            // define the order here
+            orderBy : {_sum : {quantity : "desc"}},
+            // define the limit here
+            take : 10
+        });
+
+        
+        // lets now find out the exact product details 
+        let topSellingProductDetails = [];
+        for (var currProductSellingDetails of topSellingProductsResponse) {
+            const currentProduct = await prisma.product.findUnique({
+                where : {id : currProductSellingDetails.product_id}
+            });
+            const currentProductDetails = {
+                product : currentProduct, 
+                quantitySold : currProductSellingDetails._sum.quantity ?? 0,
+            }
+            topSellingProductDetails.push(currentProductDetails);
+        }
+        
+        console.log(`(${new Date()})[AdminService, getDashboardStatsService] : - the list of top selling products are as follows : - \n ${topSellingProductDetails}`);
 
 
+        //lets now find the current month sales 
+        const monthStart = new Date(now);
+        monthStart.setDate(1);
+        monthStart.setHours(0, 0, 0, 0);
+
+        const monthEnd = new Date(monthStart);
+        monthEnd.setMonth(monthStart.getMonth() + 1);
+        monthEnd.setDate(1);
+        monthEnd.setHours(0, 0, 0, 0);
+
+        // lets write the query 
+        const revenueOfLastMonthQueryResponse = await prisma.order.aggregate({
+            where : {
+                payments : {
+                    some : {payment_status : "Paid"}
+                }, 
+                paid_at : {gte : monthStart, lt : monthEnd}
+            }, 
+
+            _sum : {total_price : true}
+        });
+
+        const revenueOfLastMonth = revenueOfLastMonthQueryResponse._sum.total_price ?? 0;
+
+        // lets now find out the low stock products for this purpose
+        const lowStockProductListQueryResponse = await prisma.product.findMany({
+            where : {stock : {lte : 5}}
+        });
+
+        // lets find out the last month revenue query itself 
+        // we already had this month start 
+        // this will act as the lastMonthEnd
+        const lastMonthEnd = new Date(monthStart)
+        const lastMonthStart = new Date(monthStart);
+        lastMonthStart.setMonth(lastMonthStart.getMonth() - 1);
+
+        // write the actual query to find this 
+        const lastMonthRevenueQueryResponse = await prisma.order.aggregate({
+            where : {
+                payments : {some : {payment_status : "Paid"}},
+                paid_at : {gte : lastMonthStart, lt : lastMonthEnd}
+            }, 
+
+            _sum : {total_price : true}
+        });
+
+        const lastMonthRevenue = lastMonthRevenueQueryResponse._sum.total_price ?? 0;
+        
+        // lets find the new users that registered on this platform 
+        const newUserRegisteredThisMonthQueryResponse = await prisma.user.aggregate({
+            where : {
+                createdAt : {gte : monthStart}
+            }, 
+            _count : {id : true}
+        });
+
+        const newUserRegisteredThisMonth = newUserRegisteredThisMonthQueryResponse._count.id ?? 0;
+
+
+        // lets say everything went fine 
+        return {
+            allTimeRevenue, 
+            totalPaidOrdersCount, 
+            totalUsersCount,
+            orderStatusCounts, 
+            todaysRevenue,
+            yesterdayRevenue,
+            monthlyRevenueResponse, 
+            topSellingProductDetails, 
+            revenueOfLastMonth,
+            lowStockProductListQueryResponse,
+            lastMonthRevenue,
+            newUserRegisteredThisMonth,
+        }
         
     }
 }

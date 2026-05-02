@@ -47,5 +47,13 @@ export class AdminController {
     // controller function to get the dashboard stats to the admin user
     static async getDashboardStatsController(request : Request , response : Response) {
         // simply call the service layer function 
+        const dashboardStatsServiceResponse = await AdminService.getDashboardStatsService();
+
+        // say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true,
+            message : "Dashboard Stats successfully fetched", 
+            dashboardStats : dashboardStatsServiceResponse
+        });
     }
 }
