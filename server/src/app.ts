@@ -12,6 +12,7 @@ import adminRouter from "./routes/admin.routes";
 import { StatusCodes } from "./error/statusCodes";
 import stripe, { Stripe } from "stripe";
 import prisma from "./config/prisma";
+import { PaymentController } from "./controllers/payments.controller";
 
 
 const app : Express = express();
@@ -30,48 +31,7 @@ app.use(cors({
  *      2. Creation of the GEMINI key is pending. This is required to be able to make AI filtered 
  *         products feature to work. 
  */
-app.post("/api/v1/payments/webhook", express.raw({type : "application/json"}), async (request : Request, response : Response) => {
-    // lets get the signature of the stripe webhook. This way we will be sure that this webhook is
-    // sent by stripe itself 
-    let signature : string = "";
-    if(!request.headers["stripe-signature"]){
-        // there is no signature header hence lets return a negative response to the user 
-        return response.status(StatusCodes.BAD_REQUEST_400).json({
-            success : false, 
-            message : "Stripe Signature not found. Payment Failed."
-        });
-    }else if (Array.isArray(request.headers["stripe-signature"])){
-        // this was not expected to be array instead it was expected to be 
-        // a single string element. hence lets return a negative response to the client application 
-        return response.status(StatusCodes.NOT_AUTHORIZED_401).json({
-            success : false, 
-            message : "Stripe signature not found. Payment failed"
-        });
-    }
-
-    // otherwise we have got confidence that this field might be a signature 
-    signature = request.headers["stripe-signature"];
-
-    // let define an event 
-    let stripeEvent : Stripe.Event;
-
-    try{
-        stripeEvent = stripe.webhooks.constructEvent(request.body, signature, ENV.STRIPE_WEBHOOK_SECRET);
-    }catch(error : any){
-        // lets log this error too as it would be helpful in debugging the webhook error too
-        console.log(`(${new Date()})[app.ts, payments/webhook endpoint] : - Webhook signature error : ${error.message || error}`);
-        // some erorr occurred lets return a negative response to the user 
-        return response.status(StatusCodes.INTERNAL_ERROR_500).json({
-            success : false, 
-            message : `Webhook error ${error.message || error}`
-        })
-    }
-
-    // lets handle the events that we care about
-    const eventReceived = await stripeEventHandler(stripeEvent);
-
-    return response.status(StatusCodes.SUCCESS_200)
-})
+app.post("/api/v1/payments/webhook", express.raw({type : "application/json"}), PaymentController.paymentWebhookHandlerController)
 
 
 // defining the function to handle the successfull payment of the client 
@@ -94,34 +54,23 @@ const finalizeStripePayment = async (paymentIntentId : string): Promise<boolean>
         if(!paymentResponse){
             // could not find any entry in payments table with this payment intent id 
             // lets throw an error 
-            throw new AppError("Payment entry not found with this given payment id", StatusCodes.NOT_FOUND_404);
-        }else if (paymentResponse.payment_status === "Paid"){
-            // the payment status is already paid hence we will return
-            throw new AppError("Payment is already done.", StatusCodes.CONFLICT_409);
+            throw new AppError("Payment entry not found for this payment id", StatusCodes.NOT_FOUND_404);
+        }
+        // }else if (paymentResponse.payment_status === "Paid"){
+        //     // the payment status is already paid hence we will return
+        //     throw new AppError("Payment is already done.", StatusCodes.CONFLICT_409);
+        // }
+        
+        // lets load the order so that we can implement the idempotency + business rules 
+        const orderResponse = await prisma.order.findUnique({
+            where : {id : paymentResponse.order_id}
+        });
+
+        if(!orderResponse){
+            // Order not found for the given payment
+            // hence lets throw an error which will be eventually be handled by 
         }
         
-        // this means that the payment status can be updated now
-        // shift this to the end. meaning after we are done updating the stocks 
-        // and other database tables then only we will mark the payment as PAID 
-        const paymentStatusUpdateResponse = await prisma.payments.update({
-            where : {payment_intent_id : paymentIntentId}, 
-            data : {payment_status : "Paid"}
-        });
-        if(!paymentStatusUpdateResponse){
-            // something went wrong 
-            throw new AppError("Internal server error while updating the payment status", StatusCodes.INTERNAL_ERROR_500);
-        }
-        const nowDateAndTime = new Date();
-        // lets update the order itself 
-        const updatedOrderResponse = await prisma.order.update({
-            where : {id : paymentStatusUpdateResponse.order_id}, 
-            data : {paid_at : nowDateAndTime}
-        });
-        if(!updatedOrderResponse){
-            // something went wrong. lets throw an error 
-            throw new AppError("Internal server error while updating the payment time in the orders table", StatusCodes.INTERNAL_ERROR_500);
-        }
-
         
         // now the user can order multiple products in a single order and for each (order, product) there would be 
         // an entry in the orderitems database table.  
@@ -137,6 +86,31 @@ const finalizeStripePayment = async (paymentIntentId : string): Promise<boolean>
         for (var currOrderItem of orderItemResponse){
 
         }
+
+        const nowDateAndTime = new Date();
+        // lets update the order itself 
+        const updatedOrderResponse = await prisma.order.update({
+            where : {id : paymentStatusUpdateResponse.order_id}, 
+            data : {paid_at : nowDateAndTime}
+        });
+        if(!updatedOrderResponse){
+            // something went wrong. lets throw an error 
+            throw new AppError("Internal server error while updating the payment time in the orders table", StatusCodes.INTERNAL_ERROR_500);
+        }
+
+
+        // this means that the payment status can be updated now
+        // shift this to the end. meaning after we are done updating the stocks 
+        // and other database tables then only we will mark the payment as PAID 
+        const paymentStatusUpdateResponse = await prisma.payments.update({
+            where : {payment_intent_id : paymentIntentId}, 
+            data : {payment_status : "Paid"}
+        });
+        if(!paymentStatusUpdateResponse){
+            // something went wrong 
+            throw new AppError("Internal server error while updating the payment status", StatusCodes.INTERNAL_ERROR_500);
+        }
+
 
         // say everything went fine 
         return true;
