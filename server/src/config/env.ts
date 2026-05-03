@@ -19,7 +19,9 @@ const envSchema = z.object(
         CLOUDINARY_CLIENT_API : z.string(), 
         CLOUDINARY_CLIENT_SECRET : z.string(),
         GEMINI_API_KEY : z.string(),
-
+        STRIPE_SECRET_KEY : z.string(), 
+        STRIPE_WEBHOOK_SECRET : z.string(), 
+        STRIPE_FRONTEND_KEY : z.string()
     }
 )
 

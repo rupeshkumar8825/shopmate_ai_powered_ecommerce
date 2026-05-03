@@ -21,6 +21,13 @@ app.use(cors({
 })
 );
 
+/**
+ * TODO : Following things needs to be implemented : 
+ *      1. Implementation of stripe integration is remaining for this server backend implementation 
+ *      2. Creation of the GEMINI key is pending. This is required to be able to make AI filtered 
+ *         products feature to work. 
+ */
+
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
