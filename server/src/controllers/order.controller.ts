@@ -28,14 +28,15 @@ export class OrderController {
         const orderItems : IorderItem[] | undefined = request.body.orderItems;
 
         // lets call the service layer function 
-        const newOrderServiceResponse = await OrderService.placeNewOrderService(userId, fullName, state, city, country, address, pincode, phone, orderItems);
+        const [newOrderServiceResponse, generatePaymentIntentResponse] = await OrderService.placeNewOrderService(userId, fullName, state, city, country, address, pincode, phone, orderItems);
 
         // if control reaches here then this means that the order is placed already
         // say everything went fine 
         return response.status(StatusCodes.SUCCESS_200).json({
             success : true, 
             message : "Order Successfully placed", 
-            order : newOrderServiceResponse
+            order : newOrderServiceResponse, 
+            paymentDetails : generatePaymentIntentResponse
         });
 
     }

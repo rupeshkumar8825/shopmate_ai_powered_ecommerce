@@ -41,7 +41,7 @@ export class PaymentsService {
 
 
 
-    
+
     static async createPaymentIntentService(orderId : string, totalPrice : number){
         // given order id lets find out the buyer id to be stored into the payment intent metadata 
         const orderRespose = await prisma.order.findFirst({
@@ -51,14 +51,29 @@ export class PaymentsService {
             throw new AppError("Order does not exists", StatusCodes.NOT_FOUND_404);
         }
 
-        const paymentIntent = await stripeObject.paymentIntents.create({
-            amount : totalPrice * 100, 
-            currency : "usd", 
-            metadata : {
-                orderId : orderId, 
-                buyerId : orderRespose.buyer_id 
+        let paymentIntent = null;
+        try{
+            paymentIntent = await stripeObject.paymentIntents.create({
+                amount : totalPrice * 100, 
+                currency : "usd", 
+                metadata : {
+                    orderId : orderId, 
+                    buyerId : orderRespose.buyer_id 
+                }
+            });
+
+        }catch(error){
+            // some error occurred.
+            const paymentIntentResponse = {
+                success : false,
+                paymentIntentId : "", 
+                clientSecret : "", 
+                amount : totalPrice, 
+                currency : "inr"
             }
-        });
+            return  paymentIntentResponse
+        } 
+
 
         // lets insert this intent into the payments itself 
         const paymentResponse = await prisma.payments.create({
@@ -73,6 +88,7 @@ export class PaymentsService {
 
         // lets return the payment intents to the caller. Caller may be someone from the service layer or controller layer
         const paymentIntentResponse = {
+            success : true,
             paymentIntentId : paymentIntent.id, 
             clientSecret : paymentIntent.client_secret, 
             amount : totalPrice, 

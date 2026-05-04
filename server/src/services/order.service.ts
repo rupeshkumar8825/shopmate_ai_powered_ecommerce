@@ -7,6 +7,7 @@ import { StatusCodes } from "../error/statusCodes";
 import AppError from "../middlware/errorHandler";
 import { avatarType, IorderItem, IOrderItemDB } from "../types/custom";
 import { OrderStatus } from "../generated/prisma/enums";
+import { PaymentsService } from "./payments.service";
 
 export class OrderService {
     static async placeNewOrderService(userId : string|undefined, fullName : string|undefined, state : string|undefined, city : string|undefined, 
@@ -118,8 +119,15 @@ export class OrderService {
             throw new AppError("Something went wrong while inserting into the shipping details table", StatusCodes.INTERNAL_ERROR_500);
         }
 
+        // now we need to generate payment intent for this purpose 
+        const generatePaymentIntentServiceResponse = await PaymentsService.createPaymentIntentService(newOrderResponse.id, totalPrice);
+        if(!generatePaymentIntentServiceResponse.success){
+            // this means that something bad happened
+            throw new AppError("Internal error while generating the payment intent", StatusCodes.INTERNAL_ERROR_500);
+        }
+        
         // say everything went fine 
-        return newOrderResponse;
+        return [newOrderResponse, generatePaymentIntentServiceResponse];
 
     }
 }
