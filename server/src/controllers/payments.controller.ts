@@ -39,9 +39,4 @@ export class PaymentController {
         
     }
 
-
-    static async createPaymentIntentController(request : Request, response : Response){
-
-    }
-
 }
