@@ -71,3 +71,11 @@ app.use(ErrorHandler)
 // also this file consists of all the settings about server and middlewares that we
 // require for our application in this case for this purpose 
 export default app;
+
+
+// TODO : Now once the complete backend and frontend is done then we can work on adding the 
+// following features to stand out further : 
+// 1. Newsletter functionality : - in this we should be able to send some emails to the 
+// customers who are subscribed to the newsletter. This newsletter should consists of 
+// the details about the new products. And on clicking on this new product the user 
+// should be redirected to the products detail page. 
