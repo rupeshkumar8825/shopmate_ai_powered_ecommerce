@@ -169,4 +169,41 @@ export class OrderService {
             
 
     }
+
+
+    static async fetchMyOrderDetailsService (userId : string|undefined){
+        // validation of the input 
+        if(!userId){
+            // userid not valid. return 
+            throw new AppError("UserId is invalid.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // else check whether user actually exists with this particular id or not 
+        const userDetailsResponse = await prisma.user.findUnique({
+            where : {id : userId}
+        });
+        if(!userDetailsResponse){
+            // user not found. lets throw an error here  
+            throw new AppError("User not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // now we have validated that the user is found. 
+        // now lets find the details of all theo orders for this user 
+        const allOrderDetailsResponse = await prisma.order.findMany({
+            where : {buyer_id : userId}, 
+            include: {
+                orderItemList : true,
+                shippingInfoList : true
+            }
+        });
+
+        if(allOrderDetailsResponse){
+            // no order found for this user 
+            throw new AppError("No orders found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // else lets return this to the controller layer 
+        // say everything went fine 
+        return allOrderDetailsResponse;
+    }
 }

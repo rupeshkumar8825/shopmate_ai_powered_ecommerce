@@ -7,5 +7,7 @@ const orderRoutes = Router();
 
 
 orderRoutes.post("/new", authMiddleware, OrderController.placeNewOrderController);
+orderRoutes.get("/:orderId", authMiddleware, OrderController.fetchSingleOrderController);
+orderRoutes.get("/user/all", authMiddleware, OrderController.fetchMyOrderDetailsController);
 
 export default orderRoutes;
