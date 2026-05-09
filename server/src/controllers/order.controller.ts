@@ -6,6 +6,12 @@ import { OrderService } from "../services/order.service";
 // controller layer code to handle everything related to the orders 
 export class OrderController {
     
+    /**
+     * 
+     * @param request 
+     * @param response 
+     * @returns 
+     */
     static async placeNewOrderController (request : Request, response : Response) {
         // lets first get all the details about the order and about the user who is 
         // placing an order 
@@ -42,7 +48,12 @@ export class OrderController {
     }
 
 
-    // controller function to fetch the details about a given controller
+    /**
+     * 
+     * @param request 
+     * @param response 
+     * @returns 
+     */
     static async fetchSingleOrderController (request : Request, response : Response) {
         const orderId : string|undefined = request.params.orderId as string;
         const userId : string|undefined = request.userId;
@@ -59,6 +70,15 @@ export class OrderController {
         });
     }
 
+
+
+
+    /**
+     * 
+     * @param request 
+     * @param response 
+     * @returns 
+     */
     static async fetchMyOrderDetailsController (request : Request, response : Response) {
         const userId : string|undefined = request.userId;
 
@@ -74,5 +94,24 @@ export class OrderController {
             orderItems : allOrderDetailsResponse
         });
 
+    }
+
+
+    /**
+     * 
+     * @param request 
+     * @param response 
+     */
+    static async fetchAllOrdersController (request : Request, response : Response) {
+        // call the service layer function 
+        const orderDetailsResponse = await OrderService.fetchAllOrdersService();
+        // if the control reaches then this means that the api request or the call to 
+        // the service layer function is successfull and its done
+        // say everything went fine
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Orders fetched successfully", 
+            orderDetails : orderDetailsResponse
+        });
     }
 }

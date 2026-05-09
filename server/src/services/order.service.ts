@@ -206,4 +206,25 @@ export class OrderService {
         // say everything went fine 
         return allOrderDetailsResponse;
     }
+
+
+
+    /**
+     * 
+     */
+    static async fetchAllOrdersService () {
+       const orderDetailsResponse = await prisma.order.findMany({
+            include : {
+                orderItemList : true, 
+                shippingInfoList : true
+            }
+       }); 
+
+       if(!orderDetailsResponse) {
+            throw new AppError("No order found", StatusCodes.NOT_FOUND_404);
+       }
+
+       // else say everything went fine 
+       return orderDetailsResponse;
+    }
 }
