@@ -114,4 +114,19 @@ export class OrderController {
             orderDetails : orderDetailsResponse
         });
     }
+
+    static async updateOrderStatusController (request : Request, response : Response) {
+        const orderId : string|undefined = request.params.orderId as string;
+        const updatedOrderStatus : string|undefined = request.body.orderId; 
+
+        // call the service layer function 
+        const updatedOrderDetailsResponse = await OrderService.updateOrderStatusService(orderId, updatedOrderStatus);
+
+        // say everything went fine
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true,
+            message : "Updated the order status successfully", 
+            orderDetails : updatedOrderDetailsResponse
+        });
+    }
 }

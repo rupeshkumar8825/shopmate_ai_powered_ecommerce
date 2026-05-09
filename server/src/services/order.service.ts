@@ -227,4 +227,29 @@ export class OrderService {
        // else say everything went fine 
        return orderDetailsResponse;
     }
+
+    static async updateOrderStatusService(orderId : string|undefined, updatedOrderStatus : string|undefined) {
+        if(!orderId || !updatedOrderStatus){
+            throw new AppError("OrderId or order status is either empty or null.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // lets try to update the order status in the database table
+        const updatedOrderRespnose = await prisma.order.update({
+            where : {id : orderId}, 
+            data : {
+                order_status : updatedOrderStatus as OrderStatus
+            }, 
+            include : {
+                orderItemList : true, 
+                shippingInfoList : true
+            }
+        });
+
+        if(!updatedOrderRespnose){
+            throw new AppError("Update order failed", StatusCodes.INTERNAL_ERROR_500);
+        }
+
+        // else lets say everything went fine 
+        return updatedOrderRespnose;
+    }
 }
