@@ -125,9 +125,48 @@ export class OrderService {
             // this means that something bad happened
             throw new AppError("Internal error while generating the payment intent", StatusCodes.INTERNAL_ERROR_500);
         }
-        
+
         // say everything went fine 
         return [newOrderResponse, generatePaymentIntentServiceResponse];
+
+    }
+
+
+    /**
+     * Function to fetch the details of a single order given the orderId. 
+     * Following details are fetched and then send to the controller
+     *      1. Basic order details : - all the fields of the order table 
+     *      2. All order items : - given an order there could be multiple order items 
+     *          this would be an array of orderitems details 
+     *      3. Shipping Info : - each of the order will have a unique shipping info that 
+     *          we need to fetch. 
+     * @param orderId unique id of the order
+     * @param userId unique id of the user. This we will get from the request object itself
+     */
+    static async fetchSingleOrderService(orderId : string|undefined, userId : string|undefined) {
+        // lets validate the inputs first 
+        if(!orderId || !userId){
+            throw new AppError("One of the required input is either invalid , empty or null", StatusCodes.BAD_REQUEST_400);
+        }
+        
+        const orderDetailsResponse = await prisma.order.findUnique({
+            where : {id : orderId}, 
+            include : {
+                orderItemList : true, 
+                shippingInfoList : true, 
+            }
+        });
+
+
+        if(!orderDetailsResponse){
+            // it seems no order is found
+            // lets throw an error for the same 
+            throw new AppError("Order not found", StatusCodes.NOT_FOUND_404);
+        }
+
+        // say everything went fine 
+        return orderDetailsResponse;
+            
 
     }
 }

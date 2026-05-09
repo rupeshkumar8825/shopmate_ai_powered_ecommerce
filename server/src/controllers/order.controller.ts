@@ -40,4 +40,22 @@ export class OrderController {
         });
 
     }
+
+
+    // controller function to fetch the details about a given controller
+    static async fetchSingleOrderController (request : Request, response : Response) {
+        const orderId : string|undefined = request.body.orderId;
+        const userId : string|undefined = request.userId;
+
+        // lets call the service layer function here 
+        const orderDetailsServiceResponse = await OrderService.fetchSingleOrderService(orderId, userId);
+
+        // if control reaches then it means that 
+        // say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Order details found", 
+            orderDetails : orderDetailsServiceResponse
+        });
+    }
 }
