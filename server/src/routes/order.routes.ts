@@ -12,5 +12,6 @@ orderRoutes.get("/:orderId", authMiddleware, OrderController.fetchSingleOrderCon
 orderRoutes.get("/user/all", authMiddleware, OrderController.fetchMyOrderDetailsController);
 orderRoutes.get("/admin/getall", authMiddleware, validateRole("Admin"), OrderController.fetchAllOrdersController);
 orderRoutes.put("/admin/:orderId", authMiddleware, validateRole("Admin"), OrderController.updateOrderStatusController);
+orderRoutes.delete("/admin/:orderId", authMiddleware, validateRole("Admin"), OrderController.deleteOrderController);
 
 export default orderRoutes;

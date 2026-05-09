@@ -129,4 +129,20 @@ export class OrderController {
             orderDetails : updatedOrderDetailsResponse
         });
     }
+
+
+    static async deleteOrderController (request : Request, response : Response) {
+        const orderId : string|undefined = request.params.orderId as string;
+
+        // call the service layer function 
+        const deleteOrderResponse = await OrderService.deleteOrderService(orderId);
+        // if control reaches here this means that the service layer function executed
+        // successfully. 
+        // hence lets say everything went fine 
+        return response.status(StatusCodes.SUCCESS_200).json({
+            success : true, 
+            message : "Order deleted successfully", 
+            deleteOrderDetails : deleteOrderResponse
+        });
+    }
 }

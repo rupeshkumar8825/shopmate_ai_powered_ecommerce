@@ -252,4 +252,22 @@ export class OrderService {
         // else lets say everything went fine 
         return updatedOrderRespnose;
     }
+
+    static async deleteOrderService(orderId : string|undefined) {
+        if(!orderId){
+            throw new AppError("OrderId is either empty or null.", StatusCodes.BAD_REQUEST_400);
+        }
+
+        // lets try to update the order status in the database table
+        const deleteOrderRespnose = await prisma.order.delete({
+            where : {id : orderId}, 
+        });
+
+        if(!deleteOrderRespnose){
+            throw new AppError("Update order failed", StatusCodes.INTERNAL_ERROR_500);
+        }
+
+        // else lets say everything went fine 
+        return deleteOrderRespnose;
+    }
 }
