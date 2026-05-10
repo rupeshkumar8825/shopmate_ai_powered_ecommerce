@@ -46,7 +46,7 @@ app.use(express.urlencoded({extended : true}))
 // setup the middlewares 
 app.use(
     expressFileUpload({
-        tempFileDir : "./uploads", 
+        tempFileDir : "./uploads",
         useTempFiles : true,
         limits : {fileSize : 5 * 1024 * 1024}, // 5MB 
         abortOnLimit : true, 
