@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from "react-icons/bs";
-import { homePageSliderData } from "../../data/homeConstants";
+import { homePageSliderData } from "../../data/homePageConstants";
 import type { HeroSliderPropType, SliderDataType } from "../../types/homePageTypes";
 
 
@@ -48,7 +48,7 @@ export const HeroSliderSectionComponent = (props: HeroSliderPropType) => {
     return (
         <div className="overflow-hidden relative">
             <div className="flex relative transition-transform ease-out duration-500" style={{transform : `translateX(-${currentSliderIndex * 100}%)`}}>
-                {homePageSliderData.map((currSlide : SliderDataType, index) => (
+                {homePageSliderData.map((currSlide : SliderDataType, index : number) => (
                     // please note that min-w-full property is very important so that the image gets stack up as column but the image takes the complete width
                     // if we do this then only the translatex would work.
                     <div key={index} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)} onFocus={() => setIsHover(true)} onBlur={() => setIsHover(false)} className="min-w-full shrink-0 flex flex-row justify-around items-center bg-cover bg-center bg-no-repeat w-full py-40" style={{backgroundImage : `url(${currSlide.image})`}}>

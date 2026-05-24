@@ -15,3 +15,10 @@ export type HeroSliderPropType = {
     autoPlayDuration : number, 
     pauseOnHover : boolean
 }
+
+
+export type CategoryDataType = {
+    id : string, 
+    name : string, 
+    image : string
+}
