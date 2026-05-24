@@ -1,4 +1,4 @@
-import type { SliderDataType } from "../types/home";
+import type { SliderDataType } from "../types/homePageTypes";
 
 // all the constants related to the home page comes here
 export const homePageSliderData : SliderDataType[] = [

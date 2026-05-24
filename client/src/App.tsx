@@ -4,7 +4,7 @@ function App() {
 
   return (
     <>
-    <div className='min-h-screen border border-red-400 bg-background rounded-lg'>
+    <div className=''>
       <HomePage></HomePage> 
 
     </div>
