@@ -10,7 +10,7 @@ export const HomePage = () => {
         <div className="">
             {/* Welcome to the home page. */}
             <NavbarLayout></NavbarLayout>
-            <HeroSliderSectionComponent></HeroSliderSectionComponent>
+            <HeroSliderSectionComponent autoPlay={true} autoPlayDuration={3000} pauseOnHover={true}></HeroSliderSectionComponent>
             <CategorySectionComponent></CategorySectionComponent>
             <FeatureSectionComponent></FeatureSectionComponent>
             <NewsLetterSectionComponent></NewsLetterSectionComponent>

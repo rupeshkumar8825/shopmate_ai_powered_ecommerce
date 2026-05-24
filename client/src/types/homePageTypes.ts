@@ -8,3 +8,10 @@ export type SliderDataType = {
     buttonText : string, 
     url : string
 }
+
+
+export type HeroSliderPropType = {
+    autoPlay : boolean, 
+    autoPlayDuration : number, 
+    pauseOnHover : boolean
+}

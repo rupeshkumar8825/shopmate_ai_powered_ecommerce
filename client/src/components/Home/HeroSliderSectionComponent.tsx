@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from "react-icons/bs";
 import { homePageSliderData } from "../../data/homeConstants";
-import type { SliderDataType } from "../../types/homePageTypes";
+import type { HeroSliderPropType, SliderDataType } from "../../types/homePageTypes";
 
 
-export const HeroSliderSectionComponent = (props: any) => {
+export const HeroSliderSectionComponent = (props: HeroSliderPropType) => {
     
     // states of the application comes here 
     const [currentSliderIndex, setCurrentSliderIndex] = useState<number>(0);
@@ -51,16 +51,13 @@ export const HeroSliderSectionComponent = (props: any) => {
                 {homePageSliderData.map((currSlide : SliderDataType, index) => (
                     // please note that min-w-full property is very important so that the image gets stack up as column but the image takes the complete width
                     // if we do this then only the translatex would work.
-                    <div key={index} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)} onFocus={() => setIsHover(true)} onBlur={() => setIsHover(false)} className="border-2 border-red-500 min-w-full shrink-0 flex flex-row justify-around items-center bg-cover bg-center bg-no-repeat w-full py-40" style={{backgroundImage : `url(${currSlide.image})`}}>
-                        <div className="border border-black flex flex-col justify-center items-center">
+                    <div key={index} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)} onFocus={() => setIsHover(true)} onBlur={() => setIsHover(false)} className="min-w-full shrink-0 flex flex-row justify-around items-center bg-cover bg-center bg-no-repeat w-full py-40" style={{backgroundImage : `url(${currSlide.image})`}}>
+                        <div className="flex flex-col justify-center items-center">
                             <h1 className="text-xl text-white font-bold font-sans text-center">{currSlide.subtitle} </h1>
                             <p className="text-4xl font-bold uppercase line-clamp-3 md:w-125 text-white text-center">{currSlide.title} </p>
                             <h1 className="md:w-125 line-clamp-3 text-gray-400 text-center">{currSlide.description}</h1>
                             <button className="bg-blue-500 text-white px-3 py-2 rounded-md cursor-pointer mt-5">{currSlide.buttonText}</button>
                         </div>
-                        {/* <div className="border-4 border-yellow-500 w-[50%] flex justify-center items-center bg-white rounded-full p-10 shadow-2xl shadow-red-400 cursor-pointer"> */}
-                        {/* <img src={currSlide.image} alt={currSlide.title} className="w-full transition-all cursor-pointer" /> */}
-                        {/* </div> */}
                     </div>
                     )
                 )}
