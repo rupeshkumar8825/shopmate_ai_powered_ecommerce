@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react"
+
 // this will consists of all the types related to the home page
 export type SliderDataType = {
     id : number, 
@@ -21,4 +23,11 @@ export type CategoryDataType = {
     id : string, 
     name : string, 
     image : string
+}
+
+
+export type FeaturesDataType = {
+    icon : LucideIcon, 
+    title : string, 
+    description : string
 }

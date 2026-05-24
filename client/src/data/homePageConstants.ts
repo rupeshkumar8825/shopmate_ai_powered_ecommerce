@@ -1,4 +1,5 @@
-import type { CategoryDataType, SliderDataType } from "../types/homePageTypes";
+import { CreditCard, Headphones, Shield, Truck } from "lucide-react";
+import type { CategoryDataType, FeaturesDataType, SliderDataType } from "../types/homePageTypes";
 
 // all the constants related to the home page comes here
 export const homePageSliderData : SliderDataType[] = [
@@ -74,4 +75,28 @@ export const listOfSupportedCategoriesData : CategoryDataType[] = [
     name: "Kids & Baby",
     image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=300",
   },
+]
+
+
+export const listOfSupportedFeaturesData : FeaturesDataType[] = [
+  {
+      icon: Truck,
+      title: 'Free Shipping',
+      description: 'Free shipping on orders over $50 worldwide'
+    },
+    {
+      icon: Shield,
+      title: 'Secure Payment',
+      description: '100% secure payment with SSL encryption'
+    },
+    {
+      icon: Headphones,
+      title: '24/7 Support',
+      description: 'Dedicated customer support available anytime'
+    },
+    {
+      icon: CreditCard,
+      title: 'Easy Returns',
+      description: '30-day return policy for your peace of mind'
+    }
 ]
