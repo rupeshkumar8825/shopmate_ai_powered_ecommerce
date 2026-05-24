@@ -11,14 +11,16 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react": "18.2",
+    "react-dom": "18.2",
+    "recoil": "^0.7.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "18.2",
+    "@types/react-dom": "18.2",
+    "@types/recoil": "^0.0.1",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.5.0",
     "eslint": "^10.2.1",
