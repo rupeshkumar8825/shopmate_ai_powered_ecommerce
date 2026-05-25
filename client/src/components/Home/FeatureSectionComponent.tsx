@@ -4,7 +4,7 @@ import type { FeaturesDataType } from "../../types/homePageTypes";
 
 export const FeatureSectionComponent = () => {
     return (
-        <div className="border border-white flex flex-wrap justify-around gap-5  items-center w-full bg-background-500 p-10">
+        <div className="flex flex-wrap justify-around gap-5  items-center w-full bg-background-500 p-10">
             {
                 listOfSupportedFeaturesData.map((currFeatureDetails : FeaturesDataType, index : number) => {
                     return (
