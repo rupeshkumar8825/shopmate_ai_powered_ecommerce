@@ -23,6 +23,7 @@ export const CategorySectionComponent = () => {
                         )
                     })
                 }
+            
             </div>
         </div>
     )
