@@ -1,13 +1,35 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
+import { ProductDetailsPage } from './pages/ProductDetailsPage'
+import { ProductPage } from './pages/ProductsPage'
+import { CartPage } from './pages/CartPage'
+import { OrdersPage } from './pages/OrdersPage'
+import { PaymentsPage } from './pages/PaymentsPage'
+import { AboutPage } from './pages/AboutPage'
+import { FAQsPage } from './pages/FAQPage'
+import { ContactPage } from './pages/ContactPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 
 function App() {
 
   return (
     <>
-    <div className=''>
-      <HomePage></HomePage> 
-
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<HomePage></HomePage>} />
+          <Route path='/password/reset/:token' element={<HomePage></HomePage>} />
+          <Route path='/products' element={<ProductPage></ProductPage>} />
+          <Route path='/product/:id' element={<ProductDetailsPage></ProductDetailsPage>} />
+          <Route path='/cart' element={<CartPage></CartPage>} />
+          <Route path='/orders' element={<OrdersPage></OrdersPage>} />
+          <Route path='/payment' element={<PaymentsPage></PaymentsPage>} />
+          <Route path='/about' element={<AboutPage></AboutPage>} />
+          <Route path='/faq' element={<FAQsPage></FAQsPage>} />
+          <Route path='/contact' element={<ContactPage></ContactPage>} />
+          <Route path='*' element={<NotFoundPage></NotFoundPage>} />
+        </Routes>
+      
+      </BrowserRouter>
     </>
   )
 }
