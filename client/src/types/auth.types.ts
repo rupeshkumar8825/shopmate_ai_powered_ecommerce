@@ -51,12 +51,34 @@ export interface LoginResponse {
 
 //  interface for defining the payload to be sent to the backend server
 // for logging out of the application 
-export  interface LogPayload  {
+export  interface LogoutPayload  {
 
 }
+
+
+
+export interface LogoutResponse {
+    success : string, 
+    message : string
+}
+
 
 
 export interface APIFailPayload {
     success : string, 
     message : string
+}
+
+
+
+export interface UserDetailPayload {
+
+}
+
+
+
+export interface UserDetailResponse {
+    success : boolean, 
+    message : string, 
+    user : User
 }
