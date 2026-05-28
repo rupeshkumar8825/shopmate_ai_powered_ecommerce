@@ -46,7 +46,8 @@ export  interface LoginPayload  {
 export interface LoginResponse {
     success : boolean, 
     message : string, 
-    token : string
+    token : string, 
+    user : User 
 }
 
 //  interface for defining the payload to be sent to the backend server

@@ -67,7 +67,7 @@ export class AuthService {
     /// if the login is successfull then this function will return the token 
     /// else it will throw the relevant error which will be then handled by the 
     /// global middleware that we have defined
-    static async loginUserService(email : string, password : string) : Promise<string> {
+    static async loginUserService(email : string, password : string) : Promise<[string, User]> {
         // check if the email exist
         const user : User | null = await prisma.user.findFirst({
             where: {
@@ -97,7 +97,7 @@ export class AuthService {
         const token = await JWTTokenService.generateNewToken(user);
 
         // say everything went fine 
-        return token;
+        return [token, user];
 
     }
 

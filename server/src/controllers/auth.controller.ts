@@ -44,7 +44,7 @@ export class AuthController {
         const email = request.body.email;
         const password = request.body.password;
         // lets call service function 
-        const token = await AuthService.loginUserService(email, password);
+        const [token, user] = await AuthService.loginUserService(email, password);
 
 
         // say everything went fine and lets set the cookie for the user
@@ -54,7 +54,8 @@ export class AuthController {
         }).json({
             success : "true", 
             message : "User logged in successfully", 
-            token : token
+            token : token, 
+            user : user
         }) 
         
     } 

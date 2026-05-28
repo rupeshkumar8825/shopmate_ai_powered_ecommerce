@@ -6,7 +6,7 @@ import axiosInstance from "./axiosInstance"
 
 
 
-export const registerUser = async (payload : RegisterPayload) : Promise<RegisterResponse> => {
+export const registerUserApi  = async (payload : RegisterPayload) : Promise<RegisterResponse> => {
     // given the payload and the axiosinstance we need to 
     // make the post api call to register the user for this purpose 
     const registerUserResponse  = await axiosInstance.post("/v1/auth/register", )
@@ -18,7 +18,7 @@ export const registerUser = async (payload : RegisterPayload) : Promise<Register
 
 
 
-export const loginUser = async (payload : LoginPayload) : Promise<LoginResponse> => {
+export const loginUserApi = async (payload : LoginPayload) : Promise<LoginResponse> => {
     const loginUserResponse = await axiosInstance.post("/v1/auth/login", payload);
     return loginUserResponse.data as LoginResponse
 }
@@ -26,14 +26,14 @@ export const loginUser = async (payload : LoginPayload) : Promise<LoginResponse>
 
 
 
-export const logoutUser = async (payload : LogoutPayload) : Promise<LogoutResponse> => {
+export const logoutUserApi = async (payload : LogoutPayload) : Promise<LogoutResponse> => {
     const logoutUserResponse = await axiosInstance.post("/v1/auth/logout", payload);
     return logoutUserResponse.data as LogoutResponse
 } 
 
 
 
-export const getUserDetails = async () : Promise<UserDetailResponse> => {
+export const getUserDetailsApi = async () : Promise<UserDetailResponse> => {
     const token = getToken();
     const userDetailsResponse = await axiosInstance.get("/v1/auth/me", {
         headers : {
