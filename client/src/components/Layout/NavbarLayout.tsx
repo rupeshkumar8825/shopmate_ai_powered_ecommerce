@@ -16,7 +16,7 @@ export const NavbarLayout = () => {
     const sideBarClickHandler = () => {
         setIsSideBarOpen(!isSideBarOpen);
     }
-    
+     
     const searchBarClickHandler = () => {
         setIsSearchBarOpen(!isSearchBarOpen)
     }
