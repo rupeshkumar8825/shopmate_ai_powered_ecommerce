@@ -3,9 +3,9 @@
 // its like the function where we write code once and then can use this at multiple places
 
 import { useRecoilState, useSetRecoilState } from "recoil"
-import type { LoginPayload, RegisterPayload } from "../types/auth.types"
+import type { LoginPayload, RegisterPayload, UpdatePasswordPayload, UpdateProfilePayload } from "../types/auth.types"
 import { authErrorAtom, isAuthenticatedAtom, isFetchingUserAtom, isPasswordChangingAtom, isUpdatingProfileAtom, isUserLoggingInAtom, isUserLoggingOutAtom, isUserRegisteringAtom, userAtom } from "../recoil/atoms/authAtom"
-import { loginUser, loginUserApi, logoutUserApi, registerUserApi } from "../api/authApi"
+import { fetchUserDetailsApi, loginUserApi, logoutUserApi, registerUserApi, updatePasswordApi, updateProfileApi } from "../api/authApi"
 
 
 // custom hook to handle all the auth related logics at a single place 
@@ -84,11 +84,17 @@ export const useAuth = () => {
         }
     }
 
-    const changePassword = async () => {
+    const updatePassword = async (payload : UpdatePasswordPayload) => {
         setAuthError(null);
         setIsPasswordChanging(true);
         try{
             // lets make an axios response here to change the password of the user 
+                await updatePasswordApi(payload);
+            // say everything went fine and we have successfully changed the password of the user
+             // now we can simply logout the user from the application for security purposes 
+             await logoutUserApi({});
+             setUser(null);
+             setIsAuthenticated(false);
         }catch(err : any) {
             setAuthError(err.message);
         } finally {
@@ -97,13 +103,42 @@ export const useAuth = () => {
     }
 
 
-    
-    const updateProfile = async () => {
 
+    const updateProfile = async (payload : UpdateProfilePayload) => {
+        setAuthError(null);
+        setIsUpdatingProfile(true);
+        try{
+            // lets make an axios response here to update the profile of the user
+            // we will get the updated user details in the response 
+            const updateProfileResponse = await updateProfileApi(payload);
+            // say everything went fine and we have successfully updated the profile of the user
+             // now we need to set the user details in the recoil state with the updated user details 
+             setUser(updateProfileResponse.user);
+        }catch(err : any) {
+            setAuthError(err.message);
+        } finally {
+            setIsUpdatingProfile(false);
+        }
     }
 
     const fetchUserDetails = async () => {
-
+        setAuthError(null);
+        setIsFetchingUser(true);
+        try{
+            // lets make an axios response here to fetch the details of the user
+            // we will get the user details in the response 
+            const userDetailsResponse = await fetchUserDetailsApi();
+            // say everything went fine and we have successfully fetched the details of the user
+             // now we need to set the user details in the recoil state with the fetched user details and also set the isAuthenticated to true 
+             setUser(userDetailsResponse.user);
+             setIsAuthenticated(true);
+        }catch(err : any) {
+            setAuthError(err.message);
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setIsFetchingUser(false);
+        }
     }
 
     return {
@@ -112,7 +147,7 @@ export const useAuth = () => {
         loginUser, 
         registerUser, 
         logoutUser, 
-        changePassword, 
+        updatePassword, 
         updateProfile, 
         fetchUserDetails
     }

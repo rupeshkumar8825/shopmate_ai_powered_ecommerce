@@ -1,6 +1,6 @@
 // all the apis related to user authentication comes here
 
-import type { ForgotPasswordPayload, LoginPayload, LoginResponse, LogoutPayload, LogoutResponse, RegisterPayload, RegisterResponse, ResetPasswordPayload, UpdatePasswordPayload, UserDetailResponse } from "../types/auth.types"
+import type { ForgotPasswordPayload, LoginPayload, LoginResponse, LogoutPayload, LogoutResponse, RegisterPayload, RegisterResponse, ResetPasswordPayload, UpdatePasswordPayload, UpdateProfilePayload, UserDetailResponse } from "../types/auth.types"
 import { getToken } from "../utils/tokenStorage";
 import axiosInstance from "./axiosInstance"
 
@@ -33,7 +33,7 @@ export const logoutUserApi = async (payload : LogoutPayload) : Promise<LogoutRes
 
 
 
-export const getUserDetailsApi = async () : Promise<UserDetailResponse> => {
+export const fetchUserDetailsApi = async () : Promise<UserDetailResponse> => {
     const token = getToken();
     const userDetailsResponse = await axiosInstance.get("/v1/auth/me", {
         headers : {
@@ -91,12 +91,12 @@ export const updatePasswordApi = async (payload : UpdatePasswordPayload) => {
 
 
 
-export const updateProfileApi = async (payload : {name? : string, email? : string, avatar? : File}) => {
+export const updateProfileApi = async (payload : UpdateProfilePayload) => {
     const token = getToken();
     const formData = new FormData();
     if(payload.name) formData.append("name", payload.name);
     if(payload.email) formData.append("email", payload.email);
-    if(payload.avatar) formData.append("files", payload.avatar);
+    if(payload.avatar) formData.append("avatar", payload.avatar);
 
     const updateProfileResponse = await axiosInstance.put("/v1/auth/profile/update", formData, {
         headers : {
