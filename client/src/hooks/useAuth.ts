@@ -85,9 +85,19 @@ export const useAuth = () => {
     }
 
     const changePassword = async () => {
-
+        setAuthError(null);
+        setIsPasswordChanging(true);
+        try{
+            // lets make an axios response here to change the password of the user 
+        }catch(err : any) {
+            setAuthError(err.message);
+        } finally {
+            setIsPasswordChanging(false);
+        }
     }
 
+
+    
     const updateProfile = async () => {
 
     }
