@@ -5,7 +5,7 @@
 import { useRecoilState, useSetRecoilState } from "recoil"
 import type { LoginPayload, RegisterPayload } from "../types/auth.types"
 import { authErrorAtom, isAuthenticatedAtom, isFetchingUserAtom, isPasswordChangingAtom, isUpdatingProfileAtom, isUserLoggingInAtom, isUserLoggingOutAtom, isUserRegisteringAtom, userAtom } from "../recoil/atoms/authAtom"
-import { loginUser, loginUserApi, registerUserApi } from "../api/authApi"
+import { loginUser, loginUserApi, logoutUserApi, registerUserApi } from "../api/authApi"
 
 
 // custom hook to handle all the auth related logics at a single place 
@@ -65,8 +65,23 @@ export const useAuth = () => {
         }
     }
 
-    const logoutUser = async () => {
 
+
+    const logoutUser = async () => {
+        setAuthError(null);
+        setIsUserLoggingOut(true);
+        try{
+            // lets make an axios response here to logout the user from the application
+            await logoutUserApi({});
+            // say everything went fine and we have successfully logged out the user 
+            // now we need to set the user details in the recoil state to null and also set the isAuthenticated to false 
+            setUser(null);
+            setIsAuthenticated(false);
+        }catch(err : any) {
+            setAuthError(err.message);
+        } finally {
+            setIsUserLoggingOut(false);
+        }
     }
 
     const changePassword = async () => {

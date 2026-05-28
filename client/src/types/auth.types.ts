@@ -83,3 +83,52 @@ export interface UserDetailResponse {
     message : string, 
     user : User
 }
+
+
+export interface ForgotPasswordPayload {
+    email : string, 
+    frontEndUrl : string
+}
+
+export interface ForgotPasswordResponse {
+    success : boolean, 
+    message : string
+}
+
+
+export interface ResetPasswordPayload {
+    token : string, 
+    newPassword : string,
+    confirmPassword : string
+}
+
+export interface ResetPasswordResponse {
+    success : boolean, 
+    message : string
+}
+
+
+
+export interface UpdatePasswordPayload {
+    confirmPassword : string,
+    currentPassword : string, 
+    newPassword : string
+}
+
+export interface UpdatePasswordResponse {
+    success : boolean, 
+    message : string
+}
+
+export interface UpdateProfilePayload {
+    name : string, 
+    email : string, 
+    avatar : File | null
+}
+
+export interface UpdateProfileResponse {
+    success : boolean, 
+    message : string, 
+    user : User
+}
+
