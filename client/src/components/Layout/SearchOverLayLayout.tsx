@@ -6,6 +6,7 @@ import { useRecoilState } from "recoil";
 import { isSearchPopupOpenAtom } from "../../recoil/atoms/popupAtom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 
 
 export const SearchOverLayLayout = () => {
@@ -33,11 +34,12 @@ export const SearchOverLayLayout = () => {
     
 
     return (
-        <>
-        // lets create the fixed overlay here for the search bar.
+        <div>
+        {/* // lets create the fixed overlay here for the search bar. */}
         <div onKeyDown={searchBarClickHandler} className={`fixed inset-0 w-full h-full bg-black/50 bg-opacity-50 z-40  ${isSearchPopupOpen ? "block" : "hidden"}`}>
             {/* actual search bar comes here  */}
-            <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg w-[80%]`}>
+            <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg w-[80%] flex flex-row justify-center items-center gap-4`}>
+                {/* input field for the search query comes here  */}
                 <input 
                     type="text" 
                     placeholder="Search for products..." 
@@ -45,9 +47,11 @@ export const SearchOverLayLayout = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
+                {/* lets add the cross button */}
+                <X onClick={() => setIsSearchPopupOpen(false)} className=" cursor-pointer"></X>
             </div>
         </div>
         
-        </>
+        </div>
     )
 }

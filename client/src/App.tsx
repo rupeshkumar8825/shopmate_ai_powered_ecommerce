@@ -9,12 +9,18 @@ import { AboutPage } from './pages/AboutPage'
 import { FAQsPage } from './pages/FAQPage'
 import { ContactPage } from './pages/ContactPage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { NavbarLayout } from './components/Layout/NavbarLayout'
+import { SideBarLayout } from './components/Layout/SideBarLayout'
+import { SearchOverLayLayout } from './components/Layout/SearchOverLayLayout'
 
 function App() {
 
   return (
     <>
       <BrowserRouter>
+        <NavbarLayout></NavbarLayout>
+        <SideBarLayout></SideBarLayout>
+        <SearchOverLayLayout></SearchOverLayLayout>
         <Routes>
           <Route path='/' element={<HomePage></HomePage>} />
           <Route path='/password/reset/:token' element={<HomePage></HomePage>} />

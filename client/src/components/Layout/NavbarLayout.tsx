@@ -59,7 +59,7 @@ export const NavbarLayout = () => {
 
             {/* search overlay comes here  */}
             <button onClick={searchBarClickHandler}>
-             <Search></Search>
+             <Search className="cursor-pointer"></Search>
             </button>
 
             {/* user profile logo comes here */}
@@ -72,18 +72,6 @@ export const NavbarLayout = () => {
                 <ShoppingCart></ShoppingCart>
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-3 h-3 flex justify-center items-center p-2">5</span>
             </button>
-
-            {/* depending on whether the side bar is opened by the user or not 
-            we will show the below side bar on the half of the screen for this purpose  */}
-            {
-                isSideBarOpen ? <SideBarLayout></SideBarLayout> : null
-            }
-
-            {/* depending on whether the search bar is opened by the user or not 
-            we will show the below search bar on the half of the screen for this purpose  */}
-            {
-                isSearchPopupOpen ? <SearchOverLayLayout></SearchOverLayLayout> : null
-            }
         </div>
     ) 
 }
