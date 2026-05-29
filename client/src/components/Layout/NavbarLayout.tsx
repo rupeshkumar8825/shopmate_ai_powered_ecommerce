@@ -3,6 +3,7 @@
 import { Menu, Search, ShoppingCart, User } from "lucide-react"
 import { isAuthPopupOpenAtom,  isCartPopupOpenAtom,  isSearchPopupOpenAtom, isSideBarOpenAtom } from "../../recoil/atoms/popupAtom";
 import { useRecoilState } from "recoil";
+import { SideBarLayout } from "./SideBarLayout";
 
 export const NavbarLayout = () => {
 
@@ -74,9 +75,7 @@ export const NavbarLayout = () => {
             {/* depending on whether the side bar is opened by the user or not 
             we will show the below side bar on the half of the screen for this purpose  */}
             {
-                isSideBarOpen ? <div className="absolute border-2 border-red-500 ">
-
-                </div> : null
+                isSideBarOpen ? <SideBarLayout></SideBarLayout> : null
             }
         </div>
     ) 

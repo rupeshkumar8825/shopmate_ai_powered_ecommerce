@@ -16,13 +16,19 @@ export  interface RegisterPayload  {
 //     Admin = 1
 // }
 
+interface Avatar {
+    public_id : string,
+    url : string
+}
+
+
 export interface User {
     name: string;
     id: string;
     email: string;
     password: string;
     role: "User" | "Admin";
-    avatar: JSON | null;
+    avatar: Avatar | null;
     resetPasswordToken: string | null;
     resetPasswordExpires: Date | null;
     createdAt: Date
