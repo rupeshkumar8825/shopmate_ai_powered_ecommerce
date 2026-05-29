@@ -3,9 +3,9 @@
 // its like the function where we write code once and then can use this at multiple places
 
 import { useRecoilState, useSetRecoilState } from "recoil"
-import type { LoginPayload, RegisterPayload, UpdatePasswordPayload, UpdateProfilePayload } from "../types/auth.types"
+import type { ForgotPasswordPayload, LoginPayload, RegisterPayload, UpdatePasswordPayload, UpdateProfilePayload } from "../types/auth.types"
 import { authErrorAtom, isAuthenticatedAtom, isFetchingUserAtom, isPasswordChangingAtom, isUpdatingProfileAtom, isUserLoggingInAtom, isUserLoggingOutAtom, isUserRegisteringAtom, userAtom } from "../recoil/atoms/authAtom"
-import { fetchUserDetailsApi, loginUserApi, logoutUserApi, registerUserApi, updatePasswordApi, updateProfileApi } from "../api/authApi"
+import { fetchUserDetailsApi, forgotPasswordApi, loginUserApi, logoutUserApi, registerUserApi, updatePasswordApi, updateProfileApi } from "../api/authApi"
 
 
 // custom hook to handle all the auth related logics at a single place 
@@ -84,6 +84,18 @@ export const useAuth = () => {
         }
     }
 
+
+    const forgotPassword = async (payload : ForgotPasswordPayload) => {
+        setAuthError(null);
+        try{
+            // lets make an axios response here to send the forgot password email to the user
+            await forgotPasswordApi(payload);
+            // say everything went fine and we have successfully sent the forgot password email to the user 
+        }catch(err : any) {
+            setAuthError(err.message);
+        } 
+    }
+
     const updatePassword = async (payload : UpdatePasswordPayload) => {
         setAuthError(null);
         setIsPasswordChanging(true);
@@ -121,6 +133,8 @@ export const useAuth = () => {
         }
     }
 
+    
+
     const fetchUserDetails = async () => {
         setAuthError(null);
         setIsFetchingUser(true);
@@ -149,6 +163,7 @@ export const useAuth = () => {
         logoutUser, 
         updatePassword, 
         updateProfile, 
-        fetchUserDetails
+        fetchUserDetails,
+        forgotPassword
     }
 }

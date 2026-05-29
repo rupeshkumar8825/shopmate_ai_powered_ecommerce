@@ -1,6 +1,6 @@
 // all the apis related to user authentication comes here
 
-import type { ForgotPasswordPayload, LoginPayload, LoginResponse, LogoutPayload, LogoutResponse, RegisterPayload, RegisterResponse, ResetPasswordPayload, UpdatePasswordPayload, UpdateProfilePayload, UserDetailResponse } from "../types/auth.types"
+import type { ForgotPasswordPayload, ForgotPasswordResponse, LoginPayload, LoginResponse, LogoutPayload, LogoutResponse, RegisterPayload, RegisterResponse, ResetPasswordPayload, ResetPasswordResponse, UpdatePasswordPayload, UpdatePasswordResponse, UpdateProfilePayload, UpdateProfileResponse, UserDetailResponse } from "../types/auth.types"
 import { getToken } from "../utils/tokenStorage";
 import axiosInstance from "./axiosInstance"
 
@@ -46,9 +46,11 @@ export const fetchUserDetailsApi = async () : Promise<UserDetailResponse> => {
 }
 
 
-export const forgotPasswordApi = async (payload : ForgotPasswordPayload) => {
+export const forgotPasswordApi = async (payload : ForgotPasswordPayload) : Promise<ForgotPasswordResponse> => {
     const token = getToken();
-    const forgotPasswordResponse = await axiosInstance.post("/v1/auth/password/password/forgot", payload, {
+    const forgotPasswordResponse = await axiosInstance.post(`/v1/auth/password/password/forgot?frontendUrl=${payload.frontEndUrl}`, {
+        email : payload.email
+    }, {
         headers : {
             Authorization : `Bearer ${token}`
         }
@@ -60,7 +62,10 @@ export const forgotPasswordApi = async (payload : ForgotPasswordPayload) => {
 
 
 
-export const resetPasswordApi = async (payload : ResetPasswordPayload) => {
+export const resetPasswordApi = async (payload : ResetPasswordPayload) : Promise<ResetPasswordResponse> => {
+    // note that the token that we are sending will not be the one which we usually send in the header for authentication 
+    // but this token will be sent as a part of the url itself and this token will be used by the backend server to identify 
+    // the user and then change the password for that user
     const resetPasswordResponse = await axiosInstance.put(`/v1/auth/password/reset/${payload.token}`, {
         password : payload.newPassword, 
         confirmPassword : payload.confirmPassword
@@ -73,7 +78,7 @@ export const resetPasswordApi = async (payload : ResetPasswordPayload) => {
 
 
 
-export const updatePasswordApi = async (payload : UpdatePasswordPayload) => {
+export const updatePasswordApi = async (payload : UpdatePasswordPayload) : Promise<UpdatePasswordResponse> => {
     const token = getToken();
     const updatePasswordResponse = await axiosInstance.put("/v1/auth/password/update", {
         password : payload.currentPassword, 
@@ -91,7 +96,7 @@ export const updatePasswordApi = async (payload : UpdatePasswordPayload) => {
 
 
 
-export const updateProfileApi = async (payload : UpdateProfilePayload) => {
+export const updateProfileApi = async (payload : UpdateProfilePayload) : Promise<UpdateProfileResponse> => {
     const token = getToken();
     const formData = new FormData();
     if(payload.name) formData.append("name", payload.name);

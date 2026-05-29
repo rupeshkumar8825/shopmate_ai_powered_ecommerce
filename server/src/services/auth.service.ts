@@ -268,7 +268,7 @@ export class AuthService {
         const hashedPassowrd = bcrypt.hash(newPassword, 10);
 
         //everything passed lets now try to update the password of the user
-        await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where : {id : user.id},
             data : {
                 password : newPassword
@@ -279,7 +279,7 @@ export class AuthService {
         // ideally we should also delete the resettokenpassword and resettokenpasswordexpires
         // from the database but we can ignore that because anyways it is not harming us
         // say everything went fine and simply return from here for this purpose
-        return;
+        return updatedUser;
 
     }
 

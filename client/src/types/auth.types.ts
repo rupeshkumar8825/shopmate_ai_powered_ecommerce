@@ -104,7 +104,8 @@ export interface ResetPasswordPayload {
 
 export interface ResetPasswordResponse {
     success : boolean, 
-    message : string
+    message : string, 
+    user : User
 }
 
 

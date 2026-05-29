@@ -119,13 +119,14 @@ export class AuthController {
         const resetPasswordToken = request.params.token as string;
 
         // call the service layer function by passing this token and also the passwords
-        AuthService.resetPasswordService(resetPasswordToken, password, confirmPassword)
+        const updatedUserDetails = await AuthService.resetPasswordService(resetPasswordToken, password, confirmPassword)
 
         // if control reaches then we know that the password change is now successfull 
         // hence lets return the positive response itself 
         response.status(StatusCodes.SUCCESS_200).json({
             success : true,
-            message : "Password successfully changed"
+            message : "Password successfully changed", 
+            user : updatedUserDetails
         })
     }
 
