@@ -3,9 +3,9 @@
 // its like the function where we write code once and then can use this at multiple places
 
 import { useRecoilState, useSetRecoilState } from "recoil"
-import type { ForgotPasswordPayload, LoginPayload, RegisterPayload, UpdatePasswordPayload, UpdateProfilePayload } from "../types/auth.types"
+import type { ForgotPasswordPayload, LoginPayload, RegisterPayload, ResetPasswordPayload, UpdatePasswordPayload, UpdateProfilePayload } from "../types/auth.types"
 import { authErrorAtom, isAuthenticatedAtom, isFetchingUserAtom, isPasswordChangingAtom, isUpdatingProfileAtom, isUserLoggingInAtom, isUserLoggingOutAtom, isUserRegisteringAtom, userAtom } from "../recoil/atoms/authAtom"
-import { fetchUserDetailsApi, forgotPasswordApi, loginUserApi, logoutUserApi, registerUserApi, updatePasswordApi, updateProfileApi } from "../api/authApi"
+import { fetchUserDetailsApi, forgotPasswordApi, loginUserApi, logoutUserApi, registerUserApi, resetPasswordApi , updatePasswordApi, updateProfileApi } from "../api/authApi"
 
 
 // custom hook to handle all the auth related logics at a single place 
@@ -96,6 +96,22 @@ export const useAuth = () => {
         } 
     }
 
+    const resetPassword = async (payload : ResetPasswordPayload) => {
+        setAuthError(null);
+        try{
+            // lets make an axios response here to reset the password of the user
+            await resetPasswordApi(payload);
+            // say everything went fine and we have successfully reset the password of the user 
+             // now we can simply logout the user from the application for security purposes
+             await logoutUserApi({});
+             setUser(null);
+             setIsAuthenticated(false);
+        }catch(err : any) {
+            setAuthError(err.message);
+        } 
+    }
+
+
     const updatePassword = async (payload : UpdatePasswordPayload) => {
         setAuthError(null);
         setIsPasswordChanging(true);
@@ -133,7 +149,7 @@ export const useAuth = () => {
         }
     }
 
-    
+
 
     const fetchUserDetails = async () => {
         setAuthError(null);
@@ -164,6 +180,7 @@ export const useAuth = () => {
         updatePassword, 
         updateProfile, 
         fetchUserDetails,
-        forgotPassword
+        forgotPassword, 
+        resetPassword
     }
 }

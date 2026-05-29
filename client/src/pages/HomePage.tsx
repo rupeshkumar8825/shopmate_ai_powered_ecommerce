@@ -6,7 +6,7 @@ import { NewsLetterSectionComponent } from "../components/Home/NewsLetterSection
 import { NavbarLayout } from "../components/Layout/NavbarLayout";
 
 export const HomePage = () => {
-    return <>
+    return(
         <div className="">
             {/* Welcome to the home page. */}
             <NavbarLayout></NavbarLayout>
@@ -15,5 +15,5 @@ export const HomePage = () => {
             <FeatureSectionComponent></FeatureSectionComponent>
             <NewsLetterSectionComponent></NewsLetterSectionComponent>
         </div>
-    </>
+    )
 }
