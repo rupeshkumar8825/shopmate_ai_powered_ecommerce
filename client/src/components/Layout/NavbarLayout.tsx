@@ -4,14 +4,15 @@ import { Menu, Search, ShoppingCart, User } from "lucide-react"
 import { isAuthPopupOpenAtom,  isCartPopupOpenAtom,  isSearchPopupOpenAtom, isSideBarOpenAtom } from "../../recoil/atoms/popupAtom";
 import { useRecoilState } from "recoil";
 import { SideBarLayout } from "./SideBarLayout";
+import { SearchOverLayLayout } from "./SearchOverLayLayout";
 
 export const NavbarLayout = () => {
 
     // all recoil related states of this component comes here 
     const [isSideBarOpen, setIsSideBarOpen] = useRecoilState(isSideBarOpenAtom);
-    const [isSearchBarOpen, setIsSearchBarOpen] = useRecoilState(isSearchPopupOpenAtom);
     const [isUserAuthOpen, setIsUserAuthOpen] = useRecoilState(isAuthPopupOpenAtom);
     const [isCartPopupOpen, setIsCartPopupOpen] = useRecoilState(isCartPopupOpenAtom);
+    const [isSearchPopupOpen, setIsSearchPopupOpen] = useRecoilState(isSearchPopupOpenAtom);
 
     // states related to this component comes here 
 
@@ -21,7 +22,7 @@ export const NavbarLayout = () => {
     }
      
     const searchBarClickHandler = () => {
-        setIsSearchBarOpen(!isSearchBarOpen)
+        setIsSearchPopupOpen(!isSearchPopupOpen)
     }
 
     const userAuthProfileClickHandler = () => {
@@ -76,6 +77,12 @@ export const NavbarLayout = () => {
             we will show the below side bar on the half of the screen for this purpose  */}
             {
                 isSideBarOpen ? <SideBarLayout></SideBarLayout> : null
+            }
+
+            {/* depending on whether the search bar is opened by the user or not 
+            we will show the below search bar on the half of the screen for this purpose  */}
+            {
+                isSearchPopupOpen ? <SearchOverLayLayout></SearchOverLayLayout> : null
             }
         </div>
     ) 
