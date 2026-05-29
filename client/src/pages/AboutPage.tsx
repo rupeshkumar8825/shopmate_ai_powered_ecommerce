@@ -25,7 +25,7 @@ export const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pt-20">
+    <div className="min-h-screen bg-background-500 pt-20 text-white">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-foreground mb-6">About ShopMate</h1>
@@ -36,7 +36,7 @@ export const AboutPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {values.map((value, index) => (
-            <div key={index} className="bg-secondary rounded-xl p-6 text-center">
+            <div key={index} className="bg-secondary rounded-xl p-6 text-center bg-component-background-500">
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
                 <value.icon className="w-8 h-8 text-primary" />
               </div>
@@ -46,7 +46,7 @@ export const AboutPage = () => {
           ))}
         </div>
 
-        <div className="bg-secondary rounded-xl p-8">
+        <div className="bg-secondary rounded-xl p-8 bg-component-background-500">
           <h2 className="text-2xl font-bold text-foreground mb-4">Our Story</h2>
           <p className="text-muted-foreground leading-relaxed">
             Founded with a vision to make online shopping simple and enjoyable, ShopMate has grown 
