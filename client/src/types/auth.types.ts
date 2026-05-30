@@ -16,7 +16,7 @@ export  interface RegisterPayload  {
 //     Admin = 1
 // }
 
-interface Avatar {
+export interface Avatar {
     public_id : string,
     url : string
 }
