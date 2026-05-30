@@ -102,6 +102,13 @@ export const ProfilePanelLayout = () => {
         }
     }, [user])
 
+    // this we will only open when the user is logged in 
+    // or user is already authenticated for this purpose 
+    if(!isAuthenticated){
+        // say everything went fine 
+        return null;
+    }
+
     return (
         <div>
             {/* here comes the code to show the overlay across the screen */}

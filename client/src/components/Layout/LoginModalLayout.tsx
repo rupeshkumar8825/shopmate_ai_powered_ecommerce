@@ -6,7 +6,7 @@ import { isAuthPopupOpenAtom } from "../../recoil/atoms/popupAtom";
 import { useRecoilState } from "recoil";
 import { authErrorAtom, isFetchingUserAtom, isPasswordChangingAtom, isUpdatingProfileAtom, isUserLoggingInAtom, isUserLoggingOutAtom, isUserRegisteringAtom } from "../../recoil/atoms/authAtom";
 import { useEffect, useState } from "react";
-import { AuthActionType, type ForgotPasswordPayload, type LoginPayload, type RegisterPayload } from "../../types/auth.types";
+import { AuthActionType, type ForgotPasswordPayload, type LoginPayload, type RegisterPayload, type ResetPasswordPayload } from "../../types/auth.types";
 
 
 export interface LoginFormData {
@@ -29,7 +29,7 @@ export const LoginModalLayout = () => {
         confirmPassword : ""
     });
 
-    const { user, isAuthenticated, loginUser, registerUser, forgotPassword } = useAuth();
+    const { user, isAuthenticated, loginUser, registerUser, forgotPassword, resetPassword } = useAuth();
 
 
     // all the recoil states related to this component comes here
@@ -75,11 +75,21 @@ export const LoginModalLayout = () => {
                     frontEndUrl : `${window.location.origin}/password/reset`
                 }
                 forgotPassword(payload);
+                // lets change the state from forgot_password to sign in now 
+                setLoginModalLayoutMode(AuthActionType.SIGNIN);
+                //toggle the auth popup 
+                setIsAuthPopupOpen(!isAuthPopUpOpen);
                 break;
             }
 
             case AuthActionType.RESET_PASSWORD : {
                 // call the reset password function from the useAuth hook for this purpose
+                const payload : ResetPasswordPayload = {
+                    token : location.pathname.split("/").pop() || "",
+                    newPassword : formData.password,
+                    confirmPassword : formData.confirmPassword
+                }
+                resetPassword(payload);
                 break;
             }
         }
@@ -114,22 +124,39 @@ export const LoginModalLayout = () => {
 
     // all other logics related to this component comes here 
 
+    // if the user is already logged in then we will now show this login page 
+    if(isAuthenticated || user) {
+        return null;
+    }
+
+    let loading = isUserLoggingIn || isUserRegistering || isPasswordChanging;
+
+
+
     return(
-        <div className="border-2 border-black fixed top-0 right-0 w-[40%] h-full shadow-lg z-50 transform translate-x-0 transition-transform duration-300 ease-in-out bg-neutral-200 flex flex-col justify-center items-center gap-5">
-            {/* heading of the login modal comes here */}
-            <h1 className="text-3xl text-center">Login to your account</h1>
+        <div>
+            {/* overlay of the login payload comes here  */}
+            <div onClick={() => setIsAuthPopupOpen(false)} className={`fixed top-0 right-0 w-full h-full bg-black/50 bg-opacity-50 z-40  ${isAuthPopUpOpen ? "block" : "hidden"}`}></div>
+            
+            <div className={`border-2 border-white fixed top-0 right-0 w-[40%] h-full bg-neutral-300 shadow-lg z-50 transform ${isAuthPopUpOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-center items-center gap-10`}>
+                <div className=" flex flex-col justify-center items-center gap-10  bg-neutral-200 p-10 rounded-lg">
 
-            {/* form for login comes here */}
-            <form className="flex flex-col gap-5">
-                <input type="email" placeholder="Email" className="border border-neutral-500 p-2" />
-                <input type="password" placeholder="Password" className="border border-neutral-500 p-2" />
+                    {/* heading of the login modal comes here */}
+                    <h1 className="text-3xl text-center">Login to your account</h1>
 
-                {/* button to submit the form comes here */}
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">Login</button>
-            </form>
+                    {/* form for login comes here */}
+                    <form className="flex flex-col gap-5">
+                        <input type="email" placeholder="Email" className="border border-neutral-500 p-2" />
+                        <input type="password" placeholder="Password" className="border border-neutral-500 p-2" />
 
-            {/* option to redirect to the registration page comes here */}
-            <p className="text-center">Don't have an account? <a href="/register" className="text-blue-500">Register here</a></p>
+                        {/* button to submit the form comes here */}
+                        <button type="submit" className="bg-neutral-300  p-2 rounded-md">Login</button>
+                    </form>
+
+                    {/* option to redirect to the registration page comes here */}
+                    <p className="text-center">Don't have an account? <a href="/register" className="text-blue-500">Register here</a></p>
+                </div>
+            </div>
         </div>
     )
 }

@@ -14,6 +14,7 @@ import { SideBarLayout } from './components/Layout/SideBarLayout'
 import { SearchOverLayLayout } from './components/Layout/SearchOverLayLayout'
 import { CartSidebar } from './components/Layout/CartSidebar'
 import { ProfilePanelLayout } from './components/Layout/ProfilePanelLayout'
+import { LoginModalLayout } from './components/Layout/LoginModalLayout'
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <SearchOverLayLayout></SearchOverLayLayout>
         <CartSidebar></CartSidebar>
         <ProfilePanelLayout></ProfilePanelLayout>
+        <LoginModalLayout></LoginModalLayout>
         <Routes>
           <Route path='/' element={<HomePage></HomePage>} />
           <Route path='/password/reset/:token' element={<HomePage></HomePage>} />
