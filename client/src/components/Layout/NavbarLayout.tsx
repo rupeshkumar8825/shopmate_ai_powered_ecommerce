@@ -64,12 +64,12 @@ export const NavbarLayout = () => {
 
             {/* user profile logo comes here */}
             <button onClick={userAuthProfileClickHandler}>
-                <User></User>
+                <User className="cursor-pointer"></User>
             </button>
 
             {/* cart comes here  */}
             <button onClick={cartClickHandler} className="relative">
-                <ShoppingCart></ShoppingCart>
+                <ShoppingCart className="cursor-pointer"></ShoppingCart>
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-3 h-3 flex justify-center items-center p-2">5</span>
             </button>
         </div>
