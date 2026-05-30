@@ -139,3 +139,14 @@ export interface UpdateProfileResponse {
     user : User
 }
 
+
+
+export const AuthActionType = {
+    SIGNIN: "SIGNIN",
+    SIGNUP: "SIGNUP",
+    FORGOT_PASSWORD: "FORGOT_PASSWORD",
+    RESET_PASSWORD: "RESET_PASSWORD",
+} as const;
+
+// Recreate the type if needed
+export type AuthActionType = typeof AuthActionType[keyof typeof AuthActionType];
