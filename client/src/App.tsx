@@ -13,6 +13,7 @@ import { NavbarLayout } from './components/Layout/NavbarLayout'
 import { SideBarLayout } from './components/Layout/SideBarLayout'
 import { SearchOverLayLayout } from './components/Layout/SearchOverLayLayout'
 import { CartSidebar } from './components/Layout/CartSidebar'
+import { ProfilePanelLayout } from './components/Layout/ProfilePanelLayout'
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <SideBarLayout></SideBarLayout>
         <SearchOverLayLayout></SearchOverLayLayout>
         <CartSidebar></CartSidebar>
+        <ProfilePanelLayout></ProfilePanelLayout>
         <Routes>
           <Route path='/' element={<HomePage></HomePage>} />
           <Route path='/password/reset/:token' element={<HomePage></HomePage>} />
