@@ -19,16 +19,23 @@ export const registerUserApi  = async (payload : RegisterPayload) : Promise<Regi
     }
     
     // say everything went fine 
-    return registerUserResponse.data;
+    return registerUserResponse.data as RegisterResponse;
 }
 
 
 
 
 export const loginUserApi = async (payload : LoginPayload) : Promise<LoginResponse> => {
-    console.log("teh payload that we are sending for login is : \n", payload)
     const loginUserResponse = await axiosInstance.post("/v1/auth/login", payload);
-    console.log("the login user response that we got from the server side is as follows\n", loginUserResponse)
+
+    if(!loginUserResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    if(!loginUserResponse.data.user || !loginUserResponse.data.token) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
     return loginUserResponse.data as LoginResponse
 }
 
@@ -37,7 +44,11 @@ export const loginUserApi = async (payload : LoginPayload) : Promise<LoginRespon
 
 export const logoutUserApi = async (payload : LogoutPayload) : Promise<LogoutResponse> => {
     const logoutUserResponse = await axiosInstance.post("/v1/auth/logout", payload);
-    console.log("The response from the backend side that we got is as follows \n", logoutUserResponse);
+
+    if(!logoutUserResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
     return logoutUserResponse.data as LogoutResponse
 } 
 
@@ -45,10 +56,20 @@ export const logoutUserApi = async (payload : LogoutPayload) : Promise<LogoutRes
 
 export const fetchUserDetailsApi = async () : Promise<UserDetailResponse> => {
     const userDetailsResponse = await axiosInstance.get("/v1/auth/me");
-    console.log("inside the fetchuser details api actual api call", userDetailsResponse);
+
+    if(!userDetailsResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    if(!userDetailsResponse.data.user) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
     // say everything went fine 
-    return userDetailsResponse.data;
+    return userDetailsResponse.data as UserDetailResponse;
 }
+
+
 
 
 export const forgotPasswordApi = async (payload : ForgotPasswordPayload) : Promise<ForgotPasswordResponse> => {
@@ -56,8 +77,12 @@ export const forgotPasswordApi = async (payload : ForgotPasswordPayload) : Promi
         email : payload.email
     });
 
+    if(!forgotPasswordResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
     // say everything went fine 
-    return forgotPasswordResponse.data;
+    return forgotPasswordResponse.data as ForgotPasswordResponse;
 } 
 
 
@@ -71,8 +96,16 @@ export const resetPasswordApi = async (payload : ResetPasswordPayload) : Promise
         confirmPassword : payload.confirmPassword
     });
 
+    if(!resetPasswordResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    if(!resetPasswordResponse.data.user) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
     // say everything went fine 
-    return resetPasswordResponse.data;
+    return resetPasswordResponse.data as ResetPasswordResponse;
 }
 
 
@@ -85,9 +118,15 @@ export const updatePasswordApi = async (payload : UpdatePasswordPayload) : Promi
         confirmPassword : payload.confirmPassword
     });
 
+    if(!updatePasswordResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
     // say everything went fine 
-    return updatePasswordResponse.data;
+    return updatePasswordResponse.data as UpdatePasswordResponse;
 }
+
+
 
 
 
@@ -99,7 +138,16 @@ export const updateProfileApi = async (payload : UpdateProfilePayload) : Promise
 
     const updateProfileResponse = await axiosInstance.put("/v1/auth/profile/update", formData);
 
+    // lets check the received a valid response or not for this purpose 
+    if(!updateProfileResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    if(!updateProfileResponse.data.user) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
     // say everything went fine 
-    return updateProfileResponse.data;
+    return updateProfileResponse.data as UpdateProfileResponse;
 }
 
