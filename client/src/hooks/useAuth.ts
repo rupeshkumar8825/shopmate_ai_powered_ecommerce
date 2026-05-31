@@ -6,12 +6,16 @@ import { useRecoilState, useSetRecoilState } from "recoil"
 import type { ForgotPasswordPayload, LoginPayload, RegisterPayload, ResetPasswordPayload, UpdatePasswordPayload, UpdateProfilePayload } from "../types/auth.types"
 import { authErrorAtom, isAuthenticatedAtom, isFetchingUserAtom, isPasswordChangingAtom, isUpdatingProfileAtom, isUserLoggingInAtom, isUserLoggingOutAtom, isUserRegisteringAtom, userAtom } from "../recoil/atoms/authAtom"
 import { fetchUserDetailsApi, forgotPasswordApi, loginUserApi, logoutUserApi, registerUserApi, resetPasswordApi , updatePasswordApi, updateProfileApi } from "../api/authApi"
+import type { ParsedApiError } from "../types/error.types"
+import { globalAxiosErrorHandler, isSessionExpired } from "../error/globalAxiosHandler"
+import { useNavigate } from "react-router-dom"
 
 
 // custom hook to handle all the auth related logics at a single place 
 // this is one of the hooks in the hook layer of the frontend application 
 // this will interact with the atoms layer and the api layer too 
 export const useAuth = () => {
+    const navigate = useNavigate()
     // all the recoil related states will come here
     const [user, setUser] = useRecoilState(userAtom)
     const [isAuthenticated, setIsAuthenticated] = useRecoilState(isAuthenticatedAtom)
@@ -40,7 +44,8 @@ export const useAuth = () => {
             setUser(loginResponse.user);
             setIsAuthenticated(true);
         }catch(err : any) {
-            setAuthError(err.message);
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            setAuthError(parsedErrorResponse.message);
         } finally {
             // in the finally block we will set the isUserLoggingIn to false 
             setIsUserLoggingIn(false);
@@ -59,7 +64,8 @@ export const useAuth = () => {
              setUser(registerResponse.user);
              setIsAuthenticated(true);
         }catch(err : any) {
-            setAuthError(err.message);
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            setAuthError(parsedErrorResponse.message);
         } finally {
             setIsUserRegistering(false);
         }
@@ -72,15 +78,18 @@ export const useAuth = () => {
         setIsUserLoggingOut(true);
         try{
             // lets make an axios response here to logout the user from the application
-            console.log("Going to make the logout request to the backend server")
             await logoutUserApi({});
-            console.log("Completed the logout api and came back in to the hooks layer")
             // say everything went fine and we have successfully logged out the user 
             // now we need to set the user details in the recoil state to null and also set the isAuthenticated to false 
             setUser(null);
             setIsAuthenticated(false);
         }catch(err : any) {
-            setAuthError(err.message);
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err);
+            setAuthError(parsedErrorResponse.message);
+            // even though we have got an error while logging out but still 
+            // lets hypothetical log out the user from the website 
+            setIsAuthenticated(false)
+            setUser(null);
         } finally {
             setIsUserLoggingOut(false);
         }
@@ -94,9 +103,11 @@ export const useAuth = () => {
             await forgotPasswordApi(payload);
             // say everything went fine and we have successfully sent the forgot password email to the user 
         }catch(err : any) {
-            setAuthError(err.message);
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            setAuthError(parsedErrorResponse.message);
         } 
     }
+
 
     const resetPassword = async (payload : ResetPasswordPayload) => {
         setAuthError(null);
@@ -109,7 +120,8 @@ export const useAuth = () => {
              setUser(null);
              setIsAuthenticated(false);
         }catch(err : any) {
-            setAuthError(err.message);
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            setAuthError(parsedErrorResponse.message);
         } 
     }
 
@@ -126,7 +138,8 @@ export const useAuth = () => {
              setUser(null);
              setIsAuthenticated(false);
         }catch(err : any) {
-            setAuthError(err.message);
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            setAuthError(parsedErrorResponse.message);
         } finally {
             setIsPasswordChanging(false);
         }
@@ -145,6 +158,15 @@ export const useAuth = () => {
              // now we need to set the user details in the recoil state with the updated user details 
              setUser(updateProfileResponse.user);
         }catch(err : any) {
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            if(isSessionExpired(parsedErrorResponse)) {
+                // this means that the user has logged out
+                setUser(null);
+                setIsAuthenticated(false)
+                // then redirect user to the login page 
+                navigate("/")
+            }
+            setAuthError(parsedErrorResponse.message);
             setAuthError(err.message);
         } finally {
             setIsUpdatingProfile(false);
@@ -167,10 +189,14 @@ export const useAuth = () => {
             setUser(userDetailsResponse.user);
             setIsAuthenticated(true);
         }catch(err : any) {
-            console.log("inside the exception while fetching the details of the user for this purpose", err.response)
+            const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
+            if(isSessionExpired(parsedErrorResponse)) {
+                // this means that the user session expired. 
+                setUser(null);
+                setIsAuthenticated(false);
+                navigate("/")                
+            }
             setAuthError(err.message);
-            setUser(null);
-            setIsAuthenticated(false);
         } finally {
             setIsFetchingUser(false);
         }

@@ -89,3 +89,16 @@ export const globalAxiosErrorHandler = (error : any) : ParsedApiError => {
     }
 
 }
+
+
+export const isSessionExpired = (parsedErrorResponse : ParsedApiError) => {
+    if(parsedErrorResponse.uniqueCode === "TOKEN_EXPIRED" && parsedErrorResponse.statusCode
+        && parsedErrorResponse.statusCode === 401) {
+            // this is now confirmed that this is the logout or session expired scenario
+            // say everything went fine 
+            return true;
+    }
+
+    // else this error is not related to logout or session expired 
+    return false;
+}
