@@ -53,6 +53,7 @@ export const ProfilePanelLayout = () => {
     const logoutHandler = async () => {
         // we just need to hit call the logout function already 
         // implemented in the useAuth hook for this purpose
+        console.log("Received the logout request from the user itself");
         await logoutUser();
     }
 
@@ -101,6 +102,11 @@ export const ProfilePanelLayout = () => {
             setAvatar(user.avatar?.public_id || "");
         }
     }, [user])
+
+    useEffect(() => {
+    // console.log("isauthenticated value checkpoint - 5 inside profile panel \n", isAuthenticated)
+
+    }, [isAuthenticated])
 
     // this we will only open when the user is logged in 
     // or user is already authenticated for this purpose 
@@ -161,6 +167,11 @@ export const ProfilePanelLayout = () => {
 
                     {/* here comes the button to update the profile */}
                     <button onClick={handleUpdateProfile} className="bg-blue-500 text-white p-2 rounded-md">Update Profile</button>
+                </div>
+
+                {/* button to logout from the website */}
+                <div>
+                    <button className="px-3 py-2 bg-neutral-300" onClick={logoutHandler}>Logout</button>
                 </div>
 
             </div>

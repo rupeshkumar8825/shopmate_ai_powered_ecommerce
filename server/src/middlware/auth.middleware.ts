@@ -26,7 +26,7 @@ export function authMiddleware (request : Request, response : Response, next : N
     if(!token)
     {
         // token was not found hence lets throw an error here
-        throw new AppError("Token was not found", StatusCodes.BAD_REQUEST_400);
+        throw new AppError("Token was not found", StatusCodes.NOT_AUTHORIZED_401, "TOKEN_EXPIRED");
     }
 
     // otherwise lets decode this token and then try to get the user information from this 

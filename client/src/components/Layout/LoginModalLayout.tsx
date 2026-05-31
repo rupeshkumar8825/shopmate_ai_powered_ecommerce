@@ -45,7 +45,9 @@ export const LoginModalLayout = () => {
 
 
     // all the handlers of the component comes here
-    const handleSubmit = () => {
+    const handleSubmit = (event : React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log("inside the submit button ")
         // based on the loginModalLayoutMode we will decide which action to perform
         switch(loginModalLayoutMode) {
             case AuthActionType.SIGNIN : {
@@ -54,6 +56,7 @@ export const LoginModalLayout = () => {
                     email: formData.email,
                     password: formData.password
                 }
+                console.log("Inside the form submit. Going to hit the login api. ")
                 loginUser(payload);
                 break;
             }

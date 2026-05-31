@@ -15,8 +15,34 @@ import { SearchOverLayLayout } from './components/Layout/SearchOverLayLayout'
 import { CartSidebar } from './components/Layout/CartSidebar'
 import { ProfilePanelLayout } from './components/Layout/ProfilePanelLayout'
 import { LoginModalLayout } from './components/Layout/LoginModalLayout'
+import { useEffect } from 'react'
+import { useAuth } from './hooks/useAuth'
 
 function App() {
+  const {fetchUserDetails, isAuthenticated, user } = useAuth()
+  // whenever this component renders then we will try to fetch the user details 
+  useEffect(() => {
+    console.log("isauthenticated value checkpoint - 1 \n", isAuthenticated)
+    fetchUserDetails()
+    console.log("isauthenticated value checkpoint - 2 \n", isAuthenticated)
+    // console.log("the value of the user is as follows \n", user)
+  }, [])
+
+  useEffect(() => {
+    console.log("it seems that the user has changed. The updated user details are : \n", user)
+    console.log("isauthenticated value checkpoint - 3 \n", isAuthenticated)
+  }, [user])
+
+  useEffect(() => {
+    console.log("isauthenticated value checkpoint - 4 \n", isAuthenticated)
+  }, [isAuthenticated])
+
+
+  // check if the app is fetching the user and user is null 
+  // TODO : add logic for adding a loading until the user details are being fetched
+  if(isAuthenticated && !user){
+    // this means that the app is fetching the details of the user
+  }
 
   return (
     <>

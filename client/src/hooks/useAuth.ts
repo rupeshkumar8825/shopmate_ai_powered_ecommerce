@@ -72,7 +72,9 @@ export const useAuth = () => {
         setIsUserLoggingOut(true);
         try{
             // lets make an axios response here to logout the user from the application
+            console.log("Going to make the logout request to the backend server")
             await logoutUserApi({});
+            console.log("Completed the logout api and came back in to the hooks layer")
             // say everything went fine and we have successfully logged out the user 
             // now we need to set the user details in the recoil state to null and also set the isAuthenticated to false 
             setUser(null);
@@ -159,10 +161,13 @@ export const useAuth = () => {
             // we will get the user details in the response 
             const userDetailsResponse = await fetchUserDetailsApi();
             // say everything went fine and we have successfully fetched the details of the user
-             // now we need to set the user details in the recoil state with the fetched user details and also set the isAuthenticated to true 
-             setUser(userDetailsResponse.user);
-             setIsAuthenticated(true);
+            // now we need to set the user details in the recoil state with the fetched user details and also set the isAuthenticated to true 
+            // console.log("Inside fetch user details api in use auth : - \n", userDetailsResponse)
+            // if(userDetailsResponse.user)
+            setUser(userDetailsResponse.user);
+            setIsAuthenticated(true);
         }catch(err : any) {
+            console.log("inside the exception while fetching the details of the user for this purpose", err.response)
             setAuthError(err.message);
             setUser(null);
             setIsAuthenticated(false);

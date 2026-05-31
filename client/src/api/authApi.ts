@@ -1,7 +1,6 @@
 // all the apis related to user authentication comes here
 
 import type { ForgotPasswordPayload, ForgotPasswordResponse, LoginPayload, LoginResponse, LogoutPayload, LogoutResponse, RegisterPayload, RegisterResponse, ResetPasswordPayload, ResetPasswordResponse, UpdatePasswordPayload, UpdatePasswordResponse, UpdateProfilePayload, UpdateProfileResponse, UserDetailResponse } from "../types/auth.types"
-import { getToken } from "../utils/tokenStorage";
 import axiosInstance from "./axiosInstance"
 
 
@@ -19,7 +18,9 @@ export const registerUserApi  = async (payload : RegisterPayload) : Promise<Regi
 
 
 export const loginUserApi = async (payload : LoginPayload) : Promise<LoginResponse> => {
+    console.log("teh payload that we are sending for login is : \n", payload)
     const loginUserResponse = await axiosInstance.post("/v1/auth/login", payload);
+    console.log("the login user response that we got from the server side is as follows\n", loginUserResponse)
     return loginUserResponse.data as LoginResponse
 }
 
@@ -28,32 +29,23 @@ export const loginUserApi = async (payload : LoginPayload) : Promise<LoginRespon
 
 export const logoutUserApi = async (payload : LogoutPayload) : Promise<LogoutResponse> => {
     const logoutUserResponse = await axiosInstance.post("/v1/auth/logout", payload);
+    console.log("The response from the backend side that we got is as follows \n", logoutUserResponse);
     return logoutUserResponse.data as LogoutResponse
 } 
 
 
 
 export const fetchUserDetailsApi = async () : Promise<UserDetailResponse> => {
-    const token = getToken();
-    const userDetailsResponse = await axiosInstance.get("/v1/auth/me", {
-        headers : {
-            Authorization : `Bearer ${token}`
-        }
-    });
-
+    const userDetailsResponse = await axiosInstance.get("/v1/auth/me");
+    console.log("inside the fetchuser details api actual api call", userDetailsResponse);
     // say everything went fine 
     return userDetailsResponse.data;
 }
 
 
 export const forgotPasswordApi = async (payload : ForgotPasswordPayload) : Promise<ForgotPasswordResponse> => {
-    const token = getToken();
     const forgotPasswordResponse = await axiosInstance.post(`/v1/auth/password/password/forgot?frontendUrl=${payload.frontEndUrl}`, {
         email : payload.email
-    }, {
-        headers : {
-            Authorization : `Bearer ${token}`
-        }
     });
 
     // say everything went fine 
@@ -79,15 +71,10 @@ export const resetPasswordApi = async (payload : ResetPasswordPayload) : Promise
 
 
 export const updatePasswordApi = async (payload : UpdatePasswordPayload) : Promise<UpdatePasswordResponse> => {
-    const token = getToken();
     const updatePasswordResponse = await axiosInstance.put("/v1/auth/password/update", {
         password : payload.currentPassword, 
         newPassword : payload.newPassword, 
         confirmPassword : payload.confirmPassword
-    }, {
-        headers : {
-            Authorization : `Bearer ${token}`
-        }
     });
 
     // say everything went fine 
@@ -97,18 +84,12 @@ export const updatePasswordApi = async (payload : UpdatePasswordPayload) : Promi
 
 
 export const updateProfileApi = async (payload : UpdateProfilePayload) : Promise<UpdateProfileResponse> => {
-    const token = getToken();
     const formData = new FormData();
     if(payload.name) formData.append("name", payload.name);
     if(payload.email) formData.append("email", payload.email);
     if(payload.avatar) formData.append("avatar", payload.avatar);
 
-    const updateProfileResponse = await axiosInstance.put("/v1/auth/profile/update", formData, {
-        headers : {
-            Authorization : `Bearer ${token}`,
-            "Content-Type" : "multipart/form-data"
-        }
-    });
+    const updateProfileResponse = await axiosInstance.put("/v1/auth/profile/update", formData);
 
     // say everything went fine 
     return updateProfileResponse.data;

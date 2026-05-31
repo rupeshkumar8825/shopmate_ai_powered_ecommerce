@@ -7,10 +7,12 @@ import { StatusCodes } from "../error/statusCodes";
 
 class AppError extends Error {
     statusCode : number
-    constructor(message : string, statusCode : number)
+    uniqueCode : string
+    constructor(message : string, statusCode : number, uniqueCode : string = "")
     {
         super(message)
         this.statusCode = statusCode
+        this.uniqueCode = uniqueCode
     }
 }
 
@@ -24,7 +26,8 @@ export const ErrorHandler = (error : Error, request : Request, response: Respons
         // then simply we can return the message and the return code as it is
         return response.status(error.statusCode).json({
             success : "error", 
-            message : error.message
+            message : error.message, 
+            uniqueCode : error.uniqueCode
         });
     }
     else if(error instanceof PrismaClientKnownRequestError)
