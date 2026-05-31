@@ -143,7 +143,7 @@ export const LoginModalLayout = () => {
                 <div className=" flex flex-col justify-center items-center gap-10  bg-neutral-200 p-10 rounded-lg">
 
                     {/* heading of the login modal comes here */}
-                    <h1 className="text-3xl text-center">
+                    <h1 className="text-3xl text-center cursor-pointer">
                         {
                             loginModalLayoutMode === AuthActionType.RESET_PASSWORD ? "Reset Password"
                             : loginModalLayoutMode === AuthActionType.SIGNUP ?  "Create Account"
@@ -152,7 +152,7 @@ export const LoginModalLayout = () => {
                     </h1>
 
                     {/* Authentication related form comes here */}
-                    <form className="flex flex-col gap-5">
+                    <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
                         {/* full name - need to show this only for sign up */}
                         {
                             loginModalLayoutMode === AuthActionType.SIGNUP ? 
@@ -194,11 +194,13 @@ export const LoginModalLayout = () => {
                         {/* FORGOT PASSWORD : this forgot password button or link comes onlly in case of the signin itself */}
                         {
                             loginModalLayoutMode === AuthActionType.SIGNIN ? 
-                            <p className="text-right text-blue-500 text-sm" onClick={() => setLoginModalLayoutMode(AuthActionType.FORGOT_PASSWORD)}>
+                            <p className="text-right text-blue-500 text-sm cursor-pointer" onClick={() => setLoginModalLayoutMode(AuthActionType.FORGOT_PASSWORD)}>
                                 Forgot Password
                             </p> : null 
                             
                         }
+
+
                         {/* SUBMIT comes here. Please note that this button will disabled while isLoading flag is true  */}
                         <button type="submit" disabled={isLoading} className={`bg-neutral-300  p-2 rounded-md font-semibold ${isLoading? "opacity-70 cursor-not-allowed" : "hover:glow-on-hover"}`}>
                             {/* now based on the mode we need to show multiple text in the button for this purpose */}
@@ -222,14 +224,24 @@ export const LoginModalLayout = () => {
                             }
                         </button>
 
+                        {/* When the user is on the SignIn then we need to show the option to go to the SignUp page 
+                        and if the user is on the SignUp page then we need to show the option to go to the SignIn page */}
+                        {
+                            (loginModalLayoutMode === AuthActionType.SIGNIN || loginModalLayoutMode === AuthActionType.SIGNUP) ? 
+                            <div className="border-2 border-black flex justify-center items-center">
+                                <button type="button" onClick={() => loginModalLayoutMode === AuthActionType.SIGNIN ? setLoginModalLayoutMode(AuthActionType.SIGNUP) : setLoginModalLayoutMode(AuthActionType.SIGNIN)}>
+                                    {
+                                        loginModalLayoutMode === AuthActionType.SIGNIN ? <p>
+                                            Don't have an account? <span className="text-blue-500 cursor-pointer">Sign In</span>
+                                        </p>  : <p>
+                                            Already have an account? <span className="text-blue-500 cursor-pointer">Sign Up</span>
+                                        </p>
+                                    }
+                                </button>
+                            </div> : null
+                        }
                     </form>
-
-                    {/* Sign up Option - this we need to show only when the user is on Sign In Page */}
-                    {/* {
-                        loginModalLayoutMode === AuthActionType.SIGNIN ? 
-                        
-                    } */}
-                    <p className="text-center">Don't have an account? <a href="/register" className="text-blue-500">Register here</a></p>
+                    
                     
                 </div>
             </div>
