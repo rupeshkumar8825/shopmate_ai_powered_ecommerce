@@ -96,8 +96,9 @@ export class AuthController {
         // considering that the zod would have validated the data being sent from
         // the user/client is correct we will take the email and the frontendURL
         const email : string = request.body.email;
-        // const frontendURL : string = request.query;
-        const frontendURL = "";
+        const frontendURL : string = request.query.frontendUrl as string;
+        console.log("The payload that we got in forgotPassword is as follows\n", frontendURL, email)
+        // const frontendURL = request.body.frontEndUrl;
 
         // lets pass these arguments to the service layer function
         AuthService.forgotPasswordService(email, frontendURL);
@@ -117,7 +118,7 @@ export class AuthController {
         const confirmPassword = request.body.confirmPassword;
 
         const resetPasswordToken = request.params.token as string;
-
+        console.log("The values that we got from the frontend is ", password, confirmPassword, resetPasswordToken);
         // call the service layer function by passing this token and also the passwords
         const updatedUserDetails = await AuthService.resetPasswordService(resetPasswordToken, password, confirmPassword)
 

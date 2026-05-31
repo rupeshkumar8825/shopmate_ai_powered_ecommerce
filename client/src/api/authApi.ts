@@ -73,7 +73,7 @@ export const fetchUserDetailsApi = async () : Promise<UserDetailResponse> => {
 
 
 export const forgotPasswordApi = async (payload : ForgotPasswordPayload) : Promise<ForgotPasswordResponse> => {
-    const forgotPasswordResponse = await axiosInstance.post(`/v1/auth/password/password/forgot?frontendUrl=${payload.frontEndUrl}`, {
+    const forgotPasswordResponse = await axiosInstance.post(`/v1/auth/password/forgot?frontendUrl=${payload.frontEndUrl}`, {
         email : payload.email
     });
 
@@ -91,7 +91,7 @@ export const resetPasswordApi = async (payload : ResetPasswordPayload) : Promise
     // note that the token that we are sending will not be the one which we usually send in the header for authentication 
     // but this token will be sent as a part of the url itself and this token will be used by the backend server to identify 
     // the user and then change the password for that user
-    const resetPasswordResponse = await axiosInstance.put(`/v1/auth/password/reset/${payload.token}`, {
+    const resetPasswordResponse = await axiosInstance.post(`/v1/auth/password/reset/${payload.token}`, {
         password : payload.newPassword, 
         confirmPassword : payload.confirmPassword
     });

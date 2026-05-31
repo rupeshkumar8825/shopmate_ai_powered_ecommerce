@@ -111,7 +111,8 @@ export const useAuth = () => {
 
     const resetPassword = async (payload : ResetPasswordPayload) => {
         setAuthError(null);
-        try{
+        try{ 
+            console.log("The payload that we are sending for reset passsword to the backend\n", payload)
             // lets make an axios response here to reset the password of the user
             await resetPasswordApi(payload);
             // say everything went fine and we have successfully reset the password of the user 
@@ -122,6 +123,7 @@ export const useAuth = () => {
         }catch(err : any) {
             const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
             setAuthError(parsedErrorResponse.message);
+            console.log("The error that we got while hitting the reset password api is : \n", parsedErrorResponse.message);
         } 
     }
 
@@ -197,7 +199,7 @@ export const useAuth = () => {
                 // this means that the user session expired. 
                 setUser(null);
                 setIsAuthenticated(false);
-                navigate("/")                
+                // navigate("/")                
             }
             setAuthError(err.message);
         } finally {

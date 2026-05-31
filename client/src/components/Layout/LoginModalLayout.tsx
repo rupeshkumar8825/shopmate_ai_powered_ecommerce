@@ -19,7 +19,6 @@ export interface LoginFormData {
 
 export const LoginModalLayout = () => {
     const location = useLocation();
-    
 
     // all the component states comes here 
     const [loginModalLayoutMode, setLoginModalLayoutMode] = useState<AuthActionType>(AuthActionType.SIGNIN);
@@ -45,7 +44,7 @@ export const LoginModalLayout = () => {
 
 
     // all the handlers of the component comes here
-    const handleSubmit = (event : React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event : React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         console.log("inside the submit button ")
         // based on the loginModalLayoutMode we will decide which action to perform
@@ -57,7 +56,8 @@ export const LoginModalLayout = () => {
                     password: formData.password
                 }
                 console.log("Inside the form submit. Going to hit the login api. ")
-                loginUser(payload);
+                console.log(payload)
+                await loginUser(payload);
                 break;
             }
 
@@ -68,7 +68,7 @@ export const LoginModalLayout = () => {
                     email : formData.email,
                     password : formData.password
                 }
-                registerUser(payload);
+                await registerUser(payload);
                 break;
             }
 
@@ -76,9 +76,11 @@ export const LoginModalLayout = () => {
                 // call the forgot password function from the useAuth hook for this purpose
                 const payload : ForgotPasswordPayload = {
                     email : formData.email,
-                    frontEndUrl : `${window.location.origin}/password/reset`
+                    frontEndUrl : `${window.location.origin}`
                 }
-                forgotPassword(payload);
+
+                console.log("The payload that we are sending for forgot password is as follows\n", payload)
+                await forgotPassword(payload);
                 // lets change the state from forgot_password to sign in now 
                 setLoginModalLayoutMode(AuthActionType.SIGNIN);
                 //toggle the auth popup 
@@ -93,7 +95,7 @@ export const LoginModalLayout = () => {
                     newPassword : formData.password,
                     confirmPassword : formData.confirmPassword
                 }
-                resetPassword(payload);
+                await resetPassword(payload);
                 break;
             }
         }
@@ -121,6 +123,7 @@ export const LoginModalLayout = () => {
         // lets try to find out whether this is a reset password URL or not 
         if(location.pathname.includes("/password/reset")) {
             setLoginModalLayoutMode(AuthActionType.RESET_PASSWORD);
+            setIsAuthPopupOpen(true)
         }else {
             setLoginModalLayoutMode(AuthActionType.SIGNIN);
         }   
@@ -235,9 +238,9 @@ export const LoginModalLayout = () => {
                                 <button type="button" onClick={() => loginModalLayoutMode === AuthActionType.SIGNIN ? setLoginModalLayoutMode(AuthActionType.SIGNUP) : setLoginModalLayoutMode(AuthActionType.SIGNIN)}>
                                     {
                                         loginModalLayoutMode === AuthActionType.SIGNIN ? <p>
-                                            Don't have an account? <span className="text-blue-500 cursor-pointer">Sign In</span>
+                                            Don't have an account? <span className="text-blue-500 cursor-pointer">Sign Up</span>
                                         </p>  : <p>
-                                            Already have an account? <span className="text-blue-500 cursor-pointer">Sign Up</span>
+                                            Already have an account? <span className="text-blue-500 cursor-pointer">Sign In</span>
                                         </p>
                                     }
                                 </button>

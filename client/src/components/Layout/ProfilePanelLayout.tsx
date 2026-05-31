@@ -100,14 +100,14 @@ export const ProfilePanelLayout = () => {
             <div onClick={() => setIsAuthPopupOpen(false)} className={`fixed top-0 right-0 w-full h-full bg-black/50 bg-opacity-50 z-40 ${isAuthPopUpOpen? "block" : "hidden"} `}></div>
 
             {/* actual navbar starts here  */}
-            <div className={` bg-neutral-300 p-10 fixed top-0 right-0 w-[40%] h-full shadow-lg z-50 transform ${isAuthPopUpOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out bg-neutral-200 flex flex-col justify-start items-center gap-10`}>
+            <div className={` bg-neutral-300 px-10 py-2 fixed top-0 right-0 w-[40%] h-full shadow-lg z-50 transform ${isAuthPopUpOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out bg-neutral-200 flex flex-col justify-start items-center gap-10`}>
                 {/* heading of the profile section comes here */}
                 <div className="">
                     <h1 className="text-3xl text-center font-bold">Profile Panel</h1>
                 </div>
 
                 {/* user info section comes here */}
-                <div className="w-full flex flex-col justify-center items-center gap-10 p-10 rounded-lg bg-neutral-200">
+                <div className="w-full flex flex-col justify-center items-center gap-10 px-10 py-6 rounded-lg bg-neutral-200">
                     {/* heading for the user info section comes here */}
                     <h2 className="text-xl text-center font-semibold w-full">User Information</h2>
                     <div className="flex justify-center items-center w-full">
@@ -125,7 +125,7 @@ export const ProfilePanelLayout = () => {
 
 
                 {/* Profile update section comes here */}
-                <div className=" bg-neutral-200 p-10  flex flex-col justify-center items-center gap-5 rounded-lg">
+                <div className=" bg-neutral-200 p-10 py-6  flex flex-col justify-center items-center gap-5 rounded-lg">
                     {/* heading for updating profile comes here */}
                     <h1 className="text-xl text-center font-semibold w-full">Update Profile</h1>
 

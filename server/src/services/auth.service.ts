@@ -175,7 +175,7 @@ export class AuthService {
 
         // now lets generate the frontend url to be sent to the user 
         const resetPasswordURL = `${frontendUrl}/password/reset/${resetToken}`;
-
+        console.log("The value of the reset password URL is as follows\n", resetPasswordURL);
         // lets generate the gmail content to be sent to the user 
         const generatedGmailContent = generatePasswordResetEmailTemplate(resetPasswordURL);
 
@@ -224,7 +224,7 @@ export class AuthService {
             where : {
                 AND : [
                     {resetPasswordToken : hashedPasswordResetToken},
-                    {resetPasswordExpires : { gt : Date.now.toString()}}
+                    {resetPasswordExpires : { gt : new Date()}}
                 ]
             }
         })
@@ -265,13 +265,13 @@ export class AuthService {
         }
 
         // hash the password using the bcrypt 
-        const hashedPassowrd = bcrypt.hash(newPassword, 10);
+        const hashedPassowrd = await bcrypt.hash(newPassword, 10);
 
         //everything passed lets now try to update the password of the user
         const updatedUser = await prisma.user.update({
             where : {id : user.id},
             data : {
-                password : newPassword
+                password : hashedPassowrd
             } 
         });
 
