@@ -9,9 +9,17 @@ export const registerUserApi  = async (payload : RegisterPayload) : Promise<Regi
     // given the payload and the axiosinstance we need to 
     // make the post api call to register the user for this purpose 
     const registerUserResponse  = await axiosInstance.post("/v1/auth/register", payload);
-    const registerUserResponseData : RegisterResponse = registerUserResponse.data;
+    // check whether or not we indeed got an response from the backend server or not
+    if(!registerUserResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+    // check if there is user details in the backend response or not
+    if(!registerUserResponse.data.user) {
+        throw new Error("INVALID_RESPONSE")
+    }
+    
     // say everything went fine 
-    return registerUserResponseData;
+    return registerUserResponse.data;
 }
 
 
