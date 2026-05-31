@@ -130,6 +130,7 @@ export const useAuth = () => {
         setAuthError(null);
         setIsPasswordChanging(true);
         try{
+            console.log("The payload to update the password that we are sending is \n", payload)
             // lets make an axios response here to change the password of the user 
                 await updatePasswordApi(payload);
             // say everything went fine and we have successfully changed the password of the user
@@ -140,6 +141,7 @@ export const useAuth = () => {
         }catch(err : any) {
             const parsedErrorResponse : ParsedApiError = globalAxiosErrorHandler(err)
             setAuthError(parsedErrorResponse.message);
+            console.log("The error occurred while updating the password of the user with message : \n", parsedErrorResponse.message)
         } finally {
             setIsPasswordChanging(false);
         }
@@ -154,7 +156,7 @@ export const useAuth = () => {
             // lets make an axios response here to update the profile of the user
             // we will get the updated user details in the response 
             const updateProfileResponse = await updateProfileApi(payload);
-            // say everything went fine and we have successfully updated the profile of the user
+            // say everything went fine and we have lsuccessfully updated the profile of the user
              // now we need to set the user details in the recoil state with the updated user details 
              setUser(updateProfileResponse.user);
         }catch(err : any) {
@@ -168,6 +170,7 @@ export const useAuth = () => {
             }
             setAuthError(parsedErrorResponse.message);
             setAuthError(err.message);
+            console.log("Some error occurred while updating the user profile with error messaghe : ", parsedErrorResponse.message);
         } finally {
             setIsUpdatingProfile(false);
         }

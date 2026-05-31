@@ -135,8 +135,12 @@ export const updateProfileApi = async (payload : UpdateProfilePayload) : Promise
     if(payload.name) formData.append("name", payload.name);
     if(payload.email) formData.append("email", payload.email);
     if(payload.avatar) formData.append("avatar", payload.avatar);
-
-    const updateProfileResponse = await axiosInstance.put("/v1/auth/profile/update", formData);
+    console.log("the payload that we are sending to the backend server inside the api layer is \n", payload);
+    const updateProfileResponse = await axiosInstance.put("/v1/auth/profile/update", formData, {
+        headers : {
+            "Content-Type" : undefined
+        }
+    });
 
     // lets check the received a valid response or not for this purpose 
     if(!updateProfileResponse.data) {

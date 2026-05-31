@@ -162,6 +162,9 @@ export class AuthController {
         const updatedEmail : string = request.body.email as string;
         const files = request.files; 
         const userId : string = request.userId ?? "";
+
+        console.log("the request object in the update profile is \n", request.body);
+        console.log("the request object in the update profile is \n", request.files);
         // lets call the service layer function 
         const updateProfileResponse = await AuthService.updateProfileService(userId, updatedName, updatedEmail, files)
         
