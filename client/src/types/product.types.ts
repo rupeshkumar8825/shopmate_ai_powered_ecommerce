@@ -21,7 +21,7 @@ export interface ProductDetail {
 
 
 
-export interface FetchAllProductsRequest {
+export interface FetchAllProductsRequestPayload {
     availability : "in-stock" | "out-of-stock" | "limited",
     minPrice : number,
     maxPrice : number, 
@@ -42,7 +42,7 @@ export interface FetchAllProductsResponse {
 }
 
 
-export interface FetchProductDetailRequest {
+export interface FetchProductDetailRequestPayload {
     productId : string
 }
 
@@ -53,5 +53,25 @@ export interface FetchProductDetailsResponse {
     message : string, 
     productDetails : ProductDetail
 }
+
+
+export interface PostProductReviewRequestPayload {
+    productId : string, 
+    rating : number, 
+    comment : string
+}
+
+
+export interface PostProductReviewResponse {
+    success : boolean, 
+    message : string, 
+    review : {
+        id : string, 
+        rating : number, 
+        comment : string, 
+        created_by : string, 
+        created_at : Date
+    }
+}   
 
 

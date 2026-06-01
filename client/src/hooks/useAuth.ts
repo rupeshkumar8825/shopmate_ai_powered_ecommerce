@@ -201,7 +201,7 @@ export const useAuth = () => {
                 setIsAuthenticated(false);
                 // navigate("/")                
             }
-            setAuthError(err.message);
+            setAuthError(parsedErrorResponse.message);
         } finally {
             setIsFetchingUser(false);
         }

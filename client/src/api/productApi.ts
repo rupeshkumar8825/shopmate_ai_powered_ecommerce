@@ -1,8 +1,8 @@
-import type { FetchAllProductsRequest, FetchAllProductsResponse, FetchProductDetailRequest } from "../types/product.types";
+import type {  FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse } from "../types/product.types";
 import axiosInstance from "./axiosInstance";
 
 // all the api related to the products comes here
-export const fetchAllProductsApi = async (payload : FetchAllProductsRequest) => {
+export const fetchAllProductsApi = async (payload : FetchAllProductsRequestPayload) => {
     // given the axios instance we need to make the get api call to fetch all the products 
     const fetchAllProductsResponse = await axiosInstance.get("/v1/products", {
         params : {
@@ -34,7 +34,8 @@ export const fetchAllProductsApi = async (payload : FetchAllProductsRequest) => 
 
 
 
-export const fetchProductDetailsApi = async (payload : FetchProductDetailRequest) => {
+
+export const fetchSingleProductDetailsApi = async (payload : FetchProductDetailRequestPayload) => {
     // given the axios instance we need to make the get api call to fetch the product details 
     const fetchProductDetailsResponse = await axiosInstance.get(`/v1/products/${payload.productId}`);
 
@@ -49,5 +50,5 @@ export const fetchProductDetailsApi = async (payload : FetchProductDetailRequest
     }
 
     // say everything went fine 
-    return fetchProductDetailsResponse.data as FetchProductDetailRequest;
+    return fetchProductDetailsResponse.data as FetchProductDetailsResponse;
 }

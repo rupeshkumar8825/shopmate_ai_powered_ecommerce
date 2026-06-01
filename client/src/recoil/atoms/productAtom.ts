@@ -22,3 +22,49 @@ export const newArrivalProductAtom = atom<ProductDetail[]>({
 });
 
 
+
+export const areProductsLoadingAtom = atom<boolean>({
+    key : "areProductsLoadingAtom", 
+    default : false
+});
+
+
+
+export const isAISearchResponseLoadingAtom = atom<boolean>({
+    key : "isAISearchResponseLoadingAtom", 
+    default : false
+});
+
+
+
+export const isReviewGettingDeletedAtom = atom<boolean>({
+    key : "isReviewGettingDeletedAtom", 
+    default : false
+});
+
+
+
+export const isReviewGettingPostedAtom = atom<boolean>({
+    key : "isReviewGettingPostedAtom", 
+    default : false
+});
+
+
+
+
+export const productDetailsAtom = atom<ProductDetail | null>({
+    key : "productDetailsAtom", 
+    default : null
+});
+
+
+export const productErrorAtom = atom<string>({
+    key : "productError", 
+    default : ""
+});
+
+
+export const totalNumberOfProductsAtom = atom<number>({
+    key : "totalNumberOfProductsAtom", 
+    default : 0
+});
