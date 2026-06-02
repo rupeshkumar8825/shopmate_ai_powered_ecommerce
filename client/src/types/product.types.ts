@@ -75,3 +75,18 @@ export interface PostProductReviewResponse {
 }   
 
 
+// lets now define the types related to the delete product review api 
+// since the review can only be deleted by the user who created it, 
+// hence we only need the productId to identify which review to delete
+export interface DeleteProductReviewRequestPayload {
+    productId : string,
+}
+
+
+export interface DeleteProductReviewResponse {
+    success : boolean, 
+    message : string, 
+    product : ProductDetail
+}
+
+

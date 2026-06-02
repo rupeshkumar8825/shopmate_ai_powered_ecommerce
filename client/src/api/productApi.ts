@@ -1,4 +1,4 @@
-import type {  FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse } from "../types/product.types";
+import type {  FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse } from "../types/product.types";
 import axiosInstance from "./axiosInstance";
 
 // all the api related to the products comes here
@@ -51,4 +51,46 @@ export const fetchSingleProductDetailsApi = async (payload : FetchProductDetailR
 
     // say everything went fine 
     return fetchProductDetailsResponse.data as FetchProductDetailsResponse;
+}
+
+
+
+export const postProductReviewApi = async (payload : PostProductReviewRequestPayload) => {  
+    // given the axios instance we need to make the post api call to post the product review
+    const postProductReviewResponse = await axiosInstance.post(`/v1/products/review/${payload.productId}`, {
+        rating : payload.rating,
+        comment : payload.comment
+    });
+
+    // check whether or not we indeed got an response from the backend server or not
+    if(!postProductReviewResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    // check if there is success field in the backend response or not
+    if(postProductReviewResponse.data.success === undefined) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
+    // say everything went fine 
+    return postProductReviewResponse.data as PostProductReviewResponse;
+}
+
+
+export const deleteProductReviewApi = async (reviewId : string) => {
+    // given the axios instance we need to make the delete api call to delete the product review
+    const deleteProductReviewResponse = await axiosInstance.delete(`/v1/products/review/${reviewId}`);
+
+    // check whether or not we indeed got an response from the backend server or not
+    if(!deleteProductReviewResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    // check if there is success field in the backend response or not
+    if(deleteProductReviewResponse.data.success === undefined) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
+    // say everything went fine 
+    return deleteProductReviewResponse.data as { success : boolean, message : string };
 }
