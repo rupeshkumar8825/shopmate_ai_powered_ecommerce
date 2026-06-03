@@ -20,7 +20,25 @@ export interface ProductDetail {
 }
 
 
+// request and response payload interfaces
+export interface CreateProductRequestPayload {
+    name : string, 
+    description : string, 
+    price : number, 
+    category : string, 
+    stock : number, 
+    images : File[]
+}
 
+export interface CreateProductResponse {
+    success : boolean, 
+    message : string, 
+    productDetails : ProductDetail
+}
+
+
+
+// fetch all products request and response payload interfaces
 export interface FetchAllProductsRequestPayload {
     availability : "in-stock" | "out-of-stock" | "limited",
     minPrice : number,
@@ -48,6 +66,39 @@ export interface FetchProductDetailRequestPayload {
 
 
 
+// update product request and response payload interfaces
+export interface UpdateProductRequestPayload {
+    productId : string,
+    name? : string, 
+    description? : string, 
+    price? : number, 
+    category? : string, 
+    images? : File[]
+    stock? : number, 
+}
+
+export interface UpdateProductResponse {
+    success : boolean, 
+    message : string, 
+    updatedProductDetails : ProductDetail
+}
+
+
+
+
+// delete product controller request and response payload interfaces 
+export interface DeleteProductRequestPayload {
+    productId : string
+}
+
+export interface DeleteProductResponse {
+    success : boolean, 
+    message : string, 
+    deletedProductDetails : ProductDetail
+}
+
+
+
 export interface FetchProductDetailsResponse {
     success : boolean, 
     message : string, 
@@ -62,16 +113,20 @@ export interface PostProductReviewRequestPayload {
 }
 
 
+export interface ReviewDetail {
+    id : string, 
+    product_id : string, 
+    user_id : string, 
+    rating : number, 
+    created_at : Date, 
+    comment : string
+}
+
 export interface PostProductReviewResponse {
     success : boolean, 
     message : string, 
-    review : {
-        id : string, 
-        rating : number, 
-        comment : string, 
-        created_by : string, 
-        created_at : Date
-    }
+    review : ReviewDetail,
+    product : ProductDetail
 }   
 
 
@@ -87,6 +142,21 @@ export interface DeleteProductReviewResponse {
     success : boolean, 
     message : string, 
     product : ProductDetail
+}
+
+
+export interface FetchAIFilteredProductsRequestPayload {
+    // for AI filtered option/feature the backend server 
+    // takes the user prompt as input
+    userPrompt : string, 
+}
+
+
+
+export interface FetchAIFilteredProductsResponse {
+    success : boolean, 
+    message : string, 
+    aiFilteredProducts : ProductDetail[]
 }
 
 

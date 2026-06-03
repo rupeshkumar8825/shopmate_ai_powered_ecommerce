@@ -37,7 +37,7 @@ export const fetchAllProductsApi = async (payload : FetchAllProductsRequestPaylo
 
 export const fetchSingleProductDetailsApi = async (payload : FetchProductDetailRequestPayload) => {
     // given the axios instance we need to make the get api call to fetch the product details 
-    const fetchProductDetailsResponse = await axiosInstance.get(`/v1/products/${payload.productId}`);
+    const fetchProductDetailsResponse = await axiosInstance.get(`/v1/product/${payload.productId}`);
 
     // check whether or not we indeed got an response from the backend server or not
     if(!fetchProductDetailsResponse.data) {
@@ -57,7 +57,7 @@ export const fetchSingleProductDetailsApi = async (payload : FetchProductDetailR
 
 export const postProductReviewApi = async (payload : PostProductReviewRequestPayload) => {  
     // given the axios instance we need to make the post api call to post the product review
-    const postProductReviewResponse = await axiosInstance.post(`/v1/products/review/${payload.productId}`, {
+    const postProductReviewResponse = await axiosInstance.post(`/v1/product/review/${payload.productId}`, {
         rating : payload.rating,
         comment : payload.comment
     });
@@ -77,9 +77,11 @@ export const postProductReviewApi = async (payload : PostProductReviewRequestPay
 }
 
 
+
+
 export const deleteProductReviewApi = async (reviewId : string) => {
     // given the axios instance we need to make the delete api call to delete the product review
-    const deleteProductReviewResponse = await axiosInstance.delete(`/v1/products/review/${reviewId}`);
+    const deleteProductReviewResponse = await axiosInstance.delete(`/v1/product/review/${reviewId}`);
 
     // check whether or not we indeed got an response from the backend server or not
     if(!deleteProductReviewResponse.data) {
