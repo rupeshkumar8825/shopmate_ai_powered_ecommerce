@@ -1,7 +1,31 @@
-import type {  FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse } from "../types/product.types";
+import type {  CreateProductRequestPayload, CreateProductResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse, UpdateProductRequestPayload, UpdateProductResponse } from "../types/product.types";
 import axiosInstance from "./axiosInstance";
 
 // all the api related to the products comes here
+export const createProductApi = async (payload : CreateProductRequestPayload) => {
+    // given the axios instance we need to make the post api call to create the product 
+    const createProductResponse = await axiosInstance.post("/v1/product/admin/create", payload, {
+        headers : {
+            "Content-Type" : "multipart/form-data"
+        }
+    });
+
+    // check whether or not we indeed got an response from the backend server or not
+    if(!createProductResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    // check if there is products details in the backend response or not
+    if(!createProductResponse.data.productDetails) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
+    // say everything went fine 
+    return createProductResponse.data as CreateProductResponse;
+}
+
+
+
 export const fetchAllProductsApi = async (payload : FetchAllProductsRequestPayload) => {
     // given the axios instance we need to make the get api call to fetch all the products 
     const fetchAllProductsResponse = await axiosInstance.get("/v1/products", {
@@ -31,6 +55,49 @@ export const fetchAllProductsApi = async (payload : FetchAllProductsRequestPaylo
     return fetchAllProductsResponse.data as FetchAllProductsResponse;
 }   
 
+
+
+
+export const updateProductApi = async (payload : UpdateProductRequestPayload) => {
+    // given the axios instance we need to make the put api call to update the product 
+    const updateProductResponse = await axiosInstance.put(`/v1/product/${payload.productId}`, payload, {
+        headers : {
+            "Content-Type" : "multipart/form-data"
+        }
+    });
+
+    // check whether or not we indeed got an response from the backend server or not
+    if(!updateProductResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    // check if there is products details in the backend response or not
+    if(!updateProductResponse.data.updatedProductDetails) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
+    // say everything went fine 
+    return updateProductResponse.data as UpdateProductResponse;
+}
+
+
+export const deleteProductApi = async (productId : string) => {
+    // given the axios instance we need to make the delete api call to delete the product 
+    const deleteProductResponse = await axiosInstance.delete(`/v1/product/${productId}`);
+
+    // check whether or not we indeed got an response from the backend server or not
+    if(!deleteProductResponse.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    // check if there is success field in the backend response or not
+    if(deleteProductResponse.data.success === undefined) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
+    // say everything went fine 
+    return deleteProductResponse.data as { success : boolean, message : string };
+}
 
 
 

@@ -60,9 +60,6 @@ export interface FetchAllProductsResponse {
 }
 
 
-export interface FetchProductDetailRequestPayload {
-    productId : string
-}
 
 
 
@@ -94,11 +91,10 @@ export interface DeleteProductRequestPayload {
 export interface DeleteProductResponse {
     success : boolean, 
     message : string, 
-    deletedProductDetails : ProductDetail
 }
 
 
-
+// now we will be defining the types related to the post product review api
 export interface FetchProductDetailsResponse {
     success : boolean, 
     message : string, 
@@ -106,6 +102,13 @@ export interface FetchProductDetailsResponse {
 }
 
 
+export interface FetchProductDetailRequestPayload {
+    productId : string
+}
+
+
+
+// types related to the post product review api comes here
 export interface PostProductReviewRequestPayload {
     productId : string, 
     rating : number, 
