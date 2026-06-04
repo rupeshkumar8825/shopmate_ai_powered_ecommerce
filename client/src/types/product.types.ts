@@ -163,3 +163,22 @@ export interface FetchAIFilteredProductsResponse {
 }
 
 
+
+
+
+// types related to the atoms and selectors which are 
+// related to the product comes here
+export interface ProductState {
+    allProducts : ProductDetail[], 
+    topRatedProducts : ProductDetail[], 
+    newArrivalProducts : ProductDetail[], 
+    productDetails : ProductDetail | null, 
+    productError : string, 
+    totalNumberOfProducts : number, 
+    loading : {
+        areProductsLoading : boolean, 
+        isAISearchResponseLoading : boolean, 
+        isReviewGettingDeleted : boolean, 
+        isReviewGettingPosted : boolean, 
+    }
+}
