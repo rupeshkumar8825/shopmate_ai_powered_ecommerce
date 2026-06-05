@@ -1,4 +1,4 @@
-import type {  CreateProductRequestPayload, CreateProductResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse, UpdateProductRequestPayload, UpdateProductResponse } from "../types/product.types";
+import type {  CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse, UpdateProductRequestPayload, UpdateProductResponse } from "../types/product.types";
 import axiosInstance from "./axiosInstance";
 
 // all the api related to the products comes here
@@ -81,9 +81,9 @@ export const updateProductApi = async (payload : UpdateProductRequestPayload) =>
 }
 
 
-export const deleteProductApi = async (productId : string) => {
-    // given the axios instance we need to make the delete api call to delete the product 
-    const deleteProductResponse = await axiosInstance.delete(`/v1/product/${productId}`);
+export const deleteProductApi = async ( payload : DeleteProductRequestPayload) => {
+// given the axios instance we need to make the delete api call to delete the product 
+    const deleteProductResponse = await axiosInstance.delete(`/v1/product/${payload.productId}`);
 
     // check whether or not we indeed got an response from the backend server or not
     if(!deleteProductResponse.data) {

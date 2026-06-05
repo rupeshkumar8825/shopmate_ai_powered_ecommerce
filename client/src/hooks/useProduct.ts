@@ -3,8 +3,8 @@
 
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { productAtom } from "../recoil/atoms/productAtom";
-import type { CreateProductRequestPayload, CreateProductResponse, FetchAIFilteredProductsRequestPayload, FetchAllProductsRequestPayload, FetchAllProductsResponse } from "../types/product.types";
-import { createProductApi, fetchAllProductsApi } from "../api/productApi";
+import type { CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, DeleteProductResponse, FetchAIFilteredProductsRequestPayload, FetchAllProductsRequestPayload, FetchAllProductsResponse, UpdateProductRequestPayload, UpdateProductRequestPayload, UpdateProductResponse, UpdateProductResponse } from "../types/product.types";
+import { createProductApi, deleteProductApi, fetchAllProductsApi, updateProductApi } from "../api/productApi";
 import { allProductsSelector, areProductsLoadingSelector, isAISearchResponseLoadingSelector, isReviewGettingDeletedSelector, isReviewGettingPostedSelector, newArrivalProductSelector, productDetailsSelector, productErrorSelector, topRatedProductSelector, totalNumberOfProductsSelector } from "../recoil/selectors/productSelectors";
 import { useCallback } from "react";
 import axiosInstance from "../api/axiosInstance";
@@ -78,6 +78,75 @@ export const useProduct = () => {
         }finally{
             setProductState({...productState, loading : {...productState.loading, areProductsLoading : false}});
         }
+    }
+
+
+    const updateProduct = async (payload : UpdateProductRequestPayload) => {    
+        // we will make the api call to update the product details and then we will update the product details in the atom state
+        // lets update the loading related states in the productstate 
+        setProductState({...productState, productError : ""});
+        setProductState({...productState, loading : {...productState.loading, isCreatingProduct : true}});
+
+        try {
+            const response : UpdateProductResponse = await updateProductApi(payload);
+            // now we need to update the product details in the atom state 
+            // we will update the product details in the allProducts list and also in the productDetails if the updated product is same as the one which is there in the productDetails
+            const updatedProductDetails = response.updatedProductDetails;
+            const updatedAllProducts = productState.allProducts.map(product => {
+                if(product.id === updatedProductDetails.id) {
+                    return updatedProductDetails;
+                }
+                return product;
+            });
+            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === updatedProductDetails.id ? updatedProductDetails : productState.productDetails});
+        }catch(error){
+            const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
+            setProductState({...productState, productError : parsedError.message});
+        } finally {
+            setProductState({...productState, loading : {...productState.loading, isCreatingProduct : false}});
+        }
+    }
+
+
+
+    const deleteProduct = async (payload : DeleteProductRequestPayload) => {
+        // we will make the api call to delete the product and then we will update the product details in the atom state
+        // lets update the loading related states in the productstate 
+        setProductState({...productState, productError : ""});
+        setProductState({...productState, loading : {...productState.loading, isCreatingProduct : true}});
+
+        try {
+            const response : DeleteProductResponse= await deleteProductApi(payload);
+            // now we need to remove the deleted product from the atom state 
+            const deletedProductId = payload.productId;
+            const updatedAllProducts = productState.allProducts.filter(product => product.id !== deletedProductId);
+            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === deletedProductId ? null : productState.productDetails});
+        }catch(error){
+            const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
+            setProductState({...productState, productError : parsedError.message});
+        } finally {
+            setProductState({...productState, loading : {...productState.loading, isCreatingProduct : false}});
+        }
+    }
+
+    return {
+        // all the states comes here 
+        allProductList,
+        topRatedProducts,
+        newArrivalProducts,
+        productDetails,
+        totalNumbertOfProducts,
+        productError,
+        areProductsLoading,
+        isAISearchResponseLoading,
+        isReviewGettingDeleted,
+        isReviewGettingPosted,
+
+        // all the functions comes here
+        createProducts,
+        fetchAllProducts,
+        updateProduct,
+        deleteProduct
     }
 
 
