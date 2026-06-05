@@ -3,7 +3,7 @@
 
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { productAtom } from "../recoil/atoms/productAtom";
-import type { CreateProductRequestPayload, CreateProductResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse } from "../types/product.types";
+import type { CreateProductRequestPayload, CreateProductResponse, FetchAIFilteredProductsRequestPayload, FetchAllProductsRequestPayload, FetchAllProductsResponse } from "../types/product.types";
 import { createProductApi, fetchAllProductsApi } from "../api/productApi";
 import { allProductsSelector, areProductsLoadingSelector, isAISearchResponseLoadingSelector, isReviewGettingDeletedSelector, isReviewGettingPostedSelector, newArrivalProductSelector, productDetailsSelector, productErrorSelector, topRatedProductSelector, totalNumberOfProductsSelector } from "../recoil/selectors/productSelectors";
 import { useCallback } from "react";
@@ -42,7 +42,26 @@ export const useProduct = () => {
     // will interact with the API layer and then
     // update the atom state accordingly based on the response 
     // we get from the backend server.
-    export const fetchAllProducts = async (payload : FetchAllProductsRequestPayload) => {
+
+
+    const createProducts = async (payload : CreateProductRequestPayload) =>  {
+        setProductState({...productState, productError : "", loading: {...productState.loading, isCreatingProduct : true}});
+        try{
+            const response : CreateProductResponse = await createProductApi(payload);
+            setProductState({...productState, allProducts : [...productState.allProducts, response.productDetails]})
+        }catch(error){
+            const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
+            setProductState({...productState, productError : parsedError.message});
+        } finally {
+            setProductState({...productState, loading : {...productState.loading, isCreatingProduct : false}});
+        }
+
+    }
+
+
+
+
+    const fetchAllProducts = async (payload : FetchAllProductsRequestPayload) => {
         // lets update the loading related states in the productstate 
         setProductState({...productState, productError : ""});
         setProductState({...productState, loading : {...productState.loading, areProductsLoading : true}});
@@ -60,4 +79,8 @@ export const useProduct = () => {
             setProductState({...productState, loading : {...productState.loading, areProductsLoading : false}});
         }
     }
+
+
+    
+
 }
