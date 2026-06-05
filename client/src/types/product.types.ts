@@ -176,6 +176,7 @@ export interface ProductState {
     productError : string, 
     totalNumberOfProducts : number, 
     loading : {
+        isCreatingProduct : boolean,
         areProductsLoading : boolean, 
         isAISearchResponseLoading : boolean, 
         isReviewGettingDeleted : boolean, 
