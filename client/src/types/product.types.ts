@@ -15,7 +15,7 @@ export interface ProductDetail {
     description : string, 
     price : number, 
     category : string, 
-    ratings : string, 
+    ratings : number, 
     images : ProductImage[], 
     stock : number, 
     created_by : string, 

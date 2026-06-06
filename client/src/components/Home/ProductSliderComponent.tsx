@@ -1,6 +1,9 @@
 // given some list of products this component is going to show the product slider 
 
+import { Link } from "react-router"
+import { Link } from "react-router"
 import type { ProductSliderComponentProps } from "../../types/homePageTypes"
+import type { ProductDetail } from "../../types/product.types"
 
 export const ProductSliderComponent = (props : ProductSliderComponentProps) => {
     return (
@@ -16,10 +19,58 @@ export const ProductSliderComponent = (props : ProductSliderComponentProps) => {
                         {
                             props.listOfProducts.map((currProduct : ProductDetail, index : number) => {
                                 return (
-                                    <div key={index} className="bg-component-background-500 flex flex-col gap-3 justify-center items-center border  p-5 rounded-2xl shadow-white">
-                                        <img src={currProduct.image} alt={currProduct.name} className=" rounded-lg w-60 h-40"/>
-                                        <h1 className="text-white font-semibold">{currProduct.name}</h1>
-                                    </div>
+                                    <Link key={currProduct.id} to={`/products/${currProduct.id}`}>
+                                        <div key={index} className="bg-component-background-500 flex flex-col gap-3 justify-center items-center border  p-5 rounded-2xl shadow-white">
+                                            {/* Product image comes here */}
+                                            <img src={currProduct.images[0].url} alt={currProduct.name} className=" rounded-lg w-60 h-40"/>
+
+                                            {/* product name comes here */}
+                                            <h1 className="text-white font-semibold">{currProduct.name}</h1>
+
+                                            {/* product price comes here */}
+                                            <h1 className="text-blue-600 font-bold text-lg">${currProduct.price}</h1>
+
+                                            {/* we need to show multiple badges for the product. For now the badges would be 
+                                            for the stock, new arrived products and for the products who are top rated meaning whose rating  is greater than 4.5 */}
+                                            <div className="flex flex-row gap-2">
+
+                                                {/* product availability badge comes here */}
+                                                {
+                                                    currProduct.stock > 0 ? (
+                                                        <div className="bg-green-600 text-white px-2 py-1 rounded-full text-sm">
+                                                            In Stock
+                                                        </div>
+                                                    ) : (
+                                                        <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm">
+                                                            Out of Stock
+                                                        </div>
+                                                    )
+                                                }
+
+                                                {/* product new arrival badge comes here */}
+                                                {
+                                                    ((Date.now() - new Date(currProduct.created_at).getTime()) < 30 * 24 * 60 * 60 * 1000) ? (
+                                                        <div className="bg-blue-600 text-white px-2 py-1 rounded-full text-sm">
+                                                            New
+                                                        </div>
+                                                    ) : null
+                                                }
+
+                                                {/* product top rated badge comes here */}
+                                                {
+                                                    currProduct.ratings > 4.5 ? (
+                                                        <div className="bg-yellow-600 text-white px-2 py-1 rounded-full text-sm">
+                                                            Top Rated
+                                                        </div>
+                                                    ) : null
+                                                }
+                                            </div> 
+
+
+
+
+                                        </div>
+                                    </Link>
                                 )
                             })
                         }
