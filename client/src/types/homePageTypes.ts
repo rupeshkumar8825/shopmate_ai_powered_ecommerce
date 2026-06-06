@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react"
+import type { ProductDetail } from "./product.types"
 
 // this will consists of all the types related to the home page
 export type SliderDataType = {
@@ -30,4 +31,9 @@ export type FeaturesDataType = {
     icon : LucideIcon, 
     title : string, 
     description : string
+}
+
+
+export interface ProductSliderComponentProps {
+    listOfProducts : ProductDetail[]
 }
