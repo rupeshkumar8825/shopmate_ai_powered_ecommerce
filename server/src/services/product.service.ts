@@ -87,7 +87,7 @@ export class ProductService {
         
 
         // update the database
-        const createdProduct : Product = await prisma.product.create({
+        const createdProduct = await prisma.product.create({
             data : {
                 name : productName, 
                 description : description, 
@@ -97,8 +97,16 @@ export class ProductService {
                 images : uploadedImages, 
                 created_by : currentUser.id, 
                 stock : stock, 
+            }, 
+            include : {
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                }
             }
-        })
+        });
+
 
         // return the response to the controller layer 
         // say everything went fine 
@@ -175,7 +183,11 @@ export class ProductService {
             skip : skip, 
             take : limit, 
             include : {
-                reviewList : true // this will include all the fields of the review list
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                } // this will include all the fields of the review list
             }
         })
 
@@ -187,7 +199,11 @@ export class ProductService {
             orderBy : {created_at : "desc"}, 
             take : 10, 
             include : {
-                reviewList : true, 
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                }, 
                 _count : {
                     select : {reviewList : true},
                 }
@@ -208,7 +224,11 @@ export class ProductService {
             orderBy : {ratings : "desc"}, 
             take : 10, 
             include : {
-                reviewList : true, 
+                reviewList : {
+                    include : {
+                        user: true
+                    }
+                }, 
                 _count : {
                     select : {reviewList : true}
                 }
@@ -223,7 +243,7 @@ export class ProductService {
 
 
         // say everything went fine 
-        return [totalNumberOfProducts, allProductList, newlyCreatedProductListFinal, topRatedProducts];
+        return [totalNumberOfProducts, allProductListWithReviews, newlyCreatedProductListFinal, topRatedProducts];
 
     }
 
@@ -256,6 +276,13 @@ export class ProductService {
                 price : updatedPrice, 
                 category : category, 
                 stock : stock
+            }, 
+            include : {
+                reviewList : {
+                    include : {
+                        user : true 
+                    }
+                }
             }
         })
 
@@ -312,6 +339,14 @@ export class ProductService {
             where : {id : productId}, 
             data : {
                 images : cloudinaryResult
+            }, 
+            include : {
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                }
+
             }
         })
 
@@ -551,6 +586,13 @@ export class ProductService {
             where : {id : productId},
             data : {
                 ratings : updatedAverageRating
+            }, 
+            include : {
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                }
             }
         })
 
@@ -591,7 +633,14 @@ export class ProductService {
         // lets update the product table now for this purpose 
         const updatedProductResponse = await prisma.product.update({
             where : {id : productId}, 
-            data : {ratings : updatedAverageRating}
+            data : {ratings : updatedAverageRating}, 
+            include : {
+                reviewList : {
+                    include : {
+                        user : true 
+                    }
+                }
+            }
         });
 
         // say everything went fine 
@@ -643,6 +692,13 @@ export class ProductService {
             where : {
                 // lets filter out those products who consists even a single element 
                 OR:  orCondition
+            }, 
+            include : {
+                reviewList : {
+                    include : {
+                        user : true
+                    }
+                }
             }
         });
 

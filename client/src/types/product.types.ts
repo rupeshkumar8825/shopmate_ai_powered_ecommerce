@@ -1,7 +1,20 @@
+import type { User } from "./auth.types"
+
 // all the product related type comes here 
 export interface ProductImage {
     public_id : string, 
     url : string
+}
+
+
+export interface Review {
+    id : string, 
+    product_id : string, 
+    user_id : string, 
+    rating : number,
+    comment : string, 
+    created_at : Date, 
+    user : User
 }
 
 
@@ -16,7 +29,8 @@ export interface ProductDetail {
     images : ProductImage[], 
     stock : number, 
     created_by : string, 
-    created_at : Date 
+    created_at : Date, 
+    reviewList : Review[] 
 }
 
 
