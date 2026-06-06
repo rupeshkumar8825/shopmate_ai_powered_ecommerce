@@ -3,13 +3,14 @@
 
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { productAtom } from "../recoil/atoms/productAtom";
-import type { CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, DeleteProductResponse, FetchAIFilteredProductsRequestPayload, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, PostProductReviewRequestPayload, UpdateProductRequestPayload, UpdateProductRequestPayload, UpdateProductResponse, UpdateProductResponse } from "../types/product.types";
-import { createProductApi, deleteProductApi, fetchAllProductsApi, fetchSingleProductDetailsApi, postProductReviewApi, updateProductApi } from "../api/productApi";
+import type { CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, DeleteProductResponse, DeleteProductReviewRequestPayload, DeleteProductReviewResponse, FetchAIFilteredProductsRequestPayload, FetchAIFilteredProductsResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, PostProductReviewRequestPayload, PostProductReviewResponse, ProductDetail, UpdateProductRequestPayload, UpdateProductRequestPayload, UpdateProductResponse, UpdateProductResponse } from "../types/product.types";
+import { createProductApi, deleteProductApi, deleteProductReviewApi, fetchAIFilteredProductsAPI, fetchAllProductsApi, fetchSingleProductDetailsApi, postProductReviewApi, updateProductApi } from "../api/productApi";
 import { allProductsSelector, areProductsLoadingSelector, isAISearchResponseLoadingSelector, isReviewGettingDeletedSelector, isReviewGettingPostedSelector, newArrivalProductSelector, productDetailsSelector, productErrorSelector, topRatedProductSelector, totalNumberOfProductsSelector } from "../recoil/selectors/productSelectors";
 import { useCallback } from "react";
 import axiosInstance from "../api/axiosInstance";
 import type { ParsedApiError } from "../types/error.types";
 import { globalAxiosErrorHandler } from "../error/globalAxiosHandler";
+import { fetchUserDetailsApi } from "../api/authApi";
 
 export const useProduct = () => {
     // all the recoil related states comes here 
@@ -149,7 +150,7 @@ export const useProduct = () => {
 
 
 
-    
+
     const postProductReview = async (payload : PostProductReviewRequestPayload) => {
         // we will make the api call to post the product review and then we will update the product details in the atom state
             // lets update the loading related states in the productstate
@@ -157,20 +158,16 @@ export const useProduct = () => {
         setProductState({...productState, loading : {...productState.loading, isReviewGettingPosted : true}});
 
         try {
-            await postProductReviewApi(payload);
+            const response : PostProductReviewResponse =  await postProductReviewApi(payload);
             // now we need to update the product details in the atom state 
             // we will update the product details in the allProducts list and also in the productDetails if the updated product is same as the one which is there in the productDetails
             const updatedAllProducts = productState.allProducts.map(product => {
                 if(product.id === payload.productId) {
-                    // we need to update the reviews and ratings of the product 
-                    const updatedReviews = [...product.reviewList, { rating : payload.rating, comment : payload.comment }];
-                    const totalRating = updatedReviews.reduce((acc, review) => acc + review.rating, 0);
-                    const averageRating = totalRating / updatedReviews.length;
-                    return {...product, reviews : updatedReviews, rating : averageRating};
+                    return response.product;
                 }
                 return product;
             });
-            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === payload.productId ? {...productState.productDetails, reviews : [...(productState.productDetails.reviews || []), { rating : payload.rating, comment : payload.comment }], rating : productState.productDetails.rating ? (productState.productDetails.rating * (productState.productDetails.reviews ? productState.productDetails.reviews.length : 0) + payload.rating) / ((productState.productDetails.reviews ? productState.productDetails.reviews.length : 0) + 1) : payload.rating} : productState.productDetails});
+            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === payload.productId ? response.product : productState.productDetails});
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
             setProductState({...productState, productError : parsedError.message});
@@ -180,6 +177,50 @@ export const useProduct = () => {
     }
 
 
+
+    const deleteProductReview = async (payload : DeleteProductReviewRequestPayload) => {
+        setProductState({...productState, loading : {...productState.loading, isReviewGettingDeleted : true}});
+
+        try{
+            // lets call the api here and get the response from the backend server 
+            const response : DeleteProductReviewResponse = await deleteProductReviewApi(payload);
+            // lets first remove the product from all product list 
+            const updatedAllProducts : ProductDetail[] = allProductList.map((currProduct : ProductDetail) => {
+                // check if any product with this product id exists or not 
+                if(currProduct.id === response.product.id)
+                {
+                    // then we need to return the updated product 
+                    return response.product;
+                } 
+
+                // else we simply return the same element 
+                return currProduct;
+            })
+
+
+            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === response.product.id? response.product : productState.productDetails  })
+        }catch(error){
+            const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
+            setProductState({...productState, productError : parsedError.message})
+        }finally {
+            setProductState({...productState, loading : {...productState.loading, isReviewGettingDeleted : false}})
+        }
+    }
+
+
+
+    const fetchAIFilteredProducts = async (payload : FetchAIFilteredProductsRequestPayload) => {
+        setProductState({...productState, loading : {...productState.loading, isAISearchResponseLoading : true}})
+        try{
+            const response : FetchAIFilteredProductsResponse = await fetchAIFilteredProductsAPI(payload)
+            setProductState({...productState, allProducts : response.aiFilteredProducts});
+        }catch(error) {
+            const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
+            setProductState({...productState, productError : parsedError.message})
+        }finally {
+            setProductState({...productState, loading : {...productState.loading, isAISearchResponseLoading : false}})
+        }
+    }
 
 
     
@@ -202,7 +243,9 @@ export const useProduct = () => {
         updateProduct,
         deleteProduct,
         fetchSingleProductDetails,
-        postProductReview
+        postProductReview, 
+        deleteProductReview, 
+        fetchAIFilteredProducts
     }
 
 

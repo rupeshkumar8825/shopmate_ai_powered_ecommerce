@@ -7,16 +7,6 @@ export interface ProductImage {
 }
 
 
-export interface Review {
-    id : string, 
-    product_id : string, 
-    user_id : string, 
-    rating : number,
-    comment : string, 
-    created_at : Date, 
-    user : User
-}
-
 
 
 export interface ProductDetail {
@@ -30,7 +20,7 @@ export interface ProductDetail {
     stock : number, 
     created_by : string, 
     created_at : Date, 
-    reviewList : Review[] 
+    reviewList : ReviewDetail[] 
 }
 
 
@@ -136,7 +126,8 @@ export interface ReviewDetail {
     user_id : string, 
     rating : number, 
     created_at : Date, 
-    comment : string
+    comment : string, 
+    user : User
 }
 
 export interface PostProductReviewResponse {

@@ -1,4 +1,4 @@
-import type {  CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse, UpdateProductRequestPayload, UpdateProductResponse } from "../types/product.types";
+import type {  CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, DeleteProductReviewRequestPayload, DeleteProductReviewResponse, FetchAIFilteredProductsRequestPayload, FetchAIFilteredProductsResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, FetchProductDetailsResponse, PostProductReviewRequestPayload, PostProductReviewResponse, UpdateProductRequestPayload, UpdateProductResponse } from "../types/product.types";
 import axiosInstance from "./axiosInstance";
 
 // all the api related to the products comes here
@@ -146,9 +146,9 @@ export const postProductReviewApi = async (payload : PostProductReviewRequestPay
 
 
 
-export const deleteProductReviewApi = async (reviewId : string) => {
+export const deleteProductReviewApi = async (payload : DeleteProductReviewRequestPayload) => {
     // given the axios instance we need to make the delete api call to delete the product review
-    const deleteProductReviewResponse = await axiosInstance.delete(`/v1/product/review/${reviewId}`);
+    const deleteProductReviewResponse = await axiosInstance.delete(`/v1/product/review/${payload.productId}`);
 
     // check whether or not we indeed got an response from the backend server or not
     if(!deleteProductReviewResponse.data) {
@@ -161,5 +161,22 @@ export const deleteProductReviewApi = async (reviewId : string) => {
     }
 
     // say everything went fine 
-    return deleteProductReviewResponse.data as { success : boolean, message : string };
+    return deleteProductReviewResponse.data as DeleteProductReviewResponse;
+}
+
+
+export const fetchAIFilteredProductsAPI = async (payload : FetchAIFilteredProductsRequestPayload) => {
+    const response = await axiosInstance.post(`/v1/product/ai-recommended-products`, payload);
+
+    if(!response.data) {
+        throw new Error("EMPTY_RESPONSE")
+    }
+
+    if(response.data.success === undefined) {
+        throw new Error("INVALID_RESPONSE")
+    }
+
+
+    // say everything went fine 
+    return response.data as FetchAIFilteredProductsResponse
 }

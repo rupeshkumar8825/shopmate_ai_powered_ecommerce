@@ -548,7 +548,10 @@ export class ProductService {
 
             // lets find the updated rating for this product and store it to be returned later. 
             reviewResponseToReturn = await prisma.reviews.findFirst({
-                where : {user_id : userId, product_id : productId}
+                where : {user_id : userId, product_id : productId}, 
+                include : {
+                    user : true
+                }
             });
 
         }else {
@@ -561,6 +564,9 @@ export class ProductService {
                     user_id : userId, 
                     rating : rating, 
                     comment : comment, 
+                }, 
+                include : {
+                    user : true
                 }
             });
     
