@@ -17,16 +17,23 @@ import { ProfilePanelLayout } from './components/Layout/ProfilePanelLayout'
 import { LoginModalLayout } from './components/Layout/LoginModalLayout'
 import { useEffect } from 'react'
 import { useAuth } from './hooks/useAuth'
+import { useProduct } from './hooks/useProduct'
 
 function App() {
-  
-  const { fetchUserDetails } = useAuth()
-
+  const { fetchUserDetails } = useAuth();
+  const { fetchAllProducts, searchFilter } = useProduct();
 
   // whenever this component renders then we will try to fetch the user details 
   useEffect(() => {
     fetchUserDetails()
   }, [])
+
+  // whenever the component renders then we will try to fetch the 
+  // list of all products 
+  useEffect(() => {
+    fetchAllProducts(searchFilter);
+  }, [])
+
 
 
 

@@ -1,16 +1,13 @@
 // this is hook to abstract all the UI related logics which interacts with the API layer and 
 // the atom layer 
 
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { productAtom } from "../recoil/atoms/productAtom";
-import type { CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, DeleteProductResponse, DeleteProductReviewRequestPayload, DeleteProductReviewResponse, FetchAIFilteredProductsRequestPayload, FetchAIFilteredProductsResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, PostProductReviewRequestPayload, PostProductReviewResponse, ProductDetail, UpdateProductRequestPayload, UpdateProductRequestPayload, UpdateProductResponse, UpdateProductResponse } from "../types/product.types";
+import type { CreateProductRequestPayload, CreateProductResponse, DeleteProductRequestPayload, DeleteProductReviewRequestPayload, DeleteProductReviewResponse, FetchAIFilteredProductsRequestPayload, FetchAIFilteredProductsResponse, FetchAllProductsRequestPayload, FetchAllProductsResponse, FetchProductDetailRequestPayload, PostProductReviewRequestPayload, PostProductReviewResponse, ProductDetail, UpdateProductRequestPayload, UpdateProductResponse } from "../types/product.types";
 import { createProductApi, deleteProductApi, deleteProductReviewApi, fetchAIFilteredProductsAPI, fetchAllProductsApi, fetchSingleProductDetailsApi, postProductReviewApi, updateProductApi } from "../api/productApi";
-import { allProductsSelector, areProductsLoadingSelector, isAISearchResponseLoadingSelector, isReviewGettingDeletedSelector, isReviewGettingPostedSelector, newArrivalProductSelector, productDetailsSelector, productErrorSelector, topRatedProductSelector, totalNumberOfProductsSelector } from "../recoil/selectors/productSelectors";
-import { useCallback } from "react";
-import axiosInstance from "../api/axiosInstance";
+import { allProductsSelector, areProductsLoadingSelector, isAISearchResponseLoadingSelector, isReviewGettingDeletedSelector, isReviewGettingPostedSelector, newArrivalProductSelector, productDetailsSelector, productErrorSelector, searchFilterSelector, topRatedProductSelector, totalNumberOfProductsSelector } from "../recoil/selectors/productSelectors";
 import type { ParsedApiError } from "../types/error.types";
 import { globalAxiosErrorHandler } from "../error/globalAxiosHandler";
-import { fetchUserDetailsApi } from "../api/authApi";
 
 export const useProduct = () => {
     // all the recoil related states comes here 
@@ -30,6 +27,7 @@ export const useProduct = () => {
     const isAISearchResponseLoading = useRecoilValue(isAISearchResponseLoadingSelector);
     const isReviewGettingDeleted = useRecoilValue(isReviewGettingDeletedSelector);
     const isReviewGettingPosted = useRecoilValue(isReviewGettingPostedSelector);
+    const searchFilter = useRecoilValue(searchFilterSelector)
 
 
 
@@ -108,7 +106,7 @@ export const useProduct = () => {
         }
     }
 
-
+    
 
     const deleteProduct = async (payload : DeleteProductRequestPayload) => {
         // we will make the api call to delete the product and then we will update the product details in the atom state
@@ -117,7 +115,7 @@ export const useProduct = () => {
         setProductState({...productState, loading : {...productState.loading, isCreatingProduct : true}});
 
         try {
-            const response : DeleteProductResponse= await deleteProductApi(payload);
+            await deleteProductApi(payload);
             // now we need to remove the deleted product from the atom state 
             const deletedProductId = payload.productId;
             const updatedAllProducts = productState.allProducts.filter(product => product.id !== deletedProductId);
@@ -213,7 +211,7 @@ export const useProduct = () => {
         setProductState({...productState, loading : {...productState.loading, isAISearchResponseLoading : true}})
         try{
             const response : FetchAIFilteredProductsResponse = await fetchAIFilteredProductsAPI(payload)
-            setProductState({...productState, allProducts : response.aiFilteredProducts});
+            setProductState({...productState, allProducts : response.aiFilteredProducts, totalNumberOfProducts : response.aiFilteredProducts.length});
         }catch(error) {
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
             setProductState({...productState, productError : parsedError.message})
@@ -223,7 +221,32 @@ export const useProduct = () => {
     }
 
 
+
+    const updateFilters = async (updatedFilters : Partial<FetchAllProductsRequestPayload>) => {
+        // whenever the filter is updated then we will set the page to 1 
+        let mergedFilters : FetchAllProductsRequestPayload = {...productState.searchFilter, ...updatedFilters, page : 1}
+
+        setProductState({...productState, searchFilter : mergedFilters})
+        
+        // now here lets call the function to fetch all the products based on this updated filter 
+        await fetchAllProducts(mergedFilters)
+
+    }
     
+
+    const changePage = async (page : number) => {
+        let mergedFilter : FetchAllProductsRequestPayload = {...productState.searchFilter, page : page}
+
+        // lets update the product state here with this updated filter 
+        setProductState({...productState, searchFilter : mergedFilter})
+
+        // now lets call the function to fetch the product  
+        await fetchAllProducts(mergedFilter)
+    }
+
+
+
+
     return {
         // all the states comes here 
         allProductList,
@@ -236,6 +259,7 @@ export const useProduct = () => {
         isAISearchResponseLoading,
         isReviewGettingDeleted,
         isReviewGettingPosted,
+        searchFilter,
 
         // all the functions comes here
         createProducts,
@@ -245,7 +269,9 @@ export const useProduct = () => {
         fetchSingleProductDetails,
         postProductReview, 
         deleteProductReview, 
-        fetchAIFilteredProducts
+        fetchAIFilteredProducts, 
+        updateFilters, 
+        changePage
     }
 
 

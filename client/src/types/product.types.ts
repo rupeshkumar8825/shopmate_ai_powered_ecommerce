@@ -44,14 +44,14 @@ export interface CreateProductResponse {
 
 // fetch all products request and response payload interfaces
 export interface FetchAllProductsRequestPayload {
-    availability : "in-stock" | "out-of-stock" | "limited",
-    minPrice : number,
-    maxPrice : number, 
-    category : string, 
-    minRating : number,
-    maxRating : number,
-    search : string,
-    page : number,
+    availability? : "in-stock" | "out-of-stock" | "limited",
+    minPrice? : number,
+    maxPrice? : number, 
+    category? : string, 
+    minRating? : number,
+    maxRating? : number,
+    search? : string,
+    page? : number,
 }
 
 export interface FetchAllProductsResponse {
@@ -186,5 +186,6 @@ export interface ProductState {
         isAISearchResponseLoading : boolean, 
         isReviewGettingDeleted : boolean, 
         isReviewGettingPosted : boolean, 
-    }
+    }, 
+    searchFilter : FetchAllProductsRequestPayload
 }

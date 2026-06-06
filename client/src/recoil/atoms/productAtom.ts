@@ -33,6 +33,17 @@ export const productAtom = atom<ProductState>({
             isAISearchResponseLoading : false,
             isReviewGettingDeleted : false,
             isReviewGettingPosted : false,
+        }, 
+        searchFilter : {
+            availability : "in-stock", 
+            minPrice : 0, 
+            maxPrice : 100000, 
+            category : undefined, 
+            minRating : undefined, 
+            maxRating : undefined,
+            search : undefined, 
+            page : 1 
+
         }
     }
 });

@@ -1,7 +1,7 @@
 // file consists of selectors related to products. 
 
 import { selector } from "recoil";
-import type { ProductDetail } from "../../types/product.types";
+import type { FetchAllProductsRequestPayload, ProductDetail } from "../../types/product.types";
 import { productAtom } from "../atoms/productAtom";
 
 
@@ -92,3 +92,13 @@ export const totalNumberOfProductsSelector = selector<number>({
         return get(productAtom).totalNumberOfProducts;
     }
 });
+
+
+
+
+export const searchFilterSelector = selector<FetchAllProductsRequestPayload>({
+    key : "searchFilterSelector", 
+    get : ( { get }) => {
+        return get(productAtom).searchFilter
+    }
+})
