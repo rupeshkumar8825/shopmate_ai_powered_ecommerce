@@ -55,7 +55,7 @@ function App() {
         <Route path='/' element={<HomePage></HomePage>} />
         <Route path='/password/reset/:token' element={<HomePage></HomePage>} />
         <Route path='/products' element={<ProductsPage></ProductsPage>} />
-        <Route path='/product/:id' element={<ProductDetailsPage></ProductDetailsPage>} />
+        <Route path='/products/:id' element={<ProductDetailsPage></ProductDetailsPage>} />
         <Route path='/cart' element={<CartPage></CartPage>} />
         <Route path='/orders' element={<OrdersPage></OrdersPage>} />
         <Route path='/payment' element={<PaymentsPage></PaymentsPage>} />
