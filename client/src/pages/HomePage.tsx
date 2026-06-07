@@ -9,19 +9,7 @@ import { useProduct } from "../hooks/useProduct";
 export const HomePage = () => {
 
     // lets get the list of all products from the product hook 
-    const { allProductList, topRatedProducts } = useProduct();
-
-    useEffect(() => {
-        console.log("the value of the all product list and toprated products in the home page is as follows")
-        console.log("All ProductList :- \n ", allProductList)
-        console.log("Top rated product list :- \n ", topRatedProducts)
-    }, [allProductList, topRatedProducts])
-
-    useEffect(() => {
-        // console.log("INSIDE USEEFFECT TO CAPTURE THE CHANGE IN THE useProduct")
-        // console.log("All ProductList :- \n ", allProductList)
-        // console.log("Top rated product list :- \n ", topRatedProducts)
-    }, [useProduct])
+    const { topRatedProducts, newArrivalProducts } = useProduct();
 
     return(
         <div className="">
@@ -32,16 +20,16 @@ export const HomePage = () => {
             {/* we will show the allProducts and topratedproducts product slider too */}
             <div className="w-full bg-neutral-700 my-10">
                 {
-                    allProductList.length > 0 && (
+                    newArrivalProducts?.length > 0 && (
                         <div className="flex flex-col gap-10">
-                            <ProductSliderComponent listOfProducts={allProductList}></ProductSliderComponent>
+                            <ProductSliderComponent listOfProducts={newArrivalProducts} title="New Arrivals"></ProductSliderComponent>
                         </div>
                     )
                 }
                 {
-                    topRatedProducts.length > 0 && (
+                    topRatedProducts?.length > 0 && (
                         <div className="flex flex-col gap-10">
-                            <ProductSliderComponent listOfProducts={topRatedProducts}></ProductSliderComponent>
+                            <ProductSliderComponent listOfProducts={topRatedProducts} title="Top Rated Products"></ProductSliderComponent>
                         </div>
                     )
                 }

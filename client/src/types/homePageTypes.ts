@@ -35,5 +35,6 @@ export type FeaturesDataType = {
 
 
 export interface ProductSliderComponentProps {
+    title : string,
     listOfProducts : ProductDetail[]
 }

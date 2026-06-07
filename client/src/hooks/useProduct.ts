@@ -57,11 +57,13 @@ export const useProduct = () => {
             const response : FetchAllProductsResponse = await fetchAllProductsApi(payload);
             console.log("[fetchAllProducts] the response that we got from the fetchallproduct apis are : \n", response)
             console.log("[fetchAllProducts] the list of all the products that we got is : \n", response.productList)
+            console.log("[fetchAllProducts] the list of all the products that we got is : \n", response.newlyCreatedProductList)
+            console.log("[fetchAllProducts] the list of all the products that we got is : \n", response.topRatedProducts)
             setProductState((prev) => ({
                 ...prev,
                 allProducts: response.productList,
                 totalNumberOfProducts: response.totalNumberOfProducts,
-                newlyCreatedProductList: response.newlyCreatedProducts,
+                newlyCreatedProductList: response.newlyCreatedProductList,
                 topRatedProducts: response.topRatedProducts,
             }));
         }catch (error){

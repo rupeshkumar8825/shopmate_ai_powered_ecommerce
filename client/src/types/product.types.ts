@@ -59,7 +59,7 @@ export interface FetchAllProductsResponse {
     message : string, 
     totalNumberOfProducts : number,
     productList : ProductDetail[], 
-    newlyCreatedProducts : ProductDetail[],
+    newlyCreatedProductList : ProductDetail[],
     topRatedProducts : ProductDetail[]
 }
 
