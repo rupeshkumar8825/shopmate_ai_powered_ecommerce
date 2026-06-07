@@ -32,33 +32,40 @@ export const CartSidebar = () => {
 
             {
                 cartItems.length === 0 ? (
-                    <div className={`border-2 border-black fixed top-0 right-0 w-[60%] h-full bg-neutral-200 shadow-lg z-50 transform ${isCartPopupOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-center items-center gap-10`}>
+                    <div className={` fixed top-0 right-0 w-[60%] h-full bg-neutral-200 shadow-lg z-50 transform ${isCartPopupOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-center items-center gap-10`}>
                         <h1 className="text-2xl font-semibold">Your cart is empty</h1>
                         <p className="text-muted-foreground">Looks like you haven't added anything to your cart yet.</p>
                         <button onClick={browseProductsClickHandler} className="px-4 py-2 bg-neutral-300 shadow-2xl  text-black rounded-lg mt-5 cursor-pointer">Start Shopping</button>
                     </div>
                 ) : (
-                    <div className={`border-2 border-black fixed top-0 right-0 w-[60%] h-full bg-neutral-200 shadow-lg z-50 transform ${isCartPopupOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-center items-center gap-10`}>
-                        {
-                            cartItems.map((item) => (
-                                <div key={item.id} className=" border-2 border-black flex flex-row justify-between items-center gap-5">
-                                    <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
-                                    <div className="flex flex-col justify-start items-start gap-2">
-                                        <h1 className="text-lg font-semibold">{item.name}</h1>
-                                        <p className="text-sm text-muted-foreground">Price: ${item.price}</p>
-                                        <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                    <div className={` fixed top-0 right-0 w-[30%] h-full bg-neutral-300 shadow-lg z-50 transform ${isCartPopupOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-start items-center gap-10`}>
+                        {/* title of the cart page comes here */}
+                        <div className=" p-10">
+                            <h1 className="text-5xl  font-bold">You Cart</h1>
+                        </div>
+                        <div className=" flex flex-col justify-center items-center bg-neutral-200 w-[80%] shadow-lg gap-10 p-10 rounded-md  ">
+                            {
+                                cartItems.map((item) => (
+                                    <div key={item.id} className=" flex flex-row justify-between items-center gap-5 bg-neutral-200 w-full rounded-md">
+                                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                                        <div className="flex flex-col justify-start items-start gap-2">
+                                            <h1 className="text-lg font-semibold">{item.name}</h1>
+                                            <p className="text-sm text-muted-foreground">Price: ${item.price}</p>
+                                            <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                                        </div>
+                                        <div className="flex flex-row justify-center items-center gap-2">
+                                            <button onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)} className="px-2 py-1 bg-primary text-white rounded-lg">+</button>
+                                            <button onClick={() => updateCartItemQuantity(item.id, item.quantity - 1)} className="px-2 py-1 bg-primary text-white rounded-lg">-</button>
+                                            <button onClick={() => removeFromCart(item.id)} className="px-2 py-1 bg-red-500 text-white rounded-lg">Remove</button>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-row justify-center items-center gap-2">
-                                        <button onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)} className="px-2 py-1 bg-primary text-white rounded-lg">+</button>
-                                        <button onClick={() => updateCartItemQuantity(item.id, item.quantity - 1)} className="px-2 py-1 bg-primary text-white rounded-lg">-</button>
-                                        <button onClick={() => removeFromCart(item.id)} className="px-2 py-1 bg-red-500 text-white rounded-lg">Remove</button>
-                                    </div>
-                                </div>
-                            ))
-                        }
-                        <div className="flex flex-row justify-between items-center gap-5 mt-5">
-                            <h1 className="text-lg font-semibold">Total: ${cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)}</h1>
-                            <button className="px-4 py-2 bg-green-500 text-white rounded-lg">Checkout</button>
+                                ))
+                            }
+
+                            <div className="flex flex-row justify-between items-center gap-5 mt-5">
+                                <h1 className="text-lg font-semibold">Total: ${cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)}</h1>
+                                <button className="px-4 py-2 bg-green-500 text-white rounded-lg">Checkout</button>
+                            </div>
                         </div>
                     </div>
                 )
