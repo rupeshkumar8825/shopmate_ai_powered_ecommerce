@@ -86,6 +86,7 @@ export class ProductController {
         const images = request.files? request.files : undefined;
         const stock = request.body.stock? parseInt(request.body.stock as string) : undefined;
         
+        console.log("the value of the product id in the update product controller is \n", productId);
         // lets call the service layer function
         const updatedProduct = await ProductService.updateProductService(productId, updatedProductName, updatedDescription, updatedPrice, category, images, stock);
 

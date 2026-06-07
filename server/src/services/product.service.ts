@@ -491,8 +491,8 @@ export class ProductService {
             }
             
         });
-        
-        if(!orderListResponse){
+        console.log("the list of orders for this product for this particular user is : \n", orderListResponse)
+        if(!orderListResponse || orderListResponse.length === 0){
             // this means that user do not have any order with successfull payments
             // need to throw an error which will eventually return to the client 
             throw new AppError("User cannot rate this product as he has not purchased it", StatusCodes.NOT_AUTHORIZED_401);
@@ -509,7 +509,7 @@ export class ProductService {
         })
 
 
-        if(!orderItemForGivenProductAndOrders){
+        if(!orderItemForGivenProductAndOrders || orderItemForGivenProductAndOrders.length === 0){
             // this means that we are sure that this user has not purchased this product
             // itself. hence lets return the error from this service layer 
             throw new AppError("User has not purchased this product. Hence cannot review", StatusCodes.NOT_AUTHORIZED_401); 
@@ -526,7 +526,7 @@ export class ProductService {
 
         let reviewResponseToReturn = null;
 
-        if(hasUserAlreadyAddedReview){
+        if(hasUserAlreadyAddedReview && hasUserAlreadyAddedReview.length > 0){
             // this means that user would want to update thier own old ratings. 
             // lets do that now
             const reviewResponse : BatchPayload = await prisma.reviews.updateMany({

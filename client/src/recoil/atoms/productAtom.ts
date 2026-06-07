@@ -16,7 +16,17 @@ import type { ProductDetail, ProductState } from "../../types/product.types";
 // and then we will create selectors to get the specific information from
 // the productAtom.
 
-
+/**
+ * List of supported categories for the products in the application are as follows : 
+ *  1. Electronics
+ *  2. Fashion
+ *  3. Home & Garden 
+ *  4. Sports
+ *  5. Books 
+ *  6. Beauty
+ *  7. Automotive 
+ *  8. Kids and Baby
+*/
 
 export const productAtom = atom<ProductState>({
     key : "productAtom", 
