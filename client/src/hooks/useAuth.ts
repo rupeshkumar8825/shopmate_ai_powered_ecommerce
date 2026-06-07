@@ -170,8 +170,7 @@ export const useAuth = () => {
                 // then redirect user to the login page 
                 navigate("/")
             }
-            setAuthError(parsedErrorResponse.message);
-            setAuthError(err.message);
+            setAuthError(parsedErrorResponse.message);   // ✅ removed duplicate setAuthError(err.message)
             console.log("Some error occurred while updating the user profile with error messaghe : ", parsedErrorResponse.message);
         } finally {
             setIsUpdatingProfile(false);

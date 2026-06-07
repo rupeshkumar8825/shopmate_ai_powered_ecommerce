@@ -30,7 +30,7 @@ export const HomePage = () => {
             <CategorySectionComponent></CategorySectionComponent>
             <FeatureSectionComponent></FeatureSectionComponent>
             {/* we will show the allProducts and topratedproducts product slider too */}
-            <div className="w-full h-px bg-neutral-700 my-10">
+            {/* <div className="w-full h-px bg-neutral-700 my-10">
                 {
                     allProductList.length > 0 && (
                         <div className="flex flex-col gap-10">
@@ -45,7 +45,7 @@ export const HomePage = () => {
                         </div>
                     )
                 }
-            </div>
+            </div> */}
             <NewsLetterSectionComponent></NewsLetterSectionComponent>
         </div>
     )
