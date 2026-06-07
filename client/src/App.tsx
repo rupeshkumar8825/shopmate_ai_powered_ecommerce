@@ -1,7 +1,7 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { ProductDetailsPage } from './pages/ProductDetailsPage'
-import { ProductPage } from './pages/ProductsPage'
+import { ProductsPage } from './pages/ProductsPage'
 import { CartPage } from './pages/CartPage'
 import { OrdersPage } from './pages/OrdersPage'
 import { PaymentsPage } from './pages/PaymentsPage'
@@ -54,7 +54,7 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage></HomePage>} />
         <Route path='/password/reset/:token' element={<HomePage></HomePage>} />
-        <Route path='/products' element={<ProductPage></ProductPage>} />
+        <Route path='/products' element={<ProductsPage></ProductsPage>} />
         <Route path='/product/:id' element={<ProductDetailsPage></ProductDetailsPage>} />
         <Route path='/cart' element={<CartPage></CartPage>} />
         <Route path='/orders' element={<OrdersPage></OrdersPage>} />
