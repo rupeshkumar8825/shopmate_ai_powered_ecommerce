@@ -86,7 +86,7 @@ export const ProductSliderComponent = (props : ProductSliderComponentProps) => {
 
                                             {/* product price comes here */}
                                             <div className="mt-2">
-                                                <span className="text-white text-lg font-bold">${currProduct.price.toFixed(2)}</span>
+                                                <span className="text-white text-lg font-bold">${Number(currProduct.price).toFixed(2)}</span>
                                             </div>
 
                                         </div>
