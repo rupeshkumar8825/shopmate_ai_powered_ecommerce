@@ -5,6 +5,7 @@ import { ProductSectionComponent } from "../components/Products/ProductSectionCo
 import { PaginationComponent } from "../components/Products/PaginationComponent"
 import { FilterComponent } from "../components/Products/FilterSectionComponent"
 import { Sparkle, Sparkles } from "lucide-react"
+import { useState } from "react"
 
 const PRODUCTS_PER_PAGE = 6
 
@@ -19,6 +20,15 @@ export const ProductsPage = () => {
         changePage,
     } = useProduct()
 
+
+    const handleSearch = (e : React.ChangeEvent<HTMLInputElement>) => {
+        // set the search query to the updated value 
+
+        // update the filters here 
+        updateFilters({search : e.target.value })
+    }
+
+    
     return (
         <div className=" bg-background-500">
             <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
@@ -47,7 +57,7 @@ export const ProductsPage = () => {
                         {/* here comes the Search query where we can search the product with its name */}
                         <div className="flex flex-row justify-between items-center gap-5 w-full">
                             {/* here comes the actual search bar */}
-                            <input type="search" className="p-3 bg-component-background-500 text-white w-[80%] rounded-lg" placeholder="Search Products" />
+                            <input type="search" value={searchFilter.search} className="p-3 bg-component-background-500 text-white w-[80%] rounded-lg" placeholder="Search Products" onChange={handleSearch} />
                             {/* AI search button comes here  */}
                             <button className="px-4 py-2 rounded-lg bg-component-background-500 text-white font-semibold border-2 border-pink-400 flex justify-center items-center gap-2">
                                 <Sparkles className="w-4 h-4"></Sparkles>    
