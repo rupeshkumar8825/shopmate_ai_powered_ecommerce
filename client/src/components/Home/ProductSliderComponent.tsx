@@ -4,8 +4,13 @@ import { Link } from "react-router"
 import type { ProductSliderComponentProps } from "../../types/homePageTypes"
 import type { ProductDetail } from "../../types/product.types"
 import { useEffect, useRef } from "react"
+import { useCart } from "../../hooks/useCart"
+import type { CartItem } from "../../types/cartType"
 
 export const ProductSliderComponent = (props : ProductSliderComponentProps) => {
+    // all the hooks related function comes here 
+    const { addToCart } = useCart()
+
     const sliderRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -22,6 +27,25 @@ export const ProductSliderComponent = (props : ProductSliderComponentProps) => {
         if (sliderRef.current) {
             sliderRef.current.scrollBy({ left: 320, behavior: "smooth" });
         }
+    }
+
+
+    // all the handlers for this component comes here 
+    const handleAddToCart = (currProduct : ProductDetail) => {
+        // lets add this product in the cart. 
+        // al the cart related business logic is already written in 
+        // useCart hook for this purpose
+        let cartItemToAdd : CartItem = {
+            id : currProduct.id,
+            name : currProduct.name, 
+            price : currProduct.price, 
+            quantity : 1, 
+            image : currProduct.images[0].public_id, 
+            stock : currProduct.stock
+        } 
+
+        // lets call the function now 
+        addToCart(cartItemToAdd)
     }
 
     return (
@@ -98,7 +122,7 @@ export const ProductSliderComponent = (props : ProductSliderComponentProps) => {
                                         </div>
 
                                         {/* quick add to cart icon button comes here*/}
-                                        <button disabled={currProduct.stock === 0} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-2 cursor-pointer">
+                                        <button onClick={() => {handleAddToCart(currProduct)}} disabled={currProduct.stock === 0} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-2 cursor-pointer">
                                             Add to Cart
                                         </button>
 
