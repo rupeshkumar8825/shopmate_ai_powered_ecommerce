@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 // all the api related to the products comes here
 export const createProductApi = async (payload : CreateProductRequestPayload) => {
     // given the axios instance we need to make the post api call to create the product 
-    const createProductResponse = await axiosInstance.post("/v1/product/admin/create", payload, {
+    const createProductResponse = await axiosInstance.post("/v1/product/admin/create/", payload, {
         headers : {
             "Content-Type" : "multipart/form-data"
         }
@@ -28,7 +28,7 @@ export const createProductApi = async (payload : CreateProductRequestPayload) =>
 
 export const fetchAllProductsApi = async (payload : FetchAllProductsRequestPayload) => {
     // given the axios instance we need to make the get api call to fetch all the products 
-    const fetchAllProductsResponse = await axiosInstance.get("/v1/products", {
+    const fetchAllProductsResponse = await axiosInstance.get("/v1/product", {
         params : {
             availability : payload.availability,
             minPrice : payload.minPrice,
@@ -41,13 +41,14 @@ export const fetchAllProductsApi = async (payload : FetchAllProductsRequestPaylo
         }
     });
 
+
     // check whether or not we indeed got an response from the backend server or not
     if(!fetchAllProductsResponse.data) {
         throw new Error("EMPTY_RESPONSE")
     }
 
     // check if there is products details in the backend response or not
-    if(!fetchAllProductsResponse.data.products) {
+    if(!fetchAllProductsResponse.data.productList) {
         throw new Error("INVALID_RESPONSE")
     }
 

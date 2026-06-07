@@ -27,7 +27,7 @@ export const topRatedProductSelector = selector<ProductDetail[]>({
 export const newArrivalProductSelector = selector<ProductDetail[]>({
     key : "newArrivalProductSelector", 
     get : ({ get }) => {
-        return get(productAtom).newArrivalProducts;
+        return get(productAtom).newlyCreatedProductList;
     }
 });
 

@@ -15,7 +15,7 @@ export const useProduct = () => {
     
     // all the selectors related to the product comes here
     // Note : Selectors are used for reads so components that consume individual 
-    // values get fine-grained re-renders. The atom is only set, never reed directly 
+    // values get fine-grained re-renders. The atom is only set, never read directly 
     // in this hook
     const allProductList = useRecoilValue(allProductsSelector);
     const topRatedProducts = useRecoilValue(topRatedProductSelector);
@@ -30,13 +30,6 @@ export const useProduct = () => {
     const searchFilter = useRecoilValue(searchFilterSelector)
 
 
-
-
-
-
-
-
-   
     // now here we will define all the function which 
     // will interact with the API layer and then
     // update the atom state accordingly based on the response 
@@ -44,52 +37,47 @@ export const useProduct = () => {
 
 
     const createProducts = async (payload : CreateProductRequestPayload) =>  {
-        setProductState({...productState, productError : "", loading: {...productState.loading, isCreatingProduct : true}});
+        setProductState((prev) => ({ ...prev, productError: "", loading: { ...prev.loading, isCreatingProduct: true } }));
         try{
             const response : CreateProductResponse = await createProductApi(payload);
-            setProductState({...productState, allProducts : [...productState.allProducts, response.productDetails]})
+            setProductState((prev) => ({ ...prev, allProducts: [...prev.allProducts, response.productDetails] }));
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message});
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         } finally {
-            setProductState({...productState, loading : {...productState.loading, isCreatingProduct : false}});
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isCreatingProduct: false } }));
         }
-
     }
 
 
-
-
     const fetchAllProducts = async (payload : FetchAllProductsRequestPayload) => {
-        // lets update the loading related states in the productstate 
-        setProductState({...productState, productError : ""});
-        setProductState({...productState, loading : {...productState.loading, areProductsLoading : true}});
-
-        // lets use the try catch here 
+        setProductState((prev) => ({ ...prev, productError: "", loading: { ...prev.loading, areProductsLoading: true } }));
         try {   
+            console.log("the payload that we are sending to get the list of all the products are : \n", payload)
             const response : FetchAllProductsResponse = await fetchAllProductsApi(payload);
-            setProductState({...productState, allProducts : response.productList, totalNumberOfProducts : response.totalNumberOfProducts});
+            console.log("[fetchAllProducts] the response that we got from the fetchallproduct apis are : \n", response)
+            console.log("[fetchAllProducts] the list of all the products that we got is : \n", response.productList)
+            setProductState((prev) => ({
+                ...prev,
+                allProducts: response.productList,
+                totalNumberOfProducts: response.totalNumberOfProducts,
+                newlyCreatedProductList: response.newlyCreatedProducts,
+                topRatedProducts: response.topRatedProducts,
+            }));
         }catch (error){
-            // some error occurred while making an api request
-            // lets set an error here 
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message});
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
+            console.log("The error that we got is as follows\n", parsedError)
         }finally{
-            setProductState({...productState, loading : {...productState.loading, areProductsLoading : false}});
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, areProductsLoading: false } }));
         }
     }
 
 
     const updateProduct = async (payload : UpdateProductRequestPayload) => {    
-        // we will make the api call to update the product details and then we will update the product details in the atom state
-        // lets update the loading related states in the productstate 
-        setProductState({...productState, productError : ""});
-        setProductState({...productState, loading : {...productState.loading, isCreatingProduct : true}});
-
+        setProductState((prev) => ({ ...prev, productError: "", loading: { ...prev.loading, isCreatingProduct: true } }));
         try {
             const response : UpdateProductResponse = await updateProductApi(payload);
-            // now we need to update the product details in the atom state 
-            // we will update the product details in the allProducts list and also in the productDetails if the updated product is same as the one which is there in the productDetails
             const updatedProductDetails = response.updatedProductDetails;
             const updatedAllProducts = productState.allProducts.map(product => {
                 if(product.id === updatedProductDetails.id) {
@@ -97,154 +85,135 @@ export const useProduct = () => {
                 }
                 return product;
             });
-            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === updatedProductDetails.id ? updatedProductDetails : productState.productDetails});
+            setProductState((prev) => ({
+                ...prev,
+                allProducts: updatedAllProducts,
+                productDetails: prev.productDetails?.id === updatedProductDetails.id ? updatedProductDetails : prev.productDetails
+            }));
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message});
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         } finally {
-            setProductState({...productState, loading : {...productState.loading, isCreatingProduct : false}});
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isCreatingProduct: false } }));
         }
     }
 
-    
 
     const deleteProduct = async (payload : DeleteProductRequestPayload) => {
-        // we will make the api call to delete the product and then we will update the product details in the atom state
-        // lets update the loading related states in the productstate 
-        setProductState({...productState, productError : ""});
-        setProductState({...productState, loading : {...productState.loading, isCreatingProduct : true}});
-
+        setProductState((prev) => ({ ...prev, productError: "", loading: { ...prev.loading, isCreatingProduct: true } }));
         try {
             await deleteProductApi(payload);
-            // now we need to remove the deleted product from the atom state 
             const deletedProductId = payload.productId;
-            const updatedAllProducts = productState.allProducts.filter(product => product.id !== deletedProductId);
-            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === deletedProductId ? null : productState.productDetails});
+            setProductState((prev) => ({
+                ...prev,
+                allProducts: prev.allProducts.filter(product => product.id !== deletedProductId),
+                productDetails: prev.productDetails?.id === deletedProductId ? null : prev.productDetails
+            }));
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message});
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         } finally {
-            setProductState({...productState, loading : {...productState.loading, isCreatingProduct : false}});
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isCreatingProduct: false } }));
         }
     }
 
 
     const fetchSingleProductDetails = async (payload : FetchProductDetailRequestPayload) => {
-        // we will make the api call to fetch the product details and then we will update the product details in the atom state
-        // lets update the loading related states in the productstate 
-        setProductState({...productState, productError : ""});
-        setProductState({...productState, loading : {...productState.loading, areProductsLoading : true}});
-        
+        setProductState((prev) => ({ ...prev, productError: "", loading: { ...prev.loading, areProductsLoading: true } }));
         try {
             const response = await fetchSingleProductDetailsApi(payload);
-            setProductState({...productState, productDetails : response.productDetails});
+            setProductState((prev) => ({ ...prev, productDetails: response.productDetails }));
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message});
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         } finally {
-            setProductState({...productState, loading : {...productState.loading, areProductsLoading : false}});
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, areProductsLoading: false } }));
         }
     }
 
 
-
-
     const postProductReview = async (payload : PostProductReviewRequestPayload) => {
-        // we will make the api call to post the product review and then we will update the product details in the atom state
-            // lets update the loading related states in the productstate
-        setProductState({...productState, productError : ""});
-        setProductState({...productState, loading : {...productState.loading, isReviewGettingPosted : true}});
-
+        setProductState((prev) => ({ ...prev, productError: "", loading: { ...prev.loading, isReviewGettingPosted: true } }));
         try {
-            const response : PostProductReviewResponse =  await postProductReviewApi(payload);
-            // now we need to update the product details in the atom state 
-            // we will update the product details in the allProducts list and also in the productDetails if the updated product is same as the one which is there in the productDetails
+            const response : PostProductReviewResponse = await postProductReviewApi(payload);
             const updatedAllProducts = productState.allProducts.map(product => {
                 if(product.id === payload.productId) {
                     return response.product;
                 }
                 return product;
             });
-            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === payload.productId ? response.product : productState.productDetails});
+            setProductState((prev) => ({
+                ...prev,
+                allProducts: updatedAllProducts,
+                productDetails: prev.productDetails?.id === payload.productId ? response.product : prev.productDetails
+            }));
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message});
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         } finally {
-            setProductState({...productState, loading : {...productState.loading, isReviewGettingPosted : false}});
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isReviewGettingPosted: false } }));
         }   
     }
 
 
-
     const deleteProductReview = async (payload : DeleteProductReviewRequestPayload) => {
-        setProductState({...productState, loading : {...productState.loading, isReviewGettingDeleted : true}});
-
+        setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isReviewGettingDeleted: true } }));
         try{
-            // lets call the api here and get the response from the backend server 
             const response : DeleteProductReviewResponse = await deleteProductReviewApi(payload);
-            // lets first remove the product from all product list 
             const updatedAllProducts : ProductDetail[] = allProductList.map((currProduct : ProductDetail) => {
-                // check if any product with this product id exists or not 
                 if(currProduct.id === response.product.id)
                 {
-                    // then we need to return the updated product 
                     return response.product;
                 } 
-
-                // else we simply return the same element 
                 return currProduct;
             })
-
-
-            setProductState({...productState, allProducts : updatedAllProducts, productDetails : productState.productDetails?.id === response.product.id? response.product : productState.productDetails  })
+            setProductState((prev) => ({
+                ...prev,
+                allProducts: updatedAllProducts,
+                productDetails: prev.productDetails?.id === response.product.id ? response.product : prev.productDetails
+            }));
         }catch(error){
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message})
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         }finally {
-            setProductState({...productState, loading : {...productState.loading, isReviewGettingDeleted : false}})
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isReviewGettingDeleted: false } }));
         }
     }
-
 
 
     const fetchAIFilteredProducts = async (payload : FetchAIFilteredProductsRequestPayload) => {
-        setProductState({...productState, loading : {...productState.loading, isAISearchResponseLoading : true}})
+        setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isAISearchResponseLoading: true } }));
         try{
             const response : FetchAIFilteredProductsResponse = await fetchAIFilteredProductsAPI(payload)
-            setProductState({...productState, allProducts : response.aiFilteredProducts, totalNumberOfProducts : response.aiFilteredProducts.length});
+            setProductState((prev) => ({ ...prev, allProducts: response.aiFilteredProducts, totalNumberOfProducts: response.aiFilteredProducts.length }));
         }catch(error) {
             const parsedError : ParsedApiError = globalAxiosErrorHandler(error);
-            setProductState({...productState, productError : parsedError.message})
+            setProductState((prev) => ({ ...prev, productError: parsedError.message }));
         }finally {
-            setProductState({...productState, loading : {...productState.loading, isAISearchResponseLoading : false}})
+            setProductState((prev) => ({ ...prev, loading: { ...prev.loading, isAISearchResponseLoading: false } }));
         }
     }
-
 
 
     const updateFilters = async (updatedFilters : Partial<FetchAllProductsRequestPayload>) => {
         // whenever the filter is updated then we will set the page to 1 
         let mergedFilters : FetchAllProductsRequestPayload = {...productState.searchFilter, ...updatedFilters, page : 1}
 
-        setProductState({...productState, searchFilter : mergedFilters})
+        setProductState((prev) => ({ ...prev, searchFilter: mergedFilters }));
         
         // now here lets call the function to fetch all the products based on this updated filter 
         await fetchAllProducts(mergedFilters)
-
     }
     
 
     const changePage = async (page : number) => {
         let mergedFilter : FetchAllProductsRequestPayload = {...productState.searchFilter, page : page}
 
-        // lets update the product state here with this updated filter 
-        setProductState({...productState, searchFilter : mergedFilter})
+        setProductState((prev) => ({ ...prev, searchFilter: mergedFilter }));
 
         // now lets call the function to fetch the product  
         await fetchAllProducts(mergedFilter)
     }
-
-
 
 
     return {
@@ -273,8 +242,4 @@ export const useProduct = () => {
         updateFilters, 
         changePage
     }
-
-
-    
-
 }

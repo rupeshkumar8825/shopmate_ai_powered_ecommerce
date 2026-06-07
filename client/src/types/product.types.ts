@@ -176,7 +176,7 @@ export interface FetchAIFilteredProductsResponse {
 export interface ProductState {
     allProducts : ProductDetail[], 
     topRatedProducts : ProductDetail[], 
-    newArrivalProducts : ProductDetail[], 
+    newlyCreatedProductList : ProductDetail[], 
     productDetails : ProductDetail | null, 
     productError : string, 
     totalNumberOfProducts : number, 

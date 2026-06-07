@@ -53,7 +53,7 @@ export class ProductController {
         const search = request.query.search? request.query.search as string : undefined;
         const page : number|undefined = request.query.page? parseInt(request.query.page as string) : undefined;
 
-        
+        console.log("fetchallProductsController was hit")
         const [totalNumberOfProducts, allProductList, newlyCreatedProductListFinal, topRatedProducts] = await ProductService.fetchAllProductsService(availability, minPrice, maxPrice, minRating, maxRating, search, category, page);
 
         // control reaches means this executed perfectly right 

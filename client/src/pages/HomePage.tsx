@@ -1,9 +1,8 @@
-import React from "react";
+import { useEffect } from "react";
 import { HeroSliderSectionComponent } from "../components/Home/HeroSliderSectionComponent";
 import { CategorySectionComponent } from "../components/Home/CategorySectionComponent";
 import { FeatureSectionComponent } from "../components/Home/FeatureSectionComponent";
 import { NewsLetterSectionComponent } from "../components/Home/NewsLetterSectionComponent";
-import { NavbarLayout } from "../components/Layout/NavbarLayout";
 import { ProductSliderComponent } from "../components/Home/ProductSliderComponent";
 import { useProduct } from "../hooks/useProduct";
 
@@ -11,6 +10,18 @@ export const HomePage = () => {
 
     // lets get the list of all products from the product hook 
     const { allProductList, topRatedProducts } = useProduct();
+
+    useEffect(() => {
+        console.log("the value of the all product list and toprated products in the home page is as follows")
+        console.log("All ProductList :- \n ", allProductList)
+        console.log("Top rated product list :- \n ", topRatedProducts)
+    }, [allProductList, topRatedProducts])
+
+    useEffect(() => {
+        // console.log("INSIDE USEEFFECT TO CAPTURE THE CHANGE IN THE useProduct")
+        // console.log("All ProductList :- \n ", allProductList)
+        // console.log("Top rated product list :- \n ", topRatedProducts)
+    }, [useProduct])
 
     return(
         <div className="">

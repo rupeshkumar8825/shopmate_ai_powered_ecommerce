@@ -33,7 +33,7 @@ export const productAtom = atom<ProductState>({
     default : {
         allProducts : [],
         topRatedProducts : [],
-        newArrivalProducts : [],
+        newlyCreatedProductList : [],
         productDetails : null,
         totalNumberOfProducts : 0,
         productError : "",
@@ -45,7 +45,7 @@ export const productAtom = atom<ProductState>({
             isReviewGettingPosted : false,
         }, 
         searchFilter : {
-            availability : "in-stock", 
+            availability : undefined, 
             minPrice : 0, 
             maxPrice : 100000, 
             category : undefined, 
