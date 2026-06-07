@@ -119,7 +119,7 @@ export class ProductService {
 
         // based on the filters we need to frame the prisma query to be passed
         page = page ?? 1;
-        const limit = 20;
+        const limit = 6;
         const skip = (page - 1) * limit;
         const andQueries = [];
         if(availability === "in-stock"){
@@ -150,10 +150,10 @@ export class ProductService {
 
         // lets accomodate the rating related filters 
         if(minRating){
-            andQueries.push({rating : {gte : minRating}})
+            andQueries.push({ratings : {gte : minRating}})
         }
         if(maxRating){
-            andQueries.push({rating : {lte : maxRating}})
+            andQueries.push({ratings : {lte : maxRating}})
         }
 
         // handle the category related filter

@@ -19,7 +19,7 @@ export const ProductsPage = () => {
     } = useProduct()
 
     return (
-        <div className="min-h-screen bg-background-500">
+        <div className=" bg-background-500">
             <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col gap-8">
 
                 {/* Page Header */}
