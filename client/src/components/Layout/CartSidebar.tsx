@@ -46,7 +46,7 @@ export const CartSidebar = () => {
                         <div className=" flex flex-col justify-center items-center bg-neutral-200 w-[80%] shadow-lg gap-10 p-10 rounded-md  ">
                             {
                                 cartItems.map((item) => (
-                                    <div key={item.id} className=" flex flex-row justify-between items-center gap-5 bg-neutral-200 w-full rounded-md">
+                                    <div key={item.id} className=" flex flex-row justify-between items-center gap-5 bg-neutral-300 w-full rounded-md p-10">
                                         <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
                                         <div className="flex flex-col justify-start items-start gap-2">
                                             <h1 className="text-lg font-semibold">{item.name}</h1>
