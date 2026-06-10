@@ -73,6 +73,10 @@ export class OrderService {
                 tax_price : taxPrice, 
                 shipping_price : 2, 
                 order_status : OrderStatus.Processing, 
+            }, 
+            include : {
+                orderItemList : true, 
+                shippingInfoList : true
             }
         });
 
