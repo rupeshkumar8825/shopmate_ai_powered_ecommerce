@@ -13,7 +13,7 @@ export const useCart = () => {
             // check if the item is already in the cart 
             const existingItemIndex = prev.findIndex(cartItem => cartItem.id === item.id);
             if(existingItemIndex !== -1) {
-                // if the item is already in the cart then we need to update the quantity of that item
+                // if the item is already in the ca rt then we need to update the quantity of that item
                 const updatedCartItems = [...prev];
                 updatedCartItems[existingItemIndex] = {
                     ...updatedCartItems[existingItemIndex],
