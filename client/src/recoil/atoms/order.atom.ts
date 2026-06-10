@@ -9,25 +9,27 @@
 // 7. placing order too
 
 import { atom } from "recoil";
-import type { OrderDetails } from "../../types/order.types"
+import type { OrderDetails, PaymentIntentResponse } from "../../types/order.types"
 
 export interface OrderAtom {
-    orderDetails : OrderDetails |  null,
-    fetchingOrders : boolean, 
-    placingOrder : boolean, 
-    finalPrice : number | null, 
-    orderStep : number, 
-    paymentIntent : string
+    orderDetails : OrderDetails | null,
+    orderList : OrderDetails[],
+    fetchingOrders : boolean,
+    placingOrder : boolean,
+    finalPrice : number | null,
+    orderStep : number,
+    paymentIntent : PaymentIntentResponse | null
 }
 
 
 const defaultOrderAtomValue : OrderAtom = {
-    orderDetails : null, 
-    fetchingOrders : false, 
-    placingOrder : false, 
-    finalPrice : null, 
-    orderStep : 1, 
-    paymentIntent : ""
+    orderDetails : null,
+    orderList : [],
+    fetchingOrders : false,
+    placingOrder : false,
+    finalPrice : null,
+    orderStep : 1,
+    paymentIntent : null
 }
 
 
