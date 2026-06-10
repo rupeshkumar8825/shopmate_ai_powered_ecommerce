@@ -117,7 +117,7 @@ export class OrderController {
 
     static async updateOrderStatusController (request : Request, response : Response) {
         const orderId : string|undefined = request.params.orderId as string;
-        const updatedOrderStatus : string|undefined = request.body.orderId; 
+        const updatedOrderStatus : string|undefined = request.body.orderStatus; 
 
         // call the service layer function 
         const updatedOrderDetailsResponse = await OrderService.updateOrderStatusService(orderId, updatedOrderStatus);
