@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "../error/statusCodes";
-import { IorderItem } from "../types/custom";
+import { ProductToQuantity } from "../types/custom";
 import { OrderService } from "../services/order.service";
 
 // controller layer code to handle everything related to the orders 
@@ -31,7 +31,7 @@ export class OrderController {
             });
         }
         // else lets get the orderItems 
-        const orderItems : IorderItem[] | undefined = request.body.orderItems;
+        const orderItems : ProductToQuantity[] | undefined = request.body.orderItems;
 
         // lets call the service layer function 
         const [newOrderServiceResponse, generatePaymentIntentResponse] = await OrderService.placeNewOrderService(userId, fullName, state, city, country, address, pincode, phone, orderItems);

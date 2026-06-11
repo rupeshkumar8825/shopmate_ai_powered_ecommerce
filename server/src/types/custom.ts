@@ -1,5 +1,5 @@
 // lets have our all custom types in this file 
-export type IorderItem = {
+export type ProductToQuantity = {
     productId : string, 
     quantity : string 
 };

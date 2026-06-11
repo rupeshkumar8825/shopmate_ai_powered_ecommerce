@@ -2,9 +2,22 @@
 
 
 export interface OrderItem {
-    productId : string, 
-    quantity : string
+    id : string, 
+    order_id : string,
+    product_id : string,
+    quantity : number, 
+    price : number, 
+    image : string, 
+    title : string, 
+    created_at : Date
 }
+
+
+export type ProductToQuantity = {
+    productId : string, 
+    quantity : string 
+};
+
 
 export interface ShippingInfoDetails {
     id : string, 
@@ -49,7 +62,7 @@ export interface PlaceNewOrderRequestPayload {
     address : string, 
     pincode : string,
     phone : string, 
-    orderItems : OrderItem[],
+    orderItems : ProductToQuantity[],
 }
 
 

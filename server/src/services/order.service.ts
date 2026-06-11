@@ -5,13 +5,13 @@ import { Decimal } from "@prisma/client/runtime/library";
 import prisma from "../config/prisma";
 import { StatusCodes } from "../error/statusCodes";
 import AppError from "../middlware/errorHandler";
-import { avatarType, IorderItem, IOrderItemDB } from "../types/custom";
+import { avatarType, ProductToQuantity, IOrderItemDB } from "../types/custom";
 import { OrderStatus } from "../generated/prisma/enums";
 import { PaymentsService } from "./payments.service";
 
 export class OrderService {
     static async placeNewOrderService(userId : string|undefined, fullName : string|undefined, state : string|undefined, city : string|undefined, 
-        country : string|undefined, address : string|undefined, pincode : string|undefined, phone : string|undefined, orderItems : IorderItem[]|undefined
+        country : string|undefined, address : string|undefined, pincode : string|undefined, phone : string|undefined, orderItems : ProductToQuantity[]|undefined
     ){
         // lets first validate the inputs which are present here 
         if(!userId || !fullName || !state || !city || !country || !address
