@@ -4,8 +4,10 @@ import type { DeleteOrderRequestPayload, DeleteOrderResponse, FetchAllOrderRespo
 import axiosInstance from "./axiosInstance";
 
 export const placeNewOrderApi = async (payload : PlaceNewOrderRequestPayload) : Promise<PlaceNewOrderRequestResponse> => {
+    // lets write some of the log statements here 
+    console.log("INSIDE PLACE NEW ORDER : - The request to send to backend to place new order is ", payload)
     const response = await axiosInstance.post("/v1/order/new", payload)
-
+    console.log("INSIDE PLACE NEW ORDER : - the response that we have got is from placenew order is : ", response)
     if(!response.data) {
         throw new Error ("EMPTY_RESPONSE")
     }
@@ -34,8 +36,9 @@ export const fetchSingleOrderApi = async (payload : FetchSingleOrderRequestPaylo
 
 
 export const fetchMyOrderDetailsApi = async () : Promise<FetchMyOrderDetailsResponse> => {
+    console.log("FETCH MY ORDER DETAILS API : - we are not sending any of the payload as there is no need");
     const response = await axiosInstance.get("/v1/order/user/all")
-
+    console.log("FETCH MY ORDER DETAILS API : - the response that we got from the backend server is", response);
     if(!response.data) {
         throw new Error("EMPTY_RESPONSE")
     }

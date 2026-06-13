@@ -81,10 +81,8 @@ export class OrderController {
      */
     static async fetchMyOrderDetailsController (request : Request, response : Response) {
         const userId : string|undefined = request.userId;
-
         // call the service layer function here 
         const allOrderDetailsResponse = await OrderService.fetchMyOrderDetailsService(userId);
-
         // if the control reaches here this means that the all the order details of 
         // of all the orders of a given order is fetched 
         // say everything went fine 

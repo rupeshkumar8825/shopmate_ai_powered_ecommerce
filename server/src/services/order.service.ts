@@ -190,7 +190,6 @@ export class OrderService {
             // user not found. lets throw an error here  
             throw new AppError("User not found", StatusCodes.NOT_FOUND_404);
         }
-
         // now we have validated that the user is found. 
         // now lets find the details of all theo orders for this user 
         const allOrderDetailsResponse = await prisma.order.findMany({
@@ -200,8 +199,7 @@ export class OrderService {
                 shippingInfoList : true
             }
         });
-
-        if(allOrderDetailsResponse){
+        if(!allOrderDetailsResponse){
             // no order found for this user 
             throw new AppError("No orders found", StatusCodes.NOT_FOUND_404);
         }
