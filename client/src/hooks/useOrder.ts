@@ -27,9 +27,11 @@ export const useOrder = () => {
                 orderDetails: response.order,
                 paymentIntent: response.paymentDetails,
             }));
+            return response;
         } catch (error) {
             const parsedError: ParsedApiError = globalAxiosErrorHandler(error);
             console.error("[placeNewOrder]", parsedError.message);
+            return null;
         } finally {
             setOrderState((prev) => ({ ...prev, placingOrder: false }));
         }
