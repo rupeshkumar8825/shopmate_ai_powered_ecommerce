@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/use.auth.hook"
 
 export const LoginPage = () => {
     // ── custom hook ──
-    const { loginAdmin, isAuthenticated, loading, error, clearError } = useAuth()
+    const { loginAdmin, isAuthenticated, user, loading, error, clearError } = useAuth()
 
     // ── inbuilt hooks ──
     const navigate = useNavigate()
@@ -25,6 +25,9 @@ export const LoginPage = () => {
 
     // already logged in → straight to the dashboard
     useEffect(() => {
+        console.log("INSIDE THE LOGIN PAGE USEEFFECT : - the value of isauthenticated and the user is ")
+        console.log(isAuthenticated)
+        console.log(user)
         if (isAuthenticated) navigate("/")
     }, [isAuthenticated, navigate])
 

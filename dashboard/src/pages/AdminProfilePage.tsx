@@ -61,12 +61,17 @@ export const AdminProfilePage = () => {
     // hydrate the session on mount if the user isn't loaded yet
     useEffect(() => {
         clearError()
-        if (!user) fetchAdminDetails()
+        console.log("INSIDE THE ADMIN PROFILE PAGE FIRST RENDERS HAPPENS HERE")
+        if (!user)  fetchAdminDetails()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // bounce to login if we know the admin isn't authenticated
     useEffect(() => {
+        console.log("ADMIN PROFILE PAGE USEEFFECT : - the value of the auth state atom is : ")
+        console.log(loading)
+        console.log(isAuthenticated)
+        console.log(user)
         if (!loading && !isAuthenticated && !user) navigate("/login")
     }, [loading, isAuthenticated, user, navigate])
 
