@@ -1,9 +1,13 @@
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { LoginPage } from "./pages/LoginPage"
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage"
 import { ResetPasswordPage } from "./pages/ResetPasswordPage"
 import { AdminProfilePage } from "./pages/AdminProfilePage"
 import { DashboardPage } from "./pages/DashboardPage"
+import { OrdersPage } from "./pages/OrdersPage"
+import { ProductsPage } from "./pages/ProductsPage"
+import { UsersPage } from "./pages/UsersPage"
+import { DashboardLayout } from "./components/DashboardLayout"
 import { useEffect } from "react"
 import { useAuth } from "./hooks/use.auth.hook"
 
@@ -19,10 +23,8 @@ const FullPageSpinner = () => (
 
 function App() {
     const { fetchAdminDetails, loading, isAuthenticated } = useAuth();
-    const navigate = useNavigate();
     // fetch admin details on mount to confirm auth state
     useEffect(() => {
-      console.log("THE MAIN APP COMPONENT OF THE DASHBOARD APP RENDERED")
         fetchAdminDetails();
     }, [])
 
@@ -53,13 +55,19 @@ function App() {
                 } />
 
                 {/* ── Protected routes ──────────────────────────────────────────
-                    Require authentication. Redirect to /login if not logged in. */}
-                <Route path="/" element={
-                    isAuthenticated ? <DashboardPage /> : <Navigate to="/login" replace />
-                } />
-                <Route path="/profile" element={
-                    isAuthenticated ? <AdminProfilePage /> : <Navigate to="/login" replace />
-                } />
+                    Require authentication. The guard is applied once on the layout
+                    route — if not logged in we redirect to /login, otherwise the
+                    DashboardLayout (persistent sidebar) renders and the selected child
+                    page shows on the right via <Outlet/>. */}
+                <Route element={
+                    isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" replace />
+                }>
+                    <Route path="/" element={<DashboardPage />} />
+                    <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/products" element={<ProductsPage />} />
+                    <Route path="/users" element={<UsersPage />} />
+                    <Route path="/profile" element={<AdminProfilePage />} />
+                </Route>
             </Routes>
         </div>
     )
