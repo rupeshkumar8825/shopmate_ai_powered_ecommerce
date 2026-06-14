@@ -19,13 +19,13 @@ export const useAuth = () => {
     // all the recoil related states will come here
     const [user, setUser] = useRecoilState(userAtom)
     const [isAuthenticated, setIsAuthenticated] = useRecoilState(isAuthenticatedAtom)
-
+    const [isFetchingUser, setIsFetchingUser] = useRecoilState(isFetchingUserAtom)
+ 
     const setIsUserLoggingIn = useSetRecoilState(isUserLoggingInAtom)
     const setIsUserRegistering = useSetRecoilState(isUserRegisteringAtom) 
     const setIsUserLoggingOut = useSetRecoilState(isUserLoggingOutAtom)
     const setIsPasswordChanging = useSetRecoilState(isPasswordChangingAtom)
     const setIsUpdatingProfile = useSetRecoilState(isUpdatingProfileAtom)
-    const setIsFetchingUser = useSetRecoilState(isFetchingUserAtom)
     const setAuthError = useSetRecoilState(authErrorAtom)
 
     /**
@@ -209,6 +209,7 @@ export const useAuth = () => {
     return {
         user, 
         isAuthenticated, 
+        isFetchingUser,
         loginUser, 
         registerUser, 
         logoutUser, 

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { ProductDetailsPage } from './pages/ProductDetailsPage'
 import { ProductsPage } from './pages/ProductsPage'
@@ -19,54 +19,79 @@ import { useEffect } from 'react'
 import { useAuth } from './hooks/useAuth'
 import { useProduct } from './hooks/useProduct'
 
+// ── Full page spinner shown while auth state is being determined ──────────────
+const FullPageSpinner = () => (
+    <div className="min-h-screen bg-background-500 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin" />
+            <p className="text-gray-400 text-sm">Loading...</p>
+        </div>
+    </div>
+)
+
 function App() {
-  const { fetchUserDetails } = useAuth();
-  const { fetchAllProducts, searchFilter } = useProduct();
+    const { fetchUserDetails, isFetchingUser, isAuthenticated } = useAuth();
+    const { fetchAllProducts, searchFilter } = useProduct();
 
-  // whenever this component renders then we will try to fetch the user details 
-  useEffect(() => {
-    fetchUserDetails()
-  }, [])
+    // fetch user details on mount to confirm auth state
+    useEffect(() => {
+        fetchUserDetails()
+    }, [])
 
-  // whenever the component renders then we will try to fetch the 
-  // list of all products 
-  useEffect(() => {
-    fetchAllProducts(searchFilter);
-  }, [])
+    // fetch all products on mount for the home and products pages
+    useEffect(() => {
+        fetchAllProducts(searchFilter);
+    }, [])
 
+    // ── Auth guard ────────────────────────────────────────────────────────────
+    // Block ALL rendering until we know whether the user is logged in or not.
+    // Without this, React renders the routes synchronously before fetchUserDetails
+    // completes, causing a flash of wrong content or unauthenticated access.
+    // isFetchingUser is true from the moment fetchUserDetails starts until
+    // the API responds (set in the finally block of the hook).
+    if (isFetchingUser) {
+        return <FullPageSpinner />
+    }
 
+    return (
+        <>
+            <NavbarLayout />
+            <SideBarLayout />
+            <SearchOverLayLayout />
+            <CartSidebar />
+            <ProfilePanelLayout />
+            <LoginModalLayout />
 
+            <Routes>
+                {/* ── Public routes — accessible to everyone ── */}
+                <Route path='/' element={<HomePage />} />
+                <Route path='/password/reset/:token' element={<HomePage />} />
+                <Route path='/products' element={<ProductsPage />} />
+                <Route path='/products/:id' element={<ProductDetailsPage />} />
+                <Route path='/about' element={<AboutPage />} />
+                <Route path='/faq' element={<FAQsPage />} />
+                <Route path='/contact' element={<ContactPage />} />
 
+                {/* ── Protected routes — redirect to "/" if not authenticated ──
+                    Note: redirecting to "/" because your login is handled via
+                    LoginModalLayout (a modal overlay on the homepage) and not
+                    a separate /login page. If you add a dedicated login page
+                    later, change the Navigate target to "/login" instead.     */}
+                <Route path='/cart' element={
+                    isAuthenticated ? <CartPage /> : <Navigate to="/" replace />
+                } />
+                <Route path='/orders' element={
+                    isAuthenticated ? <OrdersPage /> : <Navigate to="/" replace />
+                } />
+                <Route path='/payment' element={
+                    isAuthenticated ? <PaymentsPage /> : <Navigate to="/" replace />
+                } />
 
-  // TODO : add logic to add loading component until the user details are being fetched
-  // if(isAuthenticated && !user){
-  //   // this means that the app is fetching the details of the user
-  // }
-
-  return (
-    <>
-      <NavbarLayout></NavbarLayout>
-      <SideBarLayout></SideBarLayout>
-      <SearchOverLayLayout></SearchOverLayLayout>
-      <CartSidebar></CartSidebar>
-      <ProfilePanelLayout></ProfilePanelLayout>
-      <LoginModalLayout></LoginModalLayout>
-      <Routes>
-        <Route path='/' element={<HomePage></HomePage>} />
-        <Route path='/password/reset/:token' element={<HomePage></HomePage>} />
-        <Route path='/products' element={<ProductsPage></ProductsPage>} />
-        <Route path='/products/:id' element={<ProductDetailsPage></ProductDetailsPage>} />
-        <Route path='/cart' element={<CartPage></CartPage>} />
-        <Route path='/orders' element={<OrdersPage></OrdersPage>} />
-        <Route path='/payment' element={<PaymentsPage></PaymentsPage>} />
-        <Route path='/about' element={<AboutPage></AboutPage>} />
-        <Route path='/faq' element={<FAQsPage></FAQsPage>} />
-        <Route path='/contact' element={<ContactPage></ContactPage>} />
-        <Route path='*' element={<NotFoundPage></NotFoundPage>} />
-      </Routes>
-      
-    </>
-  )
+                {/* ── 404 ── */}
+                <Route path='*' element={<NotFoundPage />} />
+            </Routes>
+        </>
+    )
 }
 
 export default App
