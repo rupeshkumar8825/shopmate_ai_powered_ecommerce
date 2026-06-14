@@ -19,8 +19,16 @@ export const isAuthenticatedSelector = selector<boolean>({
 });
 
 export const authUserSelector = selector<User | null>({
-    key : "authUserSelector", 
+    key : "authUserSelector",
     get : ({ get }) => {
         return get(authStateAtom).user;
+    }
+})
+
+
+export const authErrorSelector = selector<string | null>({
+    key : "authErrorSelector",
+    get : ({ get }) => {
+        return get(authStateAtom).error;
     }
 })

@@ -9,8 +9,9 @@ import type { AuthStateAtom } from "../../types/auth.types";
 export const authStateAtom = atom<AuthStateAtom>({
     key : "authStateAtom", 
     default : {
-        loading : false, 
-        user : null, 
-        isAuthenticated : false
+        loading : false,
+        user : null,
+        isAuthenticated : false,
+        error : null
     }
 });
