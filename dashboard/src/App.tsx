@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
 import { LoginPage } from "./pages/LoginPage"
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage"
 import { ResetPasswordPage } from "./pages/ResetPasswordPage"
@@ -19,9 +19,10 @@ const FullPageSpinner = () => (
 
 function App() {
     const { fetchAdminDetails, loading, isAuthenticated } = useAuth();
-
+    const navigate = useNavigate();
     // fetch admin details on mount to confirm auth state
     useEffect(() => {
+      console.log("THE MAIN APP COMPONENT OF THE DASHBOARD APP RENDERED")
         fetchAdminDetails();
     }, [])
 

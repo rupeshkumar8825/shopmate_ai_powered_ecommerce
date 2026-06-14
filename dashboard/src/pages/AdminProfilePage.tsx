@@ -62,7 +62,16 @@ export const AdminProfilePage = () => {
     useEffect(() => {
         clearError()
         console.log("INSIDE THE ADMIN PROFILE PAGE FIRST RENDERS HAPPENS HERE")
-        if (!user)  fetchAdminDetails()
+        if (!user){
+            console.log("INSIDE THE ADMIN PROFILE USEFFECT: - it seems that the user is not there");
+            console.log("lets try to again fetch the details of the admin user")
+            fetchAdminDetails()
+
+        } else {
+            console.log("It seems user value is already set and hence user is already logged in");
+            console.log("lets not try to fetch the admin details again as admin user is already logged in for this purpose");
+
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

@@ -19,6 +19,7 @@ export const LoginPage = () => {
 
     // clear any stale auth error when the page mounts
     useEffect(() => {
+        console.log("LOGIN PAGE RENDERED IN DEFAULT USEEFFECT")
         clearError()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
