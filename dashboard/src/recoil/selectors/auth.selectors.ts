@@ -1,5 +1,6 @@
 import { selector } from "recoil";
-import { authStateAtom, type User } from "../atoms/auth.atom";
+import { authStateAtom } from "../atoms/auth.atom";
+import type { User } from "../../types/auth.types";
 
 // this is the selectors related to the authentication itself for this purpose
 export const isAuthOperationLoadingSelectors = selector<boolean>({
@@ -17,7 +18,7 @@ export const isAuthenticatedSelector = selector<boolean>({
     }
 });
 
-export const authUserSelector = selector<User>({
+export const authUserSelector = selector<User | null>({
     key : "authUserSelector", 
     get : ({ get }) => {
         return get(authStateAtom).user;
