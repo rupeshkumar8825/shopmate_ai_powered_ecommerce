@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom"
 import { LoginPage } from "./pages/LoginPage"
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage"
 import { ResetPasswordPage } from "./pages/ResetPasswordPage"
+import { AdminProfilePage } from "./pages/AdminProfilePage"
 import { DashboardPage } from "./pages/DashboardPage"
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<LoginPage></LoginPage>}></Route>
         <Route path="/password/forgot" element={<ForgotPasswordPage></ForgotPasswordPage>}></Route>
         <Route path="/password/reset/:token" element={<ResetPasswordPage></ResetPasswordPage>}></Route>
+        <Route path="/profile" element={<AdminProfilePage></AdminProfilePage>}></Route>
         <Route path="/" element={<DashboardPage></DashboardPage>}></Route>
       </Routes>
     </div>
