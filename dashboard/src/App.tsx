@@ -1,9 +1,16 @@
+import { Route, Routes } from "react-router-dom"
+import { LoginPage } from "./pages/LoginPage"
+import { DashboardPage } from "./pages/DashboardPage"
 
 function App() {
 
   return (
-    <div className='border-2 border-red-500, bg-component-background-500 text-white font-semibold'>
-      Hi this is the dashboard app that we are going to make as part of the shopmate application
+    <div>
+      {/* add the routes here for the application  */}
+      <Routes>
+        <Route path="/login" element={<LoginPage></LoginPage>}></Route>
+        <Route path="/" element={<DashboardPage></DashboardPage>}></Route>
+      </Routes>
     </div>    
   )
 }
