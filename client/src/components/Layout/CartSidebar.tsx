@@ -38,12 +38,12 @@ export const CartSidebar = () => {
                         <button onClick={browseProductsClickHandler} className="px-4 py-2 bg-neutral-300 shadow-2xl  text-black rounded-lg mt-5 cursor-pointer">Start Shopping</button>
                     </div>
                 ) : (
-                    <div className={` fixed top-0 right-0 w-[30%] h-full bg-neutral-300 shadow-lg z-50 transform ${isCartPopupOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-start items-center gap-10`}>
+                    <div className={` fixed top-0 right-0 w-[45%] h-full bg-neutral-300 shadow-lg z-50 transform ${isCartPopupOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out  flex flex-col justify-start items-center gap-10`}>
                         {/* title of the cart page comes here */}
                         <div className=" p-10">
-                            <h1 className="text-5xl  font-bold">You Cart</h1>
+                            <h1 className="text-3xl  font-bold">You Cart</h1>
                         </div>
-                        <div className=" flex flex-col justify-center items-center bg-neutral-200 w-[80%] shadow-lg gap-10 p-10 rounded-md  ">
+                        <div className=" flex flex-col justify-center items-center bg-neutral-200 w-[90%] shadow-lg gap-10 p-10 rounded-md  ">
                             {
                                 cartItems.map((item) => (
                                     <div key={item.id} className=" flex flex-row justify-between items-center gap-5 bg-neutral-300 w-full rounded-md p-10">

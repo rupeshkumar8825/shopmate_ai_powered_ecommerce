@@ -100,7 +100,7 @@ export const ProfilePanelLayout = () => {
             <div onClick={() => setIsAuthPopupOpen(false)} className={`fixed top-0 right-0 w-full h-full bg-black/50 bg-opacity-50 z-40 ${isAuthPopUpOpen? "block" : "hidden"} `}></div>
 
             {/* actual navbar starts here  */}
-            <div className={` bg-neutral-300 px-10 py-2 fixed top-0 right-0 w-[40%] h-full shadow-lg z-50 transform ${isAuthPopUpOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out bg-neutral-200 flex flex-col justify-start items-center gap-10`}>
+            <div className={` bg-neutral-300 px-10 py-2 fixed top-0 right-0 overflow-y-auto w-[40%] h-full shadow-lg z-50 transform ${isAuthPopUpOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out bg-neutral-200 flex flex-col justify-start items-center gap-10`}>
                 {/* heading of the profile section comes here */}
                 <div className="">
                     <h1 className="text-3xl text-center font-bold">Profile Panel</h1>
