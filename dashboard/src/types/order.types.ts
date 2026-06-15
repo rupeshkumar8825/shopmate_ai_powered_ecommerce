@@ -93,3 +93,10 @@ export interface DeleteOrderResponse {
     // fields of the deleted order are returned here
     deleteOrderDetails : Order
 }
+
+
+export interface OrderAtomState {
+    orderOperationInProgress : boolean, 
+    orders : OrderDetails[], 
+    error : string | null
+}
