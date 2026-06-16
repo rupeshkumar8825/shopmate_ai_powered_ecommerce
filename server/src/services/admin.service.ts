@@ -248,7 +248,8 @@ export class AdminService {
         let topSellingProductDetails = [];
         for (var currProductSellingDetails of topSellingProductsResponse) {
             const currentProduct = await prisma.product.findUnique({
-                where : {id : currProductSellingDetails.product_id}
+                where : {id : currProductSellingDetails.product_id},
+                include : {reviewList : true}
             });
             const currentProductDetails = {
                 product : currentProduct, 
@@ -286,7 +287,10 @@ export class AdminService {
 
         // lets now find out the low stock products for this purpose
         const lowStockProductListQueryResponse = await prisma.product.findMany({
-            where : {stock : {lte : 5}}
+            where : {stock : {lte : 5}}, 
+            include : {
+                reviewList : true
+            }
         });
 
         // lets find out the last month revenue query itself 
