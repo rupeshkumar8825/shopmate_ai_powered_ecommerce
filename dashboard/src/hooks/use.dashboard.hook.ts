@@ -27,7 +27,7 @@ import {
     topSellingProductDetailsSelector,
     lowStockProductListSelector,
 } from "../recoil/selectors/dashboard.selectors"
-import { getDashboardStatsAdminApi } from "../api/admin.api"
+import { getDashboardStatsApi } from "../api/dashboard.api"
 
 
 // turns whatever was thrown (axios error or the plain Errors thrown by the api layer)
@@ -85,7 +85,7 @@ export const useDashboard = () => {
             error: null,
         }))
         try {
-            const response = await getDashboardStatsAdminApi()
+            const response = await getDashboardStatsApi()
             // fold the whole stats payload into the atom, keeping our own state flags intact
             setDashboardState((prev) => ({
                 ...prev,

@@ -8,7 +8,6 @@ import type {
     AdminGetAllUsersResponse,
     AdminDeleteUserRequestPayload,
     AdminDeleteUserResponse,
-    AdminGetDashboardStatsResponse,
 } from "../types/admin.types";
 import { axiosInstance } from "./axios.instance"
 
@@ -58,21 +57,4 @@ export const deleteUserAdminApi = async (
 
     // say everything went fine
     return response.data as AdminDeleteUserResponse
-}
-
-
-// fetches the aggregated dashboard statistics (GET /v1/admin/dashboard-stats)
-export const getDashboardStatsAdminApi = async (): Promise<AdminGetDashboardStatsResponse> => {
-    const response = await axiosInstance.get("/v1/admin/dashboard-stats");
-
-    if (!response.data) {
-        throw new Error("EMPTY_RESPONSE")
-    }
-
-    if (!response.data.dashboardStats) {
-        throw new Error("INVALID_RESPONSE")
-    }
-
-    // say everything went fine
-    return response.data as AdminGetDashboardStatsResponse
 }
