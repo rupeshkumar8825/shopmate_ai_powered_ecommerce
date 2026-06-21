@@ -10,7 +10,26 @@ import { OrderStatus } from "../generated/prisma/enums";
 import { PaymentsService } from "./payments.service";
 
 export class OrderService {
-    static async placeNewOrderService(userId : string|undefined, fullName : string|undefined, state : string|undefined, city : string|undefined, 
+    /**
+     * Service that places a brand new order. The high level flow is:
+     *      1. Validate that all the required shipping fields and order items are present.
+     *      2. Load every product referenced by the order items from the database.
+     *      3. For each order item validate stock availability and build up the running
+     *         total price along with the rows that need to be inserted into OrderItem.
+     *      4. Create the Order row, then the individual OrderItem rows and the ShippingInfo row.
+     *      5. Generate a payment intent for the computed total price.
+     * @param userId id of the user placing the order (taken from the request)
+     * @param fullName recipient full name for shipping
+     * @param state shipping state
+     * @param city shipping city
+     * @param country shipping country
+     * @param address shipping street address
+     * @param pincode shipping pincode/zip
+     * @param phone contact phone number for the shipment
+     * @param orderItems list of products with the quantity being ordered
+     * @returns a tuple of [created order, payment intent details]
+     */
+    static async placeNewOrderService(userId : string|undefined, fullName : string|undefined, state : string|undefined, city : string|undefined,
         country : string|undefined, address : string|undefined, pincode : string|undefined, phone : string|undefined, orderItems : ProductToQuantity[]|undefined
     ){
         // lets first validate the inputs which are present here 
@@ -26,6 +45,7 @@ export class OrderService {
         // lets filter out all the productIds first from the orderItems
         const productIdList = orderItems.map(product => product.productId);
 
+        // fetch every product referenced by the order in a single query (instead of one query per item)
         const listOfAllProducts = await prisma.product.findMany({
             where : {id : {in : productIdList}}
         });
@@ -35,24 +55,29 @@ export class OrderService {
             throw new AppError("Product not found", StatusCodes.NOT_FOUND_404);
         }
 
+        // running total of the order and the list of order item rows we will persist later
         let totalPrice = 0;
         let orderItemToBeInsertedInDB : IOrderItemDB[] = [];
 
+        // walk through every requested item, validate it and accumulate the price + db rows
         orderItems.forEach((currOrderItem) => {
+            // match the requested item back to the product we loaded from the database
             let product = listOfAllProducts.find(currProduct => currProduct.id === currOrderItem.productId);
             if(!product){
-                // this means that the product from the database is missing 
+                // this means that the product from the database is missing
                 throw new AppError(`Product with id : ${currOrderItem.productId}`, StatusCodes.NOT_FOUND_404);
             }
 
+            // make sure we actually have enough stock to fulfil the requested quantity
             if(currOrderItem.quantity > product.stock.toString()){
                 throw new AppError(`Not enough stocks present for product ${product.id}`, StatusCodes.NOT_FOUND_404);
-            }   
+            }
             const productPrice = Number(product.price.toString());
-            // else calculate the total price 
+            // add this item's contribution (unit price * quantity) to the running total
             totalPrice = totalPrice + ((productPrice) * (parseInt(currOrderItem.quantity)));
             const productImage = product.images as avatarType[];
 
+            // snapshot the product details onto the order item so the order is unaffected by later product changes
             orderItemToBeInsertedInDB.push({
                 product_id : product.id, 
                 quantity : Number(currOrderItem.quantity),
@@ -62,10 +87,11 @@ export class OrderService {
             });
         });
 
+        // apply tax and shipping on top of the items subtotal to get the final payable amount
         const taxPrice = 0.008;
         const shippingPrice = 2;
         totalPrice = totalPrice + totalPrice * taxPrice * shippingPrice;
-        // now lets create the order 
+        // now lets create the order
         const newOrderResponse = await prisma.order.create({
             data : {
                 buyer_id : userId, 
@@ -85,7 +111,7 @@ export class OrderService {
             throw new AppError("Something went wrong while creating the new order", StatusCodes.INTERNAL_ERROR_500);
         }
 
-        // lets now update the OrderItem database table with these new orders for this purpose
+        // persist each order item, linking it back to the order we just created above
         for(let currOrderItemForDb of orderItemToBeInsertedInDB){
             const createNewOrderItemResponse = await prisma.orderItem.create({
                 data : {
@@ -123,7 +149,7 @@ export class OrderService {
             throw new AppError("Something went wrong while inserting into the shipping details table", StatusCodes.INTERNAL_ERROR_500);
         }
 
-        // now we need to generate payment intent for this purpose 
+        // finally create a payment intent for the total amount so the client can complete payment
         const generatePaymentIntentServiceResponse = await PaymentsService.createPaymentIntentService(newOrderResponse.id, totalPrice);
         if(!generatePaymentIntentServiceResponse.success){
             // this means that something bad happened
@@ -175,6 +201,13 @@ export class OrderService {
     }
 
 
+    /**
+     * Service to fetch every order placed by a particular user.
+     * It first confirms the user exists and then returns all their orders
+     * (each including its order items and shipping info).
+     * @param userId unique id of the user whose orders are being requested
+     * @returns array of the user's orders
+     */
     static async fetchMyOrderDetailsService (userId : string|undefined){
         // validation of the input 
         if(!userId){
@@ -212,7 +245,9 @@ export class OrderService {
 
 
     /**
-     * 
+     * Service (admin facing) to fetch every order in the system, each one including
+     * its order items and shipping info.
+     * @returns array of all orders
      */
     static async fetchAllOrdersService () {
        const orderDetailsResponse = await prisma.order.findMany({
@@ -230,6 +265,12 @@ export class OrderService {
        return orderDetailsResponse;
     }
 
+    /**
+     * Service (admin facing) to update the status of an existing order.
+     * @param orderId unique id of the order to update
+     * @param updatedOrderStatus the new status value (cast to the OrderStatus enum)
+     * @returns the updated order including its items and shipping info
+     */
     static async updateOrderStatusService(orderId : string|undefined, updatedOrderStatus : string|undefined) {
         if(!orderId || !updatedOrderStatus){
             throw new AppError("OrderId or order status is either empty or null.", StatusCodes.BAD_REQUEST_400);
@@ -255,18 +296,23 @@ export class OrderService {
         return updatedOrderRespnose;
     }
 
+    /**
+     * Service (admin facing) to delete an order given its id.
+     * @param orderId unique id of the order to delete
+     * @returns the deleted order record
+     */
     static async deleteOrderService(orderId : string|undefined) {
         if(!orderId){
             throw new AppError("OrderId is either empty or null.", StatusCodes.BAD_REQUEST_400);
         }
 
-        // lets try to update the order status in the database table
+        // lets try to delete the order from the database table
         const deleteOrderRespnose = await prisma.order.delete({
             where : {id : orderId}, 
         });
 
         if(!deleteOrderRespnose){
-            throw new AppError("Update order failed", StatusCodes.INTERNAL_ERROR_500);
+            throw new AppError("Delete order failed", StatusCodes.INTERNAL_ERROR_500);
         }
 
         // else lets say everything went fine 
